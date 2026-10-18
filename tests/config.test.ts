@@ -46,3 +46,47 @@ it('copies normalized configuration so callers cannot mutate light lists', () =>
   raw.lights[0]!.name = 'Changed';
   expect(normalized.lights[0]?.name).toBe('Example');
 });
+it('accepts live slider defaults and per-light overrides and rejects non-booleans', () => {
+  expect(
+    lightConfig({ type: 'test', entity: 'light.example' }).slider_live_update,
+  ).toBeUndefined();
+  expect(
+    lightConfig({
+      type: 'test',
+      entity: 'light.example',
+      slider_live_update: true,
+    }).slider_live_update,
+  ).toBe(true);
+  const config = lightingConfig({
+    type: 'test',
+    slider_live_update: true,
+    lights: [
+      { entity: 'light.example_a' },
+      { entity: 'light.example_b', slider_live_update: false },
+    ],
+  });
+  expect(config.slider_live_update).toBe(true);
+  expect(config.lights[1]?.slider_live_update).toBe(false);
+  for (const value of ['true', 1, null]) {
+    expect(() =>
+      lightConfig({
+        type: 'test',
+        entity: 'light.example',
+        slider_live_update: value,
+      }),
+    ).toThrow('slider_live_update');
+    expect(() =>
+      lightingConfig({
+        type: 'test',
+        slider_live_update: value,
+        lights: [{ entity: 'light.example' }],
+      }),
+    ).toThrow('slider_live_update');
+    expect(() =>
+      lightingConfig({
+        type: 'test',
+        lights: [{ entity: 'light.example', slider_live_update: value }],
+      }),
+    ).toThrow('lights[0].slider_live_update');
+  }
+});

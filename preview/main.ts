@@ -65,6 +65,7 @@ let states: HomeAssistant['states'];
 let previewLanguage = 'en';
 let previewTheme: 'both' | 'light' | 'dark' = 'both';
 let previewWidth: 'phone' | 'wide' = 'phone';
+let sliderLiveUpdate = false;
 function initialStates(): HomeAssistant['states'] {
   return {
     'sensor.example_temperature': makeEntity(
@@ -187,6 +188,8 @@ function updateChrome() {
   document.querySelector('#language-label')!.textContent = text.language;
   document.querySelector('#theme-label')!.textContent = text.theme;
   document.querySelector('#width-label')!.textContent = text.layout;
+  document.querySelector('#live-update-label')!.textContent =
+    text.sliderLiveUpdate;
   document.querySelector('#theme option[value="both"]')!.textContent =
     text.both;
   document.querySelector('#theme option[value="light"]')!.textContent =
@@ -215,6 +218,7 @@ document.body.innerHTML = `
       <label><span id="language-label"></span> <select id="language"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
       <label><span id="theme-label"></span> <select id="theme"><option value="both">Both</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
       <label><span id="width-label"></span> <select id="width"><option value="phone">Phone</option><option value="wide">Wide</option></select></label>
+      <label><input id="live-update" type="checkbox"><span id="live-update-label"></span></label>
       <button id="fail"></button><button id="external"></button><button id="reset"></button>
     </div>
   </header>
@@ -269,6 +273,7 @@ function renderRooms() {
   for (const theme of ['light', 'dark'] as const) {
     const room = document.createElement('article');
     room.className = `room ${theme}`;
+    room.hidden = previewTheme !== 'both' && previewTheme !== theme;
     room.setAttribute(
       'aria-label',
       `${theme} ${labels.room.toLowerCase()} preview`,
@@ -308,6 +313,7 @@ function renderRooms() {
     });
     add('home-room-lighting-card', {
       title: labels.lighting,
+      slider_live_update: sliderLiveUpdate,
       lights: localizedLights,
     });
     const heading = document.createElement('h2');
@@ -325,6 +331,10 @@ document.querySelector<HTMLSelectElement>('#theme')!.value = previewTheme;
 document.querySelector<HTMLSelectElement>('#width')!.value = previewWidth;
 updateChrome();
 renderRooms();
+document.querySelector('#live-update')!.addEventListener('change', (event) => {
+  sliderLiveUpdate = (event.target as HTMLInputElement).checked;
+  renderRooms();
+});
 document.querySelector('#language')!.addEventListener('change', (e) => {
   previewLanguage = (e.target as HTMLSelectElement).value;
   updateChrome();

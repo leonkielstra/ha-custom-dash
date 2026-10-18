@@ -90,7 +90,7 @@ export class RoomLightingCard extends BaseCard<LightingConfig> {
           (item) =>
             html`<home-light-control-card
               .hass=${this.hass}
-              .cardConfig=${{ type: 'custom:home-light-control-card', theme: this.config?.theme, ...item }}
+              .cardConfig=${{ type: 'custom:home-light-control-card', theme: this.config?.theme, ...item, slider_live_update: item.slider_live_update ?? this.config?.slider_live_update }}
             ></home-light-control-card>`,
         )}
       </div>

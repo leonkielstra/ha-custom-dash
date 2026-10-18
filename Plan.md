@@ -22,7 +22,9 @@ HACS custom-repository installation remains a requirement.
   feedback through a shared English/Dutch catalog selected from Home Assistant's
   configured language, with English as the fallback. Keep user-configured names
   and labels unchanged. Apply the same language options to the local preview.
-- Brightness input updates locally; commit on change (release or keyboard step).
+- Brightness input updates locally; by default commit on change (release or keyboard step).
+  Optional `slider_live_update` submits during input at 200 ms intervals, flushing
+  the final value on release. Room defaults allow explicit per-light overrides.
   Serialize requests, coalesce subsequent changes, and keep an optimistic value
   until a matching entity update or bounded confirmation timeout. Service errors
   restore the actual state and appear inline. Clear timers on disconnect.
@@ -36,6 +38,13 @@ HACS custom-repository installation remains a requirement.
   screenshots, responsive layout, and distributable-module smoke tests.
 
 ## Delivery order
+
+Slider reference: Bubble Card commit `91a5c77ddbd563d2586368905ead6ded8b1c9fda`.
+Its [button card](https://github.com/Clooos/Bubble-Card/blob/91a5c77ddbd563d2586368905ead6ded8b1c9fda/src/cards/button/create.js)
+delegates to the [shared slider](https://github.com/Clooos/Bubble-Card/blob/91a5c77ddbd563d2586368905ead6ded8b1c9fda/src/components/slider/create.js),
+which gates drag-time service updates on `slider_live_update` and uses a 200 ms
+leading/trailing throttle. Here the same opt-in behavior uses the existing command
+queue, with an immediate final submission on release and cleanup on cancellation.
 
 1. Establish strict TypeScript, linting, formatting, build, and typed HA contracts.
 2. Build shared tokens, validation, state helpers, and optimistic command handling.

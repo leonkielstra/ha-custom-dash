@@ -144,3 +144,39 @@ test('wide room lighting uses two columns and remains within its container', asy
     ),
   ).toBe(true);
 });
+test('live sliders update while held and reconcile the released position', async ({
+  page,
+}) => {
+  await page.goto('/?bundle=1');
+  await page.getByRole('checkbox', { name: 'Slider live update' }).check();
+  const first = page.locator('.room.light home-light-control-card').first();
+  const slider = first.getByRole('slider');
+  await slider.scrollIntoViewIfNeeded();
+  const box = await slider.boundingBox();
+  if (!box) throw new Error('Missing slider');
+  await page.mouse.move(box.x + box.width * 0.44, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width * 0.7, box.y + box.height / 2, {
+    steps: 10,
+  });
+  await expect(page.locator('.service-log')).toContainText('light.turn_on');
+  await page.mouse.move(box.x + box.width * 0.9, box.y + box.height / 2, {
+    steps: 10,
+  });
+  const desired = await slider.inputValue();
+  await page.mouse.up();
+  await expect(first.locator('.state')).not.toContainText('Updating', {
+    timeout: 3000,
+  });
+  await expect(slider).toHaveValue(desired);
+  expect(
+    await page.evaluate(() => {
+      const calls = (
+        window as unknown as {
+          preview: { calls: { data: { brightness: number } }[] };
+        }
+      ).preview.calls;
+      return calls.at(-1)?.data.brightness;
+    }),
+  ).toBe(Math.round((Number(desired) * 255) / 100));
+});

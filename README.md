@@ -80,12 +80,14 @@ configuration editor in this milestone.
 ```yaml
 type: custom:home-room-lighting-card
 title: Lighting
+slider_live_update: true
 lights:
   - entity: light.example_ceiling
     name: Ceiling spots
     icon: mdi:light-recessed
   - entity: light.example_reading
     name: Reading lights
+    slider_live_update: false # This light commits only on release.
 ```
 
 ### Card options
@@ -98,11 +100,12 @@ with a property path, so Home Assistant can show its standard error card.
 | -------------------------------- | ----------------------------------- | ------------------------------------------- |
 | `custom:home-room-header-card`   | `name`                              | `icon`, `temperature`, `humidity`, `lights` |
 | `custom:home-scene-card`         | `scenes` (nonempty scene item list) | `title`                                     |
-| `custom:home-light-control-card` | `entity` (`light.*`)                | `name`, `icon`                              |
-| `custom:home-room-lighting-card` | `lights` (nonempty light item list) | `title`                                     |
+| `custom:home-light-control-card` | `entity` (`light.*`)                | `name`, `icon`, `slider_live_update`        |
+| `custom:home-room-lighting-card` | `lights` (nonempty light item list) | `title`, `slider_live_update`               |
 | `custom:home-device-card`        | `entity` (`media_player.*`)         | `name`, `icon`                              |
 
 A scene/light item has `entity`, optional `name`, and optional `icon` (an MDI name).
+Light items also accept `slider_live_update` to override the room card's setting.
 Labels default to entity friendly names. The header's `temperature` and `humidity`
 are entity IDs; its `lights` is an explicit list of light entity IDs. Missing
 readings show an em dash. Values use the entity's unit and Home Assistant locale.
@@ -131,9 +134,16 @@ unknown, and unavailable entities disable actions.
   or the existence of a brightness value.
 - Sliders use 1–100%; the power button handles off. Values are rounded to/from
   Home Assistant's 0–255 brightness representation.
-- Dragging updates the label locally without calling Home Assistant. Release
-  (`change`) commits one command; keyboard steps also commit. In-flight commands
-  are serialized and newer pending values coalesce to the latest value.
+- By default, dragging updates the label locally and release (`change`) commits
+  one command; keyboard steps also commit. Set `slider_live_update: true` to
+  update brightness while dragging, with at most one submission every 200 ms
+  during a drag. Release flushes the final value immediately. The option defaults
+  to `false` on individual and room lighting cards; explicit per-light values
+  override the room setting. In-flight commands are serialized and newer pending
+  values coalesce to the latest value.
+- Cancellation, loss of focus, reconfiguration, and disconnect discard unsent
+  drag values. Already submitted changes remain applied. Turning a light off or
+  losing brightness support also cancels unsent updates.
 - Optimistic values remain until a matching reported state arrives (with 1%
   brightness rounding tolerance). Stale updates cannot snap a drag back. Service
   failure or timeout restores the reported state and shows an inline error.

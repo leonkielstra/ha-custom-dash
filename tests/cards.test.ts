@@ -24,7 +24,159 @@ function hass(
     themes: { darkMode: false },
   };
 }
-afterEach(() => document.body.replaceChildren());
+afterEach(() => {
+  document.body.replaceChildren();
+  vi.useRealTimers();
+});
+const changeBrightness = (slider: HTMLInputElement, value: number) => {
+  slider.value = String(value);
+  slider.dispatchEvent(new Event('input'));
+};
+it('throttles live changes, keeps the drag stable during state updates, and flushes release', async () => {
+  vi.useFakeTimers();
+  const card = new LightControlCard();
+  card.setConfig({
+    type: 'test',
+    entity: 'light.example',
+    slider_live_update: true,
+  });
+  card.hass = hass();
+  const callService = card.hass.callService;
+  document.body.append(card);
+  await card.updateComplete;
+  const slider = card.shadowRoot!.querySelector('input')!;
+  changeBrightness(slider, 60);
+  changeBrightness(slider, 65);
+  changeBrightness(slider, 70);
+  await vi.advanceTimersByTimeAsync(199);
+  expect(callService).toHaveBeenCalledTimes(1);
+  await vi.advanceTimersByTimeAsync(1);
+  expect(callService).toHaveBeenCalledTimes(2);
+  expect(callService).toHaveBeenLastCalledWith('light', 'turn_on', {
+    entity_id: 'light.example',
+    brightness: 179,
+  });
+  card.hass = { ...card.hass, states: { 'light.example': light('on', 153) } };
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('70%');
+  changeBrightness(slider, 80);
+  slider.dispatchEvent(new Event('change'));
+  await vi.advanceTimersByTimeAsync(0);
+  expect(callService).toHaveBeenCalledTimes(3);
+  expect(callService).toHaveBeenLastCalledWith('light', 'turn_on', {
+    entity_id: 'light.example',
+    brightness: 204,
+  });
+  await vi.advanceTimersByTimeAsync(200);
+  expect(callService).toHaveBeenCalledTimes(3);
+  card.hass = { ...card.hass, states: { 'light.example': light('on', 204) } };
+  await card.updateComplete;
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).not.toContain('Updating');
+});
+it('coalesces live changes behind a slow service and sends the final released value', async () => {
+  vi.useFakeTimers();
+  const card = new LightControlCard();
+  card.setConfig({
+    type: 'test',
+    entity: 'light.example',
+    slider_live_update: true,
+  });
+  card.hass = hass();
+  let resolve!: () => void;
+  vi.mocked(card.hass.callService).mockImplementationOnce(
+    () =>
+      new Promise<void>((done) => {
+        resolve = done;
+      }),
+  );
+  document.body.append(card);
+  await card.updateComplete;
+  const slider = card.shadowRoot!.querySelector('input')!;
+  changeBrightness(slider, 60);
+  changeBrightness(slider, 70);
+  await vi.advanceTimersByTimeAsync(200);
+  changeBrightness(slider, 90);
+  slider.dispatchEvent(new Event('change'));
+  expect(card.hass.callService).toHaveBeenCalledTimes(1);
+  resolve();
+  await vi.advanceTimersByTimeAsync(0);
+  expect(card.hass.callService).toHaveBeenCalledTimes(2);
+  expect(card.hass.callService).toHaveBeenLastCalledWith('light', 'turn_on', {
+    entity_id: 'light.example',
+    brightness: 230,
+  });
+});
+it.each([
+  'pointercancel',
+  'blur',
+  'disconnect',
+  'entity',
+  'disabled',
+  'unavailable',
+  'off',
+  'toggle',
+])('discards unsent live changes on %s', async (reason) => {
+  vi.useFakeTimers();
+  const card = new LightControlCard();
+  const config = {
+    type: 'test',
+    entity: 'light.example',
+    slider_live_update: true,
+  };
+  card.setConfig(config);
+  card.hass = hass();
+  document.body.append(card);
+  await card.updateComplete;
+  const slider = card.shadowRoot!.querySelector('input')!;
+  changeBrightness(slider, 60);
+  await vi.advanceTimersByTimeAsync(0);
+  card.hass = { ...card.hass, states: { 'light.example': light('on', 153) } };
+  await card.updateComplete;
+  changeBrightness(slider, 80);
+  if (reason === 'disconnect') card.remove();
+  else if (reason === 'entity')
+    card.setConfig({ ...config, entity: 'light.other' });
+  else if (reason === 'disabled')
+    card.setConfig({ ...config, slider_live_update: false });
+  else if (reason === 'unavailable' || reason === 'off')
+    card.hass = { ...card.hass, states: { 'light.example': light(reason) } };
+  else if (reason === 'toggle')
+    card.shadowRoot!.querySelector('button')!.click();
+  else slider.dispatchEvent(new Event(reason));
+  await card.updateComplete;
+  await vi.advanceTimersByTimeAsync(300);
+  expect(card.hass.callService).toHaveBeenCalledTimes(
+    reason === 'toggle' ? 2 : 1,
+  );
+});
+it('inherits live updates from the room while respecting a per-light false override', async () => {
+  const card = new RoomLightingCard();
+  card.setConfig({
+    type: 'test',
+    slider_live_update: true,
+    lights: [
+      { entity: 'light.example' },
+      { entity: 'light.other', slider_live_update: false },
+    ],
+  });
+  card.hass = hass({ 'light.example': light(), 'light.other': light() });
+  document.body.append(card);
+  await card.updateComplete;
+  const children = [
+    ...card.shadowRoot!.querySelectorAll<LightControlCard>(
+      'home-light-control-card',
+    ),
+  ];
+  await Promise.all(children.map((child) => child.updateComplete));
+  changeBrightness(children[0]!.shadowRoot!.querySelector('input')!, 70);
+  changeBrightness(children[1]!.shadowRoot!.querySelector('input')!, 80);
+  expect(card.hass.callService).toHaveBeenCalledTimes(1);
+  expect(card.hass.callService).toHaveBeenLastCalledWith('light', 'turn_on', {
+    entity_id: 'light.example',
+    brightness: 179,
+  });
+});
 it('provides local slider feedback without service calls until commit and rolls back failure', async () => {
   const card = new LightControlCard();
   card.setConfig({ type: 'test', entity: 'light.example' });

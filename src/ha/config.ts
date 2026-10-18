@@ -22,6 +22,12 @@ function text(value: unknown, path: string): string {
 function optionalText(value: unknown, path: string): string | undefined {
   return value === undefined ? undefined : text(value, path);
 }
+function optionalBoolean(value: unknown, path: string): boolean | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value !== 'boolean')
+    throw new Error(`${path}: expected a boolean`);
+  return value;
+}
 function entity(value: unknown, path: string, domain?: string): string {
   const id = text(value, path);
   if (
@@ -91,14 +97,32 @@ export function scenesConfig(value: unknown): ScenesConfig {
   };
 }
 export function lightConfig(value: unknown): LightConfig {
-  return { ...base(value), ...item(value, 'light', 'light') };
+  const c = object(value);
+  return {
+    ...base(value),
+    ...item(value, 'light', 'light'),
+    slider_live_update: optionalBoolean(
+      c.slider_live_update,
+      'slider_live_update',
+    ),
+  };
 }
 export function lightingConfig(value: unknown): LightingConfig {
   const c = object(value);
   return {
     ...base(value),
     title: optionalText(c.title, 'title'),
-    lights: items(c.lights, 'lights', 'light'),
+    slider_live_update: optionalBoolean(
+      c.slider_live_update,
+      'slider_live_update',
+    ),
+    lights: items(c.lights, 'lights', 'light').map((light, index) => ({
+      ...light,
+      slider_live_update: optionalBoolean(
+        object((c.lights as unknown[])[index]).slider_live_update,
+        `lights[${index}].slider_live_update`,
+      ),
+    })),
   };
 }
 export function deviceConfig(value: unknown): DeviceConfig {

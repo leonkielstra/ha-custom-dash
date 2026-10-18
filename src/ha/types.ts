@@ -34,9 +34,13 @@ export interface ScenesConfig extends CardConfig {
   title?: string;
   scenes: EntityItem[];
 }
-export interface LightConfig extends CardConfig, EntityItem {}
+export interface LightItem extends EntityItem {
+  slider_live_update?: boolean;
+}
+export interface LightConfig extends CardConfig, LightItem {}
 export interface LightingConfig extends CardConfig {
   title?: string;
-  lights: EntityItem[];
+  slider_live_update?: boolean;
+  lights: LightItem[];
 }
 export interface DeviceConfig extends CardConfig, EntityItem {}

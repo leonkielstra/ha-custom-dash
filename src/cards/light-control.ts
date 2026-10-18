@@ -115,6 +115,10 @@ export class LightControlCard extends BaseCard<LightConfig> {
     `,
   ];
   private draft?: number;
+  private liveTimer?: ReturnType<typeof setTimeout>;
+  private pendingLiveBrightness?: number;
+  private lastLiveBrightness?: number;
+  private lastLiveSentAt = -Infinity;
   private command = new ConfirmedCommand<LightValue>(
     async (value) => {
       if (!this.hass || !this.config) throw new Error('Not connected');
@@ -132,8 +136,12 @@ export class LightControlCard extends BaseCard<LightConfig> {
     const config = lightConfig(value);
     if (config.entity !== this.config?.entity) {
       this.command.reset();
-      this.draft = undefined;
     }
+    if (
+      config.entity !== this.config?.entity ||
+      config.slider_live_update !== this.config?.slider_live_update
+    )
+      this.cancelSlider();
     this.config = config;
   }
   set cardConfig(value: unknown) {
@@ -150,34 +158,70 @@ export class LightControlCard extends BaseCard<LightConfig> {
     const entity = this.hass?.states[this.config?.entity ?? ''];
     if (!available(entity)) {
       this.command.reset();
-      this.draft = undefined;
+      this.cancelSlider();
     } else {
       this.command.observe(lightValue(entity));
-      if (!(this.command.value ?? lightValue(entity)).on)
-        this.draft = undefined;
+      if (
+        !(this.command.value ?? lightValue(entity)).on ||
+        !supportsBrightness(entity)
+      )
+        this.cancelSlider();
     }
   }
   disconnectedCallback() {
     super.disconnectedCallback();
     this.command.reset();
-    this.draft = undefined;
+    this.cancelSlider();
   }
   private toggle() {
     const entity = this.hass?.states[this.config?.entity ?? ''];
     if (!available(entity)) return;
     const current = this.command.value ?? lightValue(entity);
-    this.draft = undefined;
+    this.cancelSlider();
     this.command.submit({ on: !current.on });
   }
-  private commit(event: Event) {
-    const value = Number((event.target as HTMLInputElement).value);
-    this.draft = undefined;
+  private canAdjustBrightness() {
     const entity = this.hass?.states[this.config?.entity ?? ''];
-    if (
+    return (
       available(entity) &&
       supportsBrightness(entity) &&
       (this.command.value ?? lightValue(entity)).on
-    )
+    );
+  }
+  private cancelSlider() {
+    clearTimeout(this.liveTimer);
+    this.liveTimer = undefined;
+    this.pendingLiveBrightness = undefined;
+    this.lastLiveBrightness = undefined;
+    this.lastLiveSentAt = -Infinity;
+    this.draft = undefined;
+  }
+  private flushLiveBrightness() {
+    this.liveTimer = undefined;
+    const value = this.pendingLiveBrightness;
+    this.pendingLiveBrightness = undefined;
+    if (value === undefined || !this.canAdjustBrightness()) return;
+    if (value === this.lastLiveBrightness && !this.command.error) return;
+    this.lastLiveSentAt = Date.now();
+    this.lastLiveBrightness = value;
+    this.command.submit({ on: true, brightness: value });
+  }
+  private input(event: Event) {
+    if (!this.canAdjustBrightness()) return;
+    this.draft = Number((event.target as HTMLInputElement).value);
+    if (!this.config?.slider_live_update) return;
+    this.pendingLiveBrightness = this.draft;
+    if (this.liveTimer !== undefined) return;
+    const delay = 200 - (Date.now() - this.lastLiveSentAt);
+    if (delay <= 0) this.flushLiveBrightness();
+    else this.liveTimer = setTimeout(() => this.flushLiveBrightness(), delay);
+  }
+  private commit(event: Event) {
+    const value = Number((event.target as HTMLInputElement).value);
+    const alreadySubmitted =
+      value === this.lastLiveBrightness && !this.command.error;
+    this.cancelSlider();
+    if (this.canAdjustBrightness() && !alreadySubmitted)
       this.command.submit({ on: true, brightness: value });
   }
   protected render() {
@@ -229,16 +273,10 @@ export class LightControlCard extends BaseCard<LightConfig> {
           aria-label=${text.brightness(name)}
           aria-valuetext=${`${percent}%`}
           ?disabled=${!isAvailable || !current.on || !dimmable}
-          @input=${(e: Event) => {
-            this.draft = Number((e.target as HTMLInputElement).value);
-          }}
+          @input=${this.input}
           @change=${this.commit}
-          @pointercancel=${() => {
-            this.draft = undefined;
-          }}
-          @blur=${() => {
-            this.draft = undefined;
-          }}
+          @pointercancel=${this.cancelSlider}
+          @blur=${this.cancelSlider}
         />
         ${isAvailable && !dimmable ? html`<p class="note">${text.onOffOnly}</p>` : nothing}
       </div>
