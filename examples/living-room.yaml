@@ -1,0 +1,53 @@
+# All entity IDs and names are fictional. Replace them with your own entities.
+# Install the bundled resource before configuring this view.
+title: Home
+views:
+  - title: Living room
+    path: living-room
+    icon: mdi:sofa-outline
+    type: masonry
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: custom:home-room-header-card
+            name: Living room
+            icon: mdi:sofa-outline
+            temperature: sensor.example_room_temperature
+            humidity: sensor.example_room_humidity
+            lights:
+              - light.example_ceiling
+              - light.example_reading
+              - light.example_wall
+              - light.example_floor
+              - light.example_accent
+          - type: custom:home-scene-card
+            title: Scenes
+            scenes:
+              - entity: scene.example_read
+                name: Read
+                icon: mdi:book-open-page-variant-outline
+              - entity: scene.example_relax
+                name: Relax
+                icon: mdi:weather-night
+              - entity: scene.example_film
+                name: Film
+                icon: mdi:movie-open-outline
+          - type: custom:home-room-lighting-card
+            title: Lighting
+            lights:
+              - entity: light.example_ceiling
+                name: Ceiling spots
+                icon: mdi:light-recessed
+              - entity: light.example_reading
+                name: Reading lights
+              - entity: light.example_wall
+                name: Wall lights
+              - entity: light.example_floor
+                name: Floor and table lamps
+                icon: mdi:floor-lamp
+              - entity: light.example_accent
+                name: Accent lights
+          - type: custom:home-device-card
+            entity: media_player.example_display
+            name: Living room display
+            icon: mdi:television

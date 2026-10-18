@@ -1,0 +1,192 @@
+import { afterEach, expect, it, vi } from 'vitest';
+import '../src/index';
+import { LightControlCard } from '../src/cards/light-control';
+import { RoomLightingCard } from '../src/cards/room-lighting';
+import { SceneCard } from '../src/cards/scenes';
+import { RoomHeaderCard } from '../src/cards/room-header';
+import { DeviceCard } from '../src/cards/device';
+import type { HassEntity, HomeAssistant } from '../src/ha/types';
+const light = (state = 'on', brightness = 128): HassEntity => ({
+  entity_id: 'light.example',
+  state,
+  attributes: {
+    brightness,
+    supported_color_modes: ['brightness'],
+    friendly_name: 'Example light',
+  },
+});
+function hass(
+  states: HomeAssistant['states'] = { 'light.example': light() },
+): HomeAssistant {
+  return {
+    states,
+    callService: vi.fn().mockResolvedValue(undefined),
+    themes: { darkMode: false },
+  };
+}
+afterEach(() => document.body.replaceChildren());
+it('provides local slider feedback without service calls until commit and rolls back failure', async () => {
+  const card = new LightControlCard();
+  card.setConfig({ type: 'test', entity: 'light.example' });
+  card.hass = hass();
+  document.body.append(card);
+  await card.updateComplete;
+  const slider = card.shadowRoot!.querySelector('input')!;
+  slider.value = '75';
+  slider.dispatchEvent(new Event('input'));
+  await card.updateComplete;
+  expect(card.hass.callService).not.toHaveBeenCalled();
+  expect(card.shadowRoot!.textContent).toContain('75%');
+  slider.dispatchEvent(new Event('change'));
+  await card.updateComplete;
+  expect(card.hass.callService).toHaveBeenCalledWith('light', 'turn_on', {
+    entity_id: 'light.example',
+    brightness: 191,
+  });
+  card.hass = { ...card.hass, states: { 'light.example': light('on', 191) } };
+  await card.updateComplete;
+  await card.updateComplete;
+  await expect
+    .poll(() => card.shadowRoot!.textContent)
+    .not.toContain('Updating');
+  vi.mocked(card.hass.callService).mockRejectedValueOnce(new Error('failure'));
+  card.shadowRoot!.querySelector('button')!.click();
+  await card.updateComplete;
+  await Promise.resolve();
+  await card.updateComplete;
+  await expect
+    .poll(() => card.shadowRoot!.querySelector('[role="alert"]')?.textContent)
+    .toContain('Could not update');
+  expect(
+    card.shadowRoot!.querySelector('button')!.getAttribute('aria-pressed'),
+  ).toBe('true');
+});
+it('disables brightness while off and gracefully handles unavailable and missing lights', async () => {
+  const card = new LightControlCard();
+  card.setConfig({ type: 'test', entity: 'light.example' });
+  card.hass = hass({ 'light.example': light('off') });
+  document.body.append(card);
+  await card.updateComplete;
+  expect(card.shadowRoot!.querySelector('input')!.disabled).toBe(true);
+  expect(card.shadowRoot!.querySelector('button')!.disabled).toBe(false);
+  card.hass = hass({});
+  await card.updateComplete;
+  expect(card.shadowRoot!.querySelector('button')!.disabled).toBe(true);
+  expect(card.shadowRoot!.textContent).toContain('Not found');
+  card.hass = hass({ 'light.example': light('unavailable') });
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('Unavailable');
+  const basic = light();
+  basic.attributes.supported_color_modes = ['onoff'];
+  card.hass = hass({ 'light.example': basic });
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('On/off only');
+  expect(card.shadowRoot!.querySelector('input')!.disabled).toBe(true);
+});
+it('limits room commands to configured available lights and uses the shared light component', async () => {
+  const card = new RoomLightingCard();
+  card.setConfig({
+    type: 'test',
+    lights: [{ entity: 'light.example' }, { entity: 'light.missing' }],
+  });
+  card.hass = hass({ 'light.example': light(), 'light.unconfigured': light() });
+  document.body.append(card);
+  await card.updateComplete;
+  const button = card.shadowRoot!.querySelector<HTMLButtonElement>(
+    '[aria-label="Turn all configured lights off"]',
+  )!;
+  button.click();
+  await card.updateComplete;
+  expect(card.hass.callService).toHaveBeenCalledWith('light', 'turn_off', {
+    entity_id: ['light.example'],
+  });
+  expect(
+    card.shadowRoot!.querySelectorAll('home-light-control-card'),
+  ).toHaveLength(2);
+});
+it('activates scenes and reports action success without treating them as toggle state', async () => {
+  const card = new SceneCard();
+  card.setConfig({
+    type: 'test',
+    scenes: [{ entity: 'scene.example', name: 'Read' }],
+  });
+  card.hass = hass({
+    'scene.example': {
+      entity_id: 'scene.example',
+      state: '2026-01-01',
+      attributes: {},
+    },
+  });
+  document.body.append(card);
+  await card.updateComplete;
+  card.shadowRoot!.querySelector('button')!.click();
+  await card.updateComplete;
+  await Promise.resolve();
+  await card.updateComplete;
+  expect(card.hass.callService).toHaveBeenCalledWith('scene', 'turn_on', {
+    entity_id: 'scene.example',
+  });
+  expect(
+    card.shadowRoot!.querySelector('[role="status"]')?.textContent,
+  ).toContain('Read activated');
+});
+it('keeps sensor readings inline, reports unavailable counts, and follows HA dark mode', async () => {
+  const card = new RoomHeaderCard();
+  card.setConfig({
+    type: 'test',
+    name: 'Example room',
+    temperature: 'sensor.example_temp',
+    humidity: 'sensor.missing',
+    lights: ['light.example', 'light.missing'],
+  });
+  card.hass = hass({
+    'light.example': light(),
+    'sensor.example_temp': {
+      entity_id: 'sensor.example_temp',
+      state: '20.4',
+      attributes: {},
+    },
+  });
+  document.body.append(card);
+  await card.updateComplete;
+  expect(card.shadowRoot!.querySelector('.readings')?.textContent).toContain(
+    '20.4°C',
+  );
+  expect(card.shadowRoot!.textContent).toContain('1 unavailable');
+  card.hass = { ...card.hass, themes: { darkMode: true } };
+  await card.updateComplete;
+  expect(card.dataset.theme).toBe('dark');
+});
+it('selects media actions using supported features', async () => {
+  const card = new DeviceCard();
+  card.setConfig({
+    type: 'test',
+    entity: 'media_player.example',
+    name: 'Example media',
+  });
+  card.hass = hass({
+    'media_player.example': {
+      entity_id: 'media_player.example',
+      state: 'playing',
+      attributes: { supported_features: 1 },
+    },
+  });
+  document.body.append(card);
+  await card.updateComplete;
+  card.shadowRoot!.querySelector('button')!.click();
+  await card.updateComplete;
+  expect(card.hass.callService).toHaveBeenCalledWith(
+    'media_player',
+    'media_pause',
+    { entity_id: 'media_player.example' },
+  );
+  card.hass = hass({
+    'media_player.example': {
+      entity_id: 'media_player.example',
+      state: 'on',
+      attributes: { supported_features: 0 },
+    },
+  });
+  await card.updateComplete;
+  expect(card.shadowRoot!.querySelector('button')).toBeNull();
+});
