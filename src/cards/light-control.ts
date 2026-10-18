@@ -20,97 +20,150 @@ export class LightControlCard extends BaseCard<LightConfig> {
     BaseCard.styles,
     css`
       ha-card {
-        padding: 8px;
+        padding: 10px 12px;
       }
       .row {
         display: grid;
-        grid-template-columns: 48px minmax(0, 1fr) 44px;
-        gap: 0 8px;
+        grid-template-columns: 44px minmax(0, 1fr) 44px;
+        grid-template-rows: 44px 32px;
+        grid-template-areas:
+          'icon details toggle'
+          'icon slider slider';
+        gap: 0 10px;
         align-items: center;
       }
       .icon-box {
-        grid-row: 1 / 3;
+        grid-area: icon;
+        align-self: center;
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+        border-radius: 12px;
+      }
+      .icon-box ha-icon {
+        width: 22px;
+        height: 22px;
+        --mdc-icon-size: 22px;
       }
       .label {
+        grid-area: details;
         min-width: 0;
-        padding: 4px 0 0;
+        padding: 0;
       }
       .label .name {
         font-size: 14px;
-        font-weight: 600;
+        line-height: 1.35;
+        font-weight: 560;
       }
       .state {
         font-size: 12px;
         color: var(--room-muted);
-        min-height: 18px;
+        line-height: 1.35;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .toggle {
         display: grid;
         place-items: center;
         color: var(--room-muted);
-        grid-column: 3;
-        grid-row: 1;
+        grid-area: toggle;
+        justify-self: end;
+        width: 44px;
+        height: 44px;
+        padding: 0;
+        border-radius: 14px;
+      }
+      .toggle:hover:not(:disabled) {
+        background: transparent;
+      }
+      .switch-track {
+        position: relative;
+        width: 34px;
+        height: 20px;
+        border-radius: 999px;
+        background: var(--room-secondary);
+      }
+      .switch-track::after {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--room-muted);
+        content: '';
       }
       .toggle[aria-pressed='true'] {
-        background: var(--room-active);
-        color: var(--room-accent);
+        color: var(--room-text);
+      }
+      .toggle[aria-pressed='true'] .switch-track {
+        background: var(--room-accent);
+      }
+      .toggle[aria-pressed='true'] .switch-track::after {
+        transform: translateX(14px);
+        background: var(--room-surface);
       }
       input {
-        grid-column: 2 / 4;
+        grid-area: slider;
         width: 100%;
         margin: 0;
         min-width: 0;
-        height: 44px;
+        height: 32px;
         appearance: none;
         background: transparent;
         touch-action: pan-y;
         cursor: pointer;
       }
       input::-webkit-slider-runnable-track {
-        height: 8px;
+        height: 6px;
         border-radius: 8px;
         background: linear-gradient(
           to right,
-          var(--room-accent) 0 var(--range-fill),
+          var(--range-color, var(--room-accent)) 0 var(--range-fill),
           var(--room-secondary) var(--range-fill) 100%
         );
       }
       input::-moz-range-track {
-        height: 8px;
+        height: 6px;
         border-radius: 8px;
         background: var(--room-secondary);
       }
       input::-moz-range-progress {
-        height: 8px;
+        height: 6px;
         border-radius: 8px;
-        background: var(--room-accent);
+        background: var(--range-color, var(--room-accent));
       }
       input::-webkit-slider-thumb {
         appearance: none;
         width: 20px;
         height: 20px;
-        margin-top: -6px;
+        margin-top: -7px;
         border: 2px solid var(--room-surface);
         border-radius: 50%;
-        background: var(--room-accent);
+        background: var(--range-color, var(--room-accent));
       }
       input::-moz-range-thumb {
         width: 16px;
         height: 16px;
         border: 2px solid var(--room-surface);
         border-radius: 50%;
-        background: var(--room-accent);
+        background: var(--range-color, var(--room-accent));
       }
       input:disabled {
-        opacity: 0.45;
+        opacity: 0.65;
         cursor: default;
-        --room-accent: var(--room-muted);
+        --range-color: var(--room-muted);
       }
-      .note {
-        grid-column: 2 / 4;
-        font-size: 12px;
-        color: var(--room-muted);
-        padding-bottom: 4px;
+      @media (prefers-reduced-motion: no-preference) {
+        .switch-track {
+          transition: background 120ms ease;
+        }
+        .switch-track::after {
+          transition:
+            transform 120ms ease,
+            background 120ms ease;
+        }
       }
     `,
   ];
@@ -237,6 +290,9 @@ export class LightControlCard extends BaseCard<LightConfig> {
       this.config.name ?? (entity ? undefined : this.config.entity),
     );
     const text = this.strings;
+    const status = isAvailable
+      ? `${current.on ? text.on : text.off}${current.on && dimmable ? ` · ${percent}%` : ''}${!dimmable ? ` · ${text.onOffOnly}` : ''}${this.command.value ? ` · ${text.updating}` : ''}`
+      : entityStatus(entity, this.hass?.locale?.language);
     return html`<ha-card class=${current.on && isAvailable ? 'active' : ''}>
       <div class="row">
         <div class="icon-box">
@@ -247,9 +303,7 @@ export class LightControlCard extends BaseCard<LightConfig> {
         </div>
         <div class="label">
           <p class="name" title=${name}>${name}</p>
-          <p class="state">
-            ${isAvailable ? `${current.on ? text.on : text.off}${current.on && dimmable ? ` · ${percent}%` : ''}${this.command.value ? ` · ${text.updating}` : ''}` : entityStatus(entity, this.hass?.locale?.language)}
-          </p>
+          <p class="state" title=${status}>${status}</p>
         </div>
         <button
           class="toggle"
@@ -258,13 +312,10 @@ export class LightControlCard extends BaseCard<LightConfig> {
           ?disabled=${!isAvailable}
           @click=${this.toggle}
         >
-          <ha-icon
-            .icon=${current.on ? 'mdi:power' : 'mdi:power-standby'}
-            aria-hidden="true"
-          ></ha-icon>
+          <span class="switch-track" aria-hidden="true"></span>
         </button>
         <input
-          style=${`--range-fill: ${current.on && dimmable ? percent : 0}%`}
+          style=${`--range-fill: ${current.on && dimmable ? percent : 0}%; --range-color: ${current.on && dimmable ? 'var(--room-accent)' : 'var(--room-muted)'}`}
           type="range"
           min="1"
           max="100"
@@ -278,7 +329,6 @@ export class LightControlCard extends BaseCard<LightConfig> {
           @pointercancel=${this.cancelSlider}
           @blur=${this.cancelSlider}
         />
-        ${isAvailable && !dimmable ? html`<p class="note">${text.onOffOnly}</p>` : nothing}
       </div>
       ${this.command.error ? html`<p class="error" role="alert">${localizedError(this.command.error, this.hass?.locale?.language)}</p>` : nothing}
     </ha-card>`;

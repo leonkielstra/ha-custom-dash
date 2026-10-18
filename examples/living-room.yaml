@@ -10,7 +10,6 @@ views:
       - type: vertical-stack
         cards:
           - type: custom:home-room-header-card
-            name: Woonkamer
             icon: mdi:sofa-outline
             temperature: sensor.example_room_temperature
             humidity: sensor.example_room_humidity

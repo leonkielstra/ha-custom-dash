@@ -96,19 +96,21 @@ Every card requires `type`. All cards accept `theme: auto` (default), `light`, o
 `dark`. Auto follows `hass.themes.darkMode`. Invalid configuration throws an error
 with a property path, so Home Assistant can show its standard error card.
 
-| Card                             | Required options                    | Optional options                            |
-| -------------------------------- | ----------------------------------- | ------------------------------------------- |
-| `custom:home-room-header-card`   | `name`                              | `icon`, `temperature`, `humidity`, `lights` |
-| `custom:home-scene-card`         | `scenes` (nonempty scene item list) | `title`                                     |
-| `custom:home-light-control-card` | `entity` (`light.*`)                | `name`, `icon`, `slider_live_update`        |
-| `custom:home-room-lighting-card` | `lights` (nonempty light item list) | `title`, `slider_live_update`               |
-| `custom:home-device-card`        | `entity` (`media_player.*`)         | `name`, `icon`                              |
+| Card                             | Required options                    | Optional options                                                 |
+| -------------------------------- | ----------------------------------- | ---------------------------------------------------------------- |
+| `custom:home-room-header-card`   | —                                   | `name`, `show_name`, `icon`, `temperature`, `humidity`, `lights` |
+| `custom:home-scene-card`         | `scenes` (nonempty scene item list) | `title`                                                          |
+| `custom:home-light-control-card` | `entity` (`light.*`)                | `name`, `icon`, `slider_live_update`                             |
+| `custom:home-room-lighting-card` | `lights` (nonempty light item list) | `title`, `slider_live_update`                                    |
+| `custom:home-device-card`        | `entity` (`media_player.*`)         | `name`, `icon`                                                   |
 
 A scene/light item has `entity`, optional `name`, and optional `icon` (an MDI name).
 Light items also accept `slider_live_update` to override the room card's setting.
 Labels default to entity friendly names. The header's `temperature` and `humidity`
 are entity IDs; its `lights` is an explicit list of light entity IDs. Missing
 readings show an em dash. Values use the entity's unit and Home Assistant locale.
+The room title is hidden by default to avoid repeating the dashboard navigation
+title. Set `name` and `show_name: true` when the header is used outside a room view.
 Missing lights are counted as unavailable, not as off. Duplicate IDs in lists
 are rejected. Header and lighting lists are independent; configure the same IDs
 if their counts should match.
@@ -162,16 +164,17 @@ in a Home Assistant theme to customize the cards (HA theme keys omit the `--`):
 
 | CSS token                | Light default | Dark default |
 | ------------------------ | ------------- | ------------ |
-| `--home-room-background` | `#F7F6F2`     | `#151917`    |
-| `--home-room-surface`    | `#FFFFFF`     | `#242A27`    |
-| `--home-room-secondary`  | `#EDECE7`     | `#303833`    |
-| `--home-room-text`       | `#242A27`     | `#F2F4F1`    |
-| `--home-room-muted`      | `#626C65`     | `#A5B0A9`    |
-| `--home-room-accent`     | `#32726C`     | `#76B9AE`    |
+| `--home-room-background` | `#F7F6F2`     | `#141414`    |
+| `--home-room-surface`    | `#FFFFFF`     | `#242424`    |
+| `--home-room-secondary`  | `#EDECE7`     | `#303030`    |
+| `--home-room-text`       | `#242A27`     | `#F2F2F2`    |
+| `--home-room-muted`      | `#626C65`     | `#A8A8A8`    |
+| `--home-room-accent`     | `#397F79`     | `#76B9AE`    |
 | `--home-room-active`     | `#E2F0EC`     | `#29453F`    |
 
-Muted text and the light accent are darker than the reference palette for contrast. The dashboard page
-background remains owned by Home Assistant; these cards do not inject global CSS.
+The dark active token is reserved for small interactive or icon treatments; card
+surfaces remain neutral charcoal. The dashboard page background remains owned by
+Home Assistant; these cards do not inject global CSS.
 Cards use their allocated width; room lighting switches to two columns when its
 container reaches 600px. All labels, controls, and focus states are inside each
 card's shadow root. Motion respects `prefers-reduced-motion`.

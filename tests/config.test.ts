@@ -18,6 +18,9 @@ it('gives property paths for invalid configuration', () => {
     deviceConfig({ type: 'test', entity: 'climate.example' }),
   ).toThrow('media_player.');
   expect(() => headerConfig({ type: 'test', name: '' })).toThrow('name');
+  expect(() => headerConfig({ type: 'test', show_name: true })).toThrow(
+    'required when show_name is true',
+  );
   expect(() =>
     lightConfig({ type: 'test', entity: 'light.example', theme: 'invalid' }),
   ).toThrow('theme');
@@ -36,6 +39,7 @@ it('rejects duplicate entity IDs and preserves explicit order', () => {
       lights: ['light.example', 'light.example'],
     }),
   ).toThrow('duplicate');
+  expect(headerConfig({ type: 'test' }).name).toBeUndefined();
 });
 it('copies normalized configuration so callers cannot mutate light lists', () => {
   const raw = {

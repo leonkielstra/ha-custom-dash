@@ -10,7 +10,7 @@ export class SceneCard extends BaseCard<ScenesConfig> {
     css`
       .scenes {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(76px, 1fr));
         gap: 8px;
       }
       button {
@@ -18,9 +18,9 @@ export class SceneCard extends BaseCard<ScenesConfig> {
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        gap: 8px;
-        padding: 12px 8px;
-        min-height: 80px;
+        gap: 4px;
+        padding: 8px 6px;
+        min-height: 68px;
         background: var(--room-surface);
       }
       button span {
@@ -31,12 +31,14 @@ export class SceneCard extends BaseCard<ScenesConfig> {
       }
       button ha-icon {
         color: var(--room-accent);
+        width: 21px;
+        height: 21px;
+        --mdc-icon-size: 21px;
       }
       .feedback {
-        min-height: 20px;
         font-size: 12px;
         color: var(--room-muted);
-        margin-top: 4px;
+        margin-top: 0;
       }
     `,
   ];

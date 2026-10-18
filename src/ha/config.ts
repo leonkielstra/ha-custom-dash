@@ -75,9 +75,14 @@ export function headerConfig(value: unknown): HeaderConfig {
     if (new Set(lights).size !== lights.length)
       throw new Error('lights: duplicate entity IDs are not allowed');
   }
+  const name = optionalText(c.name, 'name');
+  const showName = optionalBoolean(c.show_name, 'show_name');
+  if (showName && !name)
+    throw new Error('name: required when show_name is true');
   return {
     ...base(value),
-    name: text(c.name, 'name'),
+    name,
+    show_name: showName,
     icon: optionalText(c.icon, 'icon'),
     temperature:
       c.temperature === undefined

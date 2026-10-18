@@ -67,6 +67,99 @@ test('fits a smartphone, supports dark theme, and keeps touch controls accessibl
     fullPage: true,
   });
 });
+test('uses neutral dark card surfaces and compact room controls', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?bundle=1');
+  const room = page.locator('.room.dark');
+  const header = room.locator('home-room-header-card');
+  const light = room.locator('home-light-control-card').nth(1);
+  await expect(header.locator('h2')).toHaveCount(0);
+  const cardColors = await light.evaluate((card) => {
+    return {
+      page: getComputedStyle(card).getPropertyValue('--room-background').trim(),
+    };
+  });
+  const surface = light.locator('ha-card');
+  expect(cardColors.page).toBe('#141414');
+  expect(
+    await surface.evaluate(
+      (element) => getComputedStyle(element).backgroundColor,
+    ),
+  ).toBe('rgb(36, 36, 36)');
+  expect((await surface.boundingBox())?.height).toBeLessThanOrEqual(112);
+  const toggle = light.getByRole('button');
+  expect((await toggle.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  await page.locator('#theme').selectOption('dark');
+  await page.screenshot({
+    path: 'test-results/refined-dark.png',
+    fullPage: true,
+  });
+  await page.locator('#theme').selectOption('light');
+  await page.screenshot({
+    path: 'test-results/refined-light.png',
+    fullPage: true,
+  });
+});
+test('light content stays aligned across widths, themes, and device states', async ({
+  page,
+}) => {
+  await page.goto('/?bundle=1');
+  for (const width of [320, 375, 390, 430, 768, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const theme of width === 390 ? ['dark', 'light'] : ['dark']) {
+      await page.locator('#theme').selectOption(theme);
+      const room = page.locator(`.room.${theme}`);
+      const cards = room.locator('home-light-control-card');
+      const heights: number[] = [];
+      for (const card of await cards.all()) {
+        const geometry = await card.locator('.row').evaluate((row) => {
+          const bounds = (selector: string) => {
+            const r = row.querySelector(selector)!.getBoundingClientRect();
+            return {
+              x: r.x,
+              right: r.right,
+              y: r.y,
+              height: r.height,
+              center: r.y + r.height / 2,
+            };
+          };
+          return {
+            row: row.getBoundingClientRect().toJSON(),
+            label: bounds('.label'),
+            icon: bounds('.icon-box'),
+            toggle: bounds('.toggle'),
+            slider: bounds('input'),
+          };
+        });
+        expect(geometry.slider.x).toBeCloseTo(geometry.label.x, 1);
+        expect(geometry.slider.right).toBeCloseTo(geometry.row.right, 1);
+        expect(geometry.toggle.center).toBeCloseTo(geometry.label.center, 1);
+        expect(geometry.icon.center).toBeCloseTo(
+          geometry.row.y + geometry.row.height / 2,
+          1,
+        );
+        expect(geometry.slider.y).toBeGreaterThanOrEqual(
+          geometry.toggle.y + geometry.toggle.height,
+        );
+        heights.push((await card.boundingBox())!.height);
+      }
+      expect(new Set(heights).size).toBe(1);
+      expect(heights[0]).toBeLessThanOrEqual(100);
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      if (width === 390 || width === 320) {
+        await room.screenshot({
+          path: `test-results/light-layout-${width}-${theme}.png`,
+        });
+      }
+    }
+  }
+});
 test('external state events update both previews and room controls use explicit IDs', async ({
   page,
 }) => {
@@ -82,17 +175,27 @@ test('external state events update both previews and room controls use explicit 
     ).toHaveAttribute('aria-pressed', 'false');
   const room = page.locator('.room.light');
   await room
-    .getByRole('button', { name: 'Turn all configured lights on', exact: true })
+    .getByRole('button', {
+      name: 'Turn all configured lights off',
+      exact: true,
+    })
     .click();
   await expect(
     room.locator('home-light-control-card').nth(4).getByRole('button'),
-  ).toHaveAttribute('aria-pressed', 'true');
+  ).toHaveAttribute('aria-pressed', 'false');
   await expect(page.locator('.service-log')).toContainText(
     'light.example_basic',
   );
   await expect(page.locator('.service-log')).not.toContainText(
     'light.example_unavailable',
   );
+  const allOn = room.getByRole('button', {
+    name: 'Turn all configured lights on',
+    exact: true,
+  });
+  await expect(allOn).toBeEnabled();
+  await allOn.click();
+  await expect(page.locator('.service-log')).toContainText('light.turn_on');
 });
 test('dragging is local until release, then reconciles a single service call', async ({
   page,

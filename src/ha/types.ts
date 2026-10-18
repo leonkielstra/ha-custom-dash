@@ -24,7 +24,8 @@ export interface EntityItem {
   icon?: string;
 }
 export interface HeaderConfig extends CardConfig {
-  name: string;
+  name?: string;
+  show_name?: boolean;
   icon?: string;
   temperature?: string;
   humidity?: string;

@@ -83,12 +83,12 @@ select {
   border-radius: 16px;
 }
 .room.dark {
-  background: #151917;
-  color: #f2f4f1;
+  background: #141414;
+  color: #f2f2f2;
   color-scheme: dark;
 }
 .room > * + * {
-  margin-top: 16px;
+  margin-top: 12px;
 }
 .room-top {
   display: flex;

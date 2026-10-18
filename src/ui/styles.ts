@@ -12,8 +12,9 @@ export const sharedStyles = css`
     --room-secondary: var(--home-room-secondary, #edece7);
     --room-text: var(--home-room-text, var(--primary-text-color, #242a27));
     --room-muted: var(--home-room-muted, #626c65);
-    --room-accent: var(--home-room-accent, #32726c);
+    --room-accent: var(--home-room-accent, #397f79);
     --room-active: var(--home-room-active, #e2f0ec);
+    --room-border: var(--home-room-border, #e7e5df);
     --room-error: var(--error-color, #ba1a1a);
     display: block;
     color: var(--room-text);
@@ -29,13 +30,14 @@ export const sharedStyles = css`
     -webkit-tap-highlight-color: transparent;
   }
   :host([data-theme='dark']) {
-    --room-background: var(--home-room-background, #151917);
-    --room-surface: var(--home-room-surface, #242a27);
-    --room-secondary: var(--home-room-secondary, #303833);
-    --room-text: var(--home-room-text, #f2f4f1);
-    --room-muted: var(--home-room-muted, #a5b0a9);
+    --room-background: var(--home-room-background, #141414);
+    --room-surface: var(--home-room-surface, #242424);
+    --room-secondary: var(--home-room-secondary, #303030);
+    --room-text: var(--home-room-text, #f2f2f2);
+    --room-muted: var(--home-room-muted, #a8a8a8);
     --room-accent: var(--home-room-accent, #76b9ae);
     --room-active: var(--home-room-active, #29453f);
+    --room-border: var(--home-room-border, #363636);
     --room-error: var(--error-color, #ffb4ab);
   }
   *,
@@ -107,23 +109,30 @@ export const sharedStyles = css`
     justify-content: space-between;
     gap: 8px;
     margin-bottom: 8px;
-    min-height: 44px;
+    min-height: 36px;
+  }
+  .section-heading h3 {
+    font-size: 17px;
+    font-weight: 620;
   }
   .action {
     display: inline-flex;
     gap: 8px;
     align-items: center;
-    padding: 8px 12px;
-    background: var(--room-active);
+    min-height: 40px;
+    padding: 6px 10px;
+    border: 1px solid var(--room-border);
+    background: transparent;
     color: var(--room-accent);
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 550;
   }
   .icon-box {
     display: grid;
     place-items: center;
-    flex: 0 0 48px;
-    width: 48px;
-    height: 48px;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
     background: var(--room-secondary);
     border-radius: 12px;
     color: var(--room-muted);

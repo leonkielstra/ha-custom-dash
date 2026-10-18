@@ -8,37 +8,55 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
     BaseCard.styles,
     css`
       ha-card {
-        padding: 20px;
+        padding: 12px 14px;
         display: flex;
-        gap: 16px;
+        gap: 12px;
         align-items: center;
       }
       .icon-box {
-        width: 56px;
-        height: 56px;
-        flex-basis: 56px;
+        width: 46px;
+        height: 46px;
+        flex-basis: 46px;
         color: var(--room-accent);
         background: var(--room-active);
+        border-radius: 14px;
       }
       .readings {
         display: flex;
         flex-wrap: wrap;
-        gap: 4px 8px;
-        margin: 4px 0;
+        align-items: baseline;
+        gap: 2px 7px;
+        margin: 0;
         color: var(--room-muted);
       }
-      .summary {
+      .temperature {
+        color: var(--room-text);
+        font-size: 19px;
+        line-height: 1.25;
+        font-weight: 650;
+        letter-spacing: -0.35px;
+      }
+      .humidity {
         font-size: 13px;
+      }
+      .summary {
+        font-size: 12px;
+        line-height: 1.4;
+        margin-top: 2px;
       }
       .count {
         color: var(--room-accent);
-        font-weight: 650;
+        font-weight: 600;
       }
-      h2 {
-        overflow-wrap: anywhere;
+      .room-name {
+        margin-bottom: 2px;
+        font-size: 13px;
+        line-height: 1.3;
+        font-weight: 600;
       }
       .content {
         min-width: 0;
+        flex: 1;
       }
     `,
   ];
@@ -71,11 +89,11 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
         ></ha-icon>
       </div>
       <div class="content">
-        <h2>${c.name}</h2>
+        ${c.show_name && c.name ? html`<p class="room-name">${c.name}</p>` : nothing}
         <p class="readings">
-          ${c.temperature ? html`<span aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '°C')}</span>` : nothing}
+          ${c.temperature ? html`<span class="temperature" aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '°C')}</span>` : nothing}
           ${c.temperature && c.humidity ? html`<span aria-hidden="true">·</span>` : nothing}
-          ${c.humidity ? html`<span>${sensorValue(this.hass, c.humidity, '%')} ${text.humidity}</span>` : nothing}
+          ${c.humidity ? html`<span class="humidity">${sensorValue(this.hass, c.humidity, '%')} ${text.humidity}</span>` : nothing}
         </p>
         ${lights.length ? html`<p class="summary">${text.roomLightsOn(count)}${unavailable ? html`<span class="muted"> · ${text.unavailableShort(unavailable)}</span>` : nothing}</p>` : nothing}
       </div>

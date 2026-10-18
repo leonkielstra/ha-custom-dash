@@ -17,6 +17,10 @@ export class RoomLightingCard extends BaseCard<LightingConfig> {
         display: flex;
         gap: 4px;
       }
+      .actions .action {
+        min-width: 44px;
+        min-height: 44px;
+      }
       @container (min-width: 600px) {
         .lights {
           grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -59,6 +63,7 @@ export class RoomLightingCard extends BaseCard<LightingConfig> {
       (id) => !available(this.hass?.states[id]),
     ).length;
     const disabled = this.busy || unavailable === ids.length;
+    const anyOn = ids.some((id) => this.hass?.states[id]?.state === 'on');
     const text = this.strings;
     return html`<section aria-label=${this.config.title ?? text.lighting}>
       <div class="section-heading">
@@ -67,18 +72,11 @@ export class RoomLightingCard extends BaseCard<LightingConfig> {
           <button
             class="action"
             ?disabled=${disabled}
-            aria-label=${text.turnAllOn}
-            @click=${() => this.all(true)}
+            aria-label=${anyOn ? text.turnAllOff : text.turnAllOn}
+            @click=${() => this.all(!anyOn)}
           >
-            ${text.allOn}
-          </button>
-          <button
-            class="action"
-            ?disabled=${disabled}
-            aria-label="Turn all configured lights off"
-            @click=${() => this.all(false)}
-          >
-            ${text.allOff}
+            <ha-icon .icon=${'mdi:power'} aria-hidden="true"></ha-icon>
+            ${anyOn ? text.allOff : text.allOn}
           </button>
         </div>
       </div>
