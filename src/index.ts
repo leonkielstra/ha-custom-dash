@@ -3,38 +3,32 @@ import { SceneCard } from './cards/scenes';
 import { LightControlCard } from './cards/light-control';
 import { RoomLightingCard } from './cards/room-lighting';
 import { DeviceCard } from './cards/device';
+import { ui } from './i18n/strings';
 
+const text = ui(
+  typeof navigator === 'undefined' ? undefined : navigator.language,
+);
 const cards = [
   [
     'home-room-header-card',
     RoomHeaderCard,
-    'Room header',
-    'Inline room readings and lighting summary.',
+    text.roomHeaderCard,
+    text.roomHeaderDescription,
   ],
-  [
-    'home-scene-card',
-    SceneCard,
-    'Room scenes',
-    'Compact, single-tap scene buttons.',
-  ],
+  ['home-scene-card', SceneCard, text.sceneCard, text.sceneDescription],
   [
     'home-light-control-card',
     LightControlCard,
-    'Light control',
-    'A light with an always-visible brightness slider.',
+    text.lightCard,
+    text.lightDescription,
   ],
   [
     'home-room-lighting-card',
     RoomLightingCard,
-    'Room lighting',
-    'Explicit lights and room-level controls.',
+    text.lightingCard,
+    text.lightingDescription,
   ],
-  [
-    'home-device-card',
-    DeviceCard,
-    'Media device',
-    'Compact media state and primary action.',
-  ],
+  ['home-device-card', DeviceCard, text.deviceCard, text.deviceDescription],
 ] as const;
 declare global {
   interface Window {

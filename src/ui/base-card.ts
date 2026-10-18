@@ -7,6 +7,7 @@ import {
 } from 'lit';
 import type { CardConfig, HomeAssistant } from '../ha/types';
 import { sharedStyles } from './styles';
+import { localizedError, ui } from '../i18n/strings';
 export abstract class BaseCard<C extends CardConfig> extends LitElement {
   static properties = {
     hass: { attribute: false },
@@ -19,6 +20,9 @@ export abstract class BaseCard<C extends CardConfig> extends LitElement {
   protected config?: C;
   protected busy = false;
   protected error = '';
+  protected get strings() {
+    return ui(this.hass?.locale?.language);
+  }
   abstract setConfig(config: unknown): void;
   protected abstract entityIds(): string[];
   getCardSize() {
@@ -64,7 +68,9 @@ export abstract class BaseCard<C extends CardConfig> extends LitElement {
   }
   protected errorMessage() {
     return this.error
-      ? html`<p class="error" role="alert">${this.error}</p>`
+      ? html`<p class="error" role="alert">
+          ${localizedError(this.error, this.hass?.locale?.language)}
+        </p>`
       : nothing;
   }
 }

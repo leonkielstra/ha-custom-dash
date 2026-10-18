@@ -18,6 +18,10 @@ HACS custom-repository installation remains a requirement.
 - Use CSS tokens with Home Assistant theme fallbacks and explicit light/dark
   overrides. Maintain the same layout in both themes. Native buttons and ranges
   provide keyboard and touch behavior; do not imitate operating-system controls.
+- Localize built-in UI labels, accessibility text, common entity statuses, and
+  feedback through a shared English/Dutch catalog selected from Home Assistant's
+  configured language, with English as the fallback. Keep user-configured names
+  and labels unchanged. Apply the same language options to the local preview.
 - Brightness input updates locally; commit on change (release or keyboard step).
   Serialize requests, coalesce subsequent changes, and keep an optimistic value
   until a matching entity update or bounded confirmation timeout. Service errors

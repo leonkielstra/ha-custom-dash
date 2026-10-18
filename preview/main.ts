@@ -1,4 +1,5 @@
 import type { HomeAssistant, HassEntity } from '../src/ha/types';
+import { ui } from '../src/i18n/strings';
 import './style.css';
 
 // The host normally provides ha-icon. This tiny SVG stand-in exists ONLY here.
@@ -61,6 +62,9 @@ const lights = [
   { entity: 'light.example_basic', name: 'On/off-only light' },
 ];
 let states: HomeAssistant['states'];
+let previewLanguage = 'en';
+let previewTheme: 'both' | 'light' | 'dark' = 'both';
+let previewWidth: 'phone' | 'wide' = 'phone';
 function initialStates(): HomeAssistant['states'] {
   return {
     'sensor.example_temperature': makeEntity(
@@ -122,7 +126,7 @@ let failNext = false;
 function hass(theme: 'light' | 'dark'): HomeAssistant {
   return {
     states,
-    locale: { language: 'en' },
+    locale: { language: previewLanguage },
     themes: { darkMode: theme === 'dark' },
     async callService(domain, service, data) {
       calls.push({ domain, service, data });
@@ -175,70 +179,165 @@ function hass(theme: 'light' | 'dark'): HomeAssistant {
 function update() {
   for (const item of mounted) item.card.hass = hass(item.theme);
 }
+function updateChrome() {
+  const text = ui(previewLanguage);
+  document.querySelector('#preview-title')!.textContent = text.previewTitle;
+  document.querySelector('#preview-subtitle')!.textContent =
+    text.previewSubtitle;
+  document.querySelector('#language-label')!.textContent = text.language;
+  document.querySelector('#theme-label')!.textContent = text.theme;
+  document.querySelector('#width-label')!.textContent = text.layout;
+  document.querySelector('#theme option[value="both"]')!.textContent =
+    text.both;
+  document.querySelector('#theme option[value="light"]')!.textContent =
+    text.lightTheme;
+  document.querySelector('#theme option[value="dark"]')!.textContent =
+    text.darkTheme;
+  document.querySelector('#width option[value="phone"]')!.textContent =
+    text.phone;
+  document.querySelector('#width option[value="wide"]')!.textContent =
+    text.wide;
+  document.querySelector('#fail')!.textContent = text.failAction;
+  document.querySelector('#external')!.textContent = text.externalChange;
+  document.querySelector('#reset')!.textContent = text.reset;
+  document.querySelector('#preview-note')!.textContent = text.mockNotice;
+  document
+    .querySelector('.service-log')!
+    .setAttribute('aria-label', text.mockServiceCalls);
+  if (!calls.length)
+    document.querySelector('.service-log')!.textContent = text.interactHint;
+}
+
 document.body.innerHTML = `
   <header class="preview-bar">
-    <div><h1>Home Room Cards</h1><p>Living room · interactive component preview</p></div>
+    <div><h1 id="preview-title"></h1><p id="preview-subtitle"></p></div>
     <div class="preview-controls">
-      <label>Theme <select id="theme"><option value="both">Both</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
-      <label>Layout <select id="width"><option value="phone">Phone</option><option value="wide">Wide</option></select></label>
-      <button id="fail">Fail next action</button><button id="external">External light change</button><button id="reset">Reset</button>
+      <label><span id="language-label"></span> <select id="language"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
+      <label><span id="theme-label"></span> <select id="theme"><option value="both">Both</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
+      <label><span id="width-label"></span> <select id="width"><option value="phone">Phone</option><option value="wide">Wide</option></select></label>
+      <button id="fail"></button><button id="external"></button><button id="reset"></button>
     </div>
   </header>
   <main class="preview-grid" data-width="phone"></main>
-  <footer class="preview-note"><p>Fictional entities · local mock service calls · no Home Assistant connection. State events arrive after a short delay.</p><pre class="service-log" aria-label="Mock service calls">Interact with a card to inspect service calls.</pre></footer>`;
-for (const theme of ['light', 'dark'] as const) {
-  const room = document.createElement('article');
-  room.className = `room ${theme}`;
-  room.setAttribute('aria-label', `${theme} living room preview`);
-  room.innerHTML = `<div class="room-top"><p>Living room</p><span>${theme} theme</span></div>`;
-  const add = (tag: string, config: Record<string, unknown>) => {
-    const card = document.createElement(tag) as PreviewCard;
-    card.setConfig({ type: `custom:${tag}`, ...config });
-    card.hass = hass(theme);
-    room.append(card);
-    mounted.push({ card, theme });
-  };
-  add('home-room-header-card', {
-    name: 'Living room',
-    temperature: 'sensor.example_temperature',
-    humidity: 'sensor.example_humidity',
-    lights: lights.map((v) => v.entity),
-  });
-  add('home-scene-card', {
-    scenes: [
-      {
-        entity: 'scene.example_read',
-        name: 'Read',
-        icon: 'mdi:book-open-page-variant-outline',
-      },
-      {
-        entity: 'scene.example_relax',
-        name: 'Relax',
-        icon: 'mdi:weather-night',
-      },
-      {
-        entity: 'scene.example_film',
-        name: 'Film',
-        icon: 'mdi:movie-open-outline',
-      },
-    ],
-  });
-  add('home-room-lighting-card', { lights });
-  const heading = document.createElement('h2');
-  heading.textContent = 'Media';
-  room.append(heading);
-  add('home-device-card', {
-    entity: 'media_player.example_display',
-    name: 'Living room display',
-  });
-  document.querySelector('main')!.append(room);
+  <footer class="preview-note"><p id="preview-note"></p><pre class="service-log"></pre></footer>`;
+
+function renderRooms() {
+  const text = ui(previewLanguage);
+  const labels = previewLanguage.startsWith('nl')
+    ? {
+        room: 'Woonkamer',
+        scenes: 'Scènes',
+        lighting: 'Verlichting',
+        media: 'Media',
+        names: [
+          'Plafondspots',
+          'Leeslampen',
+          'Wandlampen',
+          'Vloer- en tafellampen met een bewust lange beschrijvende naam',
+          'Sfeerlampen',
+          'Niet-beschikbare lamp',
+          'Lamp met alleen aan/uit',
+        ],
+        sceneNames: ['Lezen', 'Ontspannen', 'Film'],
+        device: 'Televisie in de woonkamer',
+      }
+    : {
+        room: 'Living room',
+        scenes: 'Scenes',
+        lighting: 'Lighting',
+        media: 'Media',
+        names: [
+          'Ceiling spots',
+          'Reading lights',
+          'Wall lights',
+          'Floor and table lamps with a deliberately long descriptive name',
+          'Accent lights',
+          'Unavailable light',
+          'On/off-only light',
+        ],
+        sceneNames: ['Read', 'Relax', 'Film'],
+        device: 'Living room display',
+      };
+  const localizedLights = lights.map((light, i) => ({
+    ...light,
+    name: labels.names[i],
+  }));
+  const main = document.querySelector('main')!;
+  main.replaceChildren();
+  mounted.length = 0;
+  main.dataset.width = previewWidth;
+  for (const theme of ['light', 'dark'] as const) {
+    const room = document.createElement('article');
+    room.className = `room ${theme}`;
+    room.setAttribute(
+      'aria-label',
+      `${theme} ${labels.room.toLowerCase()} preview`,
+    );
+    room.innerHTML = `<div class="room-top"><p>${labels.room}</p><span>${theme} ${text.theme.toLowerCase()}</span></div>`;
+    const add = (tag: string, config: Record<string, unknown>) => {
+      const card = document.createElement(tag) as PreviewCard;
+      card.setConfig({ type: `custom:${tag}`, ...config });
+      card.hass = hass(theme);
+      room.append(card);
+      mounted.push({ card, theme });
+    };
+    add('home-room-header-card', {
+      name: labels.room,
+      temperature: 'sensor.example_temperature',
+      humidity: 'sensor.example_humidity',
+      lights: lights.map((v) => v.entity),
+    });
+    add('home-scene-card', {
+      scenes: [
+        {
+          entity: 'scene.example_read',
+          name: labels.sceneNames[0],
+          icon: 'mdi:book-open-page-variant-outline',
+        },
+        {
+          entity: 'scene.example_relax',
+          name: labels.sceneNames[1],
+          icon: 'mdi:weather-night',
+        },
+        {
+          entity: 'scene.example_film',
+          name: labels.sceneNames[2],
+          icon: 'mdi:movie-open-outline',
+        },
+      ],
+    });
+    add('home-room-lighting-card', {
+      title: labels.lighting,
+      lights: localizedLights,
+    });
+    const heading = document.createElement('h2');
+    heading.textContent = labels.media;
+    room.append(heading);
+    add('home-device-card', {
+      entity: 'media_player.example_display',
+      name: labels.device,
+    });
+    document.querySelector('main')!.append(room);
+  }
 }
+document.querySelector<HTMLSelectElement>('#language')!.value = previewLanguage;
+document.querySelector<HTMLSelectElement>('#theme')!.value = previewTheme;
+document.querySelector<HTMLSelectElement>('#width')!.value = previewWidth;
+updateChrome();
+renderRooms();
+document.querySelector('#language')!.addEventListener('change', (e) => {
+  previewLanguage = (e.target as HTMLSelectElement).value;
+  updateChrome();
+  renderRooms();
+});
 document.querySelector('#theme')!.addEventListener('change', (e) => {
-  const value = (e.target as HTMLSelectElement).value;
+  const value = (e.target as HTMLSelectElement).value as typeof previewTheme;
+  previewTheme = value;
   for (const room of document.querySelectorAll<HTMLElement>('.room'))
     room.hidden = value !== 'both' && !room.classList.contains(value);
 });
 document.querySelector('#width')!.addEventListener('change', (e) => {
+  previewWidth = (e.target as HTMLSelectElement).value as typeof previewWidth;
   (document.querySelector('main') as HTMLElement).dataset.width = (
     e.target as HTMLSelectElement
   ).value;

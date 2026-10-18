@@ -59,17 +59,18 @@ export class RoomLightingCard extends BaseCard<LightingConfig> {
       (id) => !available(this.hass?.states[id]),
     ).length;
     const disabled = this.busy || unavailable === ids.length;
-    return html`<section aria-label=${this.config.title ?? 'Lighting'}>
+    const text = this.strings;
+    return html`<section aria-label=${this.config.title ?? text.lighting}>
       <div class="section-heading">
-        <h3>${this.config.title ?? 'Lighting'}</h3>
+        <h3>${this.config.title ?? text.lighting}</h3>
         <div class="actions">
           <button
             class="action"
             ?disabled=${disabled}
-            aria-label="Turn all configured lights on"
+            aria-label=${text.turnAllOn}
             @click=${() => this.all(true)}
           >
-            All on
+            ${text.allOn}
           </button>
           <button
             class="action"
@@ -77,11 +78,11 @@ export class RoomLightingCard extends BaseCard<LightingConfig> {
             aria-label="Turn all configured lights off"
             @click=${() => this.all(false)}
           >
-            All off
+            ${text.allOff}
           </button>
         </div>
       </div>
-      ${unavailable ? html`<p class="availability">${unavailable} ${unavailable === 1 ? 'light' : 'lights'} unavailable</p>` : nothing}
+      ${unavailable ? html`<p class="availability">${text.unavailableCount(unavailable)}</p>` : nothing}
       <div class="lights">
         ${repeat(
           this.config.lights,

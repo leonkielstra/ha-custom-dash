@@ -52,14 +52,15 @@ export class SceneCard extends BaseCard<ScenesConfig> {
     await this.perform(async () => {
       if (!this.hass) return;
       await this.hass.callService('scene', 'turn_on', { entity_id: id });
-      this.activated = `${name} activated`;
+      this.activated = this.strings.activated(name);
     });
   }
   protected render() {
     if (!this.config) return nothing;
-    return html`<section aria-label=${this.config.title ?? 'Scenes'}>
+    const text = this.strings;
+    return html`<section aria-label=${this.config.title ?? text.scenes}>
       <div class="section-heading">
-        <h3>${this.config.title ?? 'Scenes'}</h3>
+        <h3>${this.config.title ?? text.scenes}</h3>
       </div>
       <div class="scenes">
         ${this.config.scenes.map((item) => {
@@ -71,7 +72,7 @@ export class SceneCard extends BaseCard<ScenesConfig> {
           return html`<button
             ?disabled=${this.busy || !available(entity)}
             @click=${() => this.activate(item.entity, name)}
-            aria-label=${`Activate ${name}`}
+            aria-label=${text.activate(name)}
           >
             <ha-icon
               .icon=${item.icon ?? 'mdi:palette-outline'}
@@ -82,7 +83,7 @@ export class SceneCard extends BaseCard<ScenesConfig> {
         })}
       </div>
       <p class="feedback" role="status">
-        ${this.busy ? 'Activating…' : this.activated}
+        ${this.busy ? text.activating : this.activated}
       </p>
       ${this.errorMessage()}
     </section>`;

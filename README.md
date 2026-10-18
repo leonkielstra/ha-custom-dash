@@ -110,6 +110,12 @@ Missing lights are counted as unavailable, not as off. Duplicate IDs in lists
 are rejected. Header and lighting lists are independent; configure the same IDs
 if their counts should match.
 
+Built-in card labels, accessibility text, common device states, and action
+feedback follow the Home Assistant language when it is English or Dutch, with
+English as the fallback. Names, titles, and scene labels explicitly supplied in
+dashboard YAML are shown as configured. The preview includes a language selector
+for both supported translations.
+
 Media primary actions follow reported `supported_features`: turn on when off,
 pause when playing, play when supported, otherwise turn off if supported. No
 action is shown when the integration reports no appropriate capability. Missing,

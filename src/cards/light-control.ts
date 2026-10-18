@@ -13,6 +13,7 @@ import {
 } from '../ha/entities';
 import { ConfirmedCommand } from '../ha/command';
 import type { LightConfig } from '../ha/types';
+import { localizedError } from '../i18n/strings';
 export class LightControlCard extends BaseCard<LightConfig> {
   static properties = { ...BaseCard.properties, draft: { state: true } };
   static styles = [
@@ -191,6 +192,7 @@ export class LightControlCard extends BaseCard<LightConfig> {
       entity,
       this.config.name ?? (entity ? undefined : this.config.entity),
     );
+    const text = this.strings;
     return html`<ha-card class=${current.on && isAvailable ? 'active' : ''}>
       <div class="row">
         <div class="icon-box">
@@ -202,12 +204,12 @@ export class LightControlCard extends BaseCard<LightConfig> {
         <div class="label">
           <p class="name" title=${name}>${name}</p>
           <p class="state">
-            ${isAvailable ? `${current.on ? 'On' : 'Off'}${current.on && dimmable ? ` · ${percent}%` : ''}${this.command.value ? ' · Updating…' : ''}` : entityStatus(entity)}
+            ${isAvailable ? `${current.on ? text.on : text.off}${current.on && dimmable ? ` · ${percent}%` : ''}${this.command.value ? ` · ${text.updating}` : ''}` : entityStatus(entity, this.hass?.locale?.language)}
           </p>
         </div>
         <button
           class="toggle"
-          aria-label=${`Turn ${current.on ? 'off' : 'on'} ${name}`}
+          aria-label=${`${current.on ? text.turnOff : text.turnOn} ${name}`}
           aria-pressed=${current.on && isAvailable}
           ?disabled=${!isAvailable}
           @click=${this.toggle}
@@ -224,7 +226,7 @@ export class LightControlCard extends BaseCard<LightConfig> {
           max="100"
           step="1"
           .value=${String(Math.max(1, percent))}
-          aria-label=${`${name} brightness`}
+          aria-label=${text.brightness(name)}
           aria-valuetext=${`${percent}%`}
           ?disabled=${!isAvailable || !current.on || !dimmable}
           @input=${(e: Event) => {
@@ -238,9 +240,9 @@ export class LightControlCard extends BaseCard<LightConfig> {
             this.draft = undefined;
           }}
         />
-        ${isAvailable && !dimmable ? html`<p class="note">On/off only</p>` : nothing}
+        ${isAvailable && !dimmable ? html`<p class="note">${text.onOffOnly}</p>` : nothing}
       </div>
-      ${this.command.error ? html`<p class="error" role="alert">${this.command.error}</p>` : nothing}
+      ${this.command.error ? html`<p class="error" role="alert">${localizedError(this.command.error, this.hass?.locale?.language)}</p>` : nothing}
     </ha-card>`;
   }
 }

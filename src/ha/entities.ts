@@ -1,4 +1,5 @@
 import type { HassEntity, HomeAssistant } from './types';
+import { localizedStatus, ui } from '../i18n/strings';
 export function available(entity?: HassEntity): entity is HassEntity {
   return !!entity && !['unavailable', 'unknown'].includes(entity.state);
 }
@@ -41,13 +42,9 @@ export function nameOf(
       : (entity?.entity_id ?? 'Missing entity'))
   );
 }
-export function entityStatus(entity?: HassEntity): string {
-  if (!entity) return 'Not found';
-  if (entity.state === 'unavailable') return 'Unavailable';
-  if (entity.state === 'unknown') return 'Unknown';
-  return entity.state
-    .replaceAll('_', ' ')
-    .replace(/^./, (c) => c.toUpperCase());
+export function entityStatus(entity?: HassEntity, language?: string): string {
+  if (!entity) return ui(language).notFound;
+  return localizedStatus(entity.state, language);
 }
 export function sensorValue(
   hass: HomeAssistant | undefined,

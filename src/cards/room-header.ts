@@ -62,6 +62,7 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
     const unavailable = lights.filter(
       (id) => !available(this.hass?.states[id]),
     ).length;
+    const text = this.strings;
     return html`<ha-card>
       <div class="icon-box">
         <ha-icon
@@ -72,11 +73,11 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
       <div class="content">
         <h2>${c.name}</h2>
         <p class="readings">
-          ${c.temperature ? html`<span aria-label="Temperature">${sensorValue(this.hass, c.temperature, '°C')}</span>` : nothing}
+          ${c.temperature ? html`<span aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '°C')}</span>` : nothing}
           ${c.temperature && c.humidity ? html`<span aria-hidden="true">·</span>` : nothing}
-          ${c.humidity ? html`<span>${sensorValue(this.hass, c.humidity, '%')} humidity</span>` : nothing}
+          ${c.humidity ? html`<span>${sensorValue(this.hass, c.humidity, '%')} ${text.humidity}</span>` : nothing}
         </p>
-        ${lights.length ? html`<p class="summary"><span class="count">${count}</span> ${count === 1 ? 'light' : 'lights'} on${unavailable ? html`<span class="muted"> · ${unavailable} unavailable</span>` : nothing}</p>` : nothing}
+        ${lights.length ? html`<p class="summary">${text.roomLightsOn(count)}${unavailable ? html`<span class="muted"> · ${text.unavailableShort(unavailable)}</span>` : nothing}</p>` : nothing}
       </div>
     </ha-card>`;
   }

@@ -56,14 +56,15 @@ export class DeviceCard extends BaseCard<DeviceConfig> {
           : features & TURN_OFF
             ? 'turn_off'
             : undefined;
+    const text = this.strings;
     const label =
       service === 'turn_on'
-        ? 'Turn on'
+        ? text.turnOn
         : service === 'turn_off'
-          ? 'Turn off'
+          ? text.turnOff
           : service === 'media_pause'
-            ? 'Pause'
-            : 'Play';
+            ? text.pause
+            : text.play;
     const icon =
       service === 'media_pause'
         ? 'mdi:pause'
@@ -79,7 +80,9 @@ export class DeviceCard extends BaseCard<DeviceConfig> {
         </div>
         <div class="details">
           <h3 class="name" title=${name}>${name}</h3>
-          <p class="muted">${entityStatus(entity)}</p>
+          <p class="muted">
+            ${entityStatus(entity, this.hass?.locale?.language)}
+          </p>
         </div>
         ${service ? html`<button ?disabled=${this.busy || !available(entity)} aria-label=${`${label} ${name}`} @click=${() => this.perform(() => this.hass!.callService('media_player', service, { entity_id: this.config!.entity }))}><ha-icon .icon=${icon} aria-hidden="true"></ha-icon></button>` : nothing} </ha-card
       >${this.errorMessage()}`;

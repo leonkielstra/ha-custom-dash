@@ -1,16 +1,16 @@
 # All entity IDs and names are fictional. Replace them with your own entities.
 # Install the bundled resource before configuring this view.
-title: Home
+title: Thuis
 views:
-  - title: Living room
-    path: living-room
+  - title: Woonkamer
+    path: woonkamer
     icon: mdi:sofa-outline
     type: masonry
     cards:
       - type: vertical-stack
         cards:
           - type: custom:home-room-header-card
-            name: Living room
+            name: Woonkamer
             icon: mdi:sofa-outline
             temperature: sensor.example_room_temperature
             humidity: sensor.example_room_humidity
@@ -21,33 +21,33 @@ views:
               - light.example_floor
               - light.example_accent
           - type: custom:home-scene-card
-            title: Scenes
+            title: Scènes
             scenes:
               - entity: scene.example_read
-                name: Read
+                name: Lezen
                 icon: mdi:book-open-page-variant-outline
               - entity: scene.example_relax
-                name: Relax
+                name: Ontspannen
                 icon: mdi:weather-night
               - entity: scene.example_film
                 name: Film
                 icon: mdi:movie-open-outline
           - type: custom:home-room-lighting-card
-            title: Lighting
+            title: Verlichting
             lights:
               - entity: light.example_ceiling
-                name: Ceiling spots
+                name: Plafondspots
                 icon: mdi:light-recessed
               - entity: light.example_reading
-                name: Reading lights
+                name: Leeslampen
               - entity: light.example_wall
-                name: Wall lights
+                name: Wandlampen
               - entity: light.example_floor
-                name: Floor and table lamps
+                name: Vloer- en tafellampen
                 icon: mdi:floor-lamp
               - entity: light.example_accent
-                name: Accent lights
+                name: Sfeerlampen
           - type: custom:home-device-card
             entity: media_player.example_display
-            name: Living room display
+            name: Televisie in de woonkamer
             icon: mdi:television
