@@ -157,6 +157,23 @@ it('keeps sensor readings inline, reports unavailable counts, and follows HA dar
   await card.updateComplete;
   expect(card.dataset.theme).toBe('dark');
 });
+it('localizes room lighting summaries from the Home Assistant language', async () => {
+  const lights = Array.from(
+    { length: 5 },
+    (_, index) => `light.example_${index}`,
+  );
+  const states = Object.fromEntries(lights.map((id) => [id, light()]));
+  const card = new RoomHeaderCard();
+  card.setConfig({ type: 'test', name: 'Example room', lights });
+  card.hass = { ...hass(states), locale: { language: 'nl-NL' } };
+  document.body.append(card);
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('5 lampen aan');
+
+  card.hass = { ...card.hass, locale: { language: 'en-US' } };
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('5 lights on');
+});
 it('selects media actions using supported features', async () => {
   const card = new DeviceCard();
   card.setConfig({
