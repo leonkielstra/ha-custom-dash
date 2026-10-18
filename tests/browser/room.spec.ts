@@ -1,4 +1,16 @@
 import { expect, test } from '@playwright/test';
+test('renders section headings around reusable nested cards', async ({
+  page,
+}) => {
+  await page.goto('/?bundle=1');
+  const room = page.locator('.room.light');
+  const section = room.locator('home-section-card');
+  await expect(section.getByRole('heading', { name: 'Media' })).toBeVisible();
+  await expect(section.locator('home-device-card')).toHaveCount(1);
+  await expect(
+    section.getByRole('heading', { name: 'Living room display' }),
+  ).toBeVisible();
+});
 test('bundled cards render both themes and handle real browser controls', async ({
   page,
 }) => {

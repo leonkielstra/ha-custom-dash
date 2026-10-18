@@ -5,6 +5,7 @@ import { RoomLightingCard } from '../src/cards/room-lighting';
 import { SceneCard } from '../src/cards/scenes';
 import { RoomHeaderCard } from '../src/cards/room-header';
 import { DeviceCard } from '../src/cards/device';
+import { SectionCard } from '../src/cards/section';
 import type { HassEntity, HomeAssistant } from '../src/ha/types';
 const light = (state = 'on', brightness = 128): HassEntity => ({
   entity_id: 'light.example',
@@ -15,6 +16,7 @@ const light = (state = 'on', brightness = 128): HassEntity => ({
     friendly_name: 'Example light',
   },
 });
+const originalLoadCardHelpers = window.loadCardHelpers;
 function hass(
   states: HomeAssistant['states'] = { 'light.example': light() },
 ): HomeAssistant {
@@ -27,6 +29,8 @@ function hass(
 afterEach(() => {
   document.body.replaceChildren();
   vi.useRealTimers();
+  if (originalLoadCardHelpers) window.loadCardHelpers = originalLoadCardHelpers;
+  else delete window.loadCardHelpers;
 });
 const changeBrightness = (slider: HTMLInputElement, value: number) => {
   slider.value = String(value);
@@ -176,6 +180,53 @@ it('inherits live updates from the room while respecting a per-light false overr
     entity_id: 'light.example',
     brightness: 179,
   });
+});
+it('renders generic child cards beneath a reusable section heading and syncs hass', async () => {
+  const children: (HTMLElement & { hass?: HomeAssistant })[] = [];
+  window.loadCardHelpers = async () => ({
+    createCardElement(config) {
+      const child = document.createElement('div') as HTMLElement & {
+        hass?: HomeAssistant;
+      };
+      child.dataset.type = config.type;
+      children.push(child);
+      return child;
+    },
+  });
+  const card = new SectionCard();
+  card.setConfig({
+    type: 'custom:home-section-card',
+    title: 'Media',
+    cards: [
+      { type: 'media-control', entity: 'media_player.example' },
+      { type: 'custom:bubble-card', card_type: 'media-player' },
+    ],
+  });
+  const firstHass = hass();
+  card.hass = firstHass;
+  document.body.append(card);
+  await card.updateComplete;
+  await Promise.resolve();
+  await card.updateComplete;
+
+  expect(card.shadowRoot!.querySelector('h3')!.textContent).toBe('Media');
+  expect(card.shadowRoot!.querySelector('.content')!.children).toHaveLength(2);
+  expect(children.map((child) => child.dataset.type)).toEqual([
+    'media-control',
+    'custom:bubble-card',
+  ]);
+  expect(children[0]?.hass).toBe(firstHass);
+
+  const nextHass = hass({
+    'media_player.example': {
+      entity_id: 'media_player.example',
+      state: 'playing',
+      attributes: {},
+    },
+  });
+  card.hass = nextHass;
+  await card.updateComplete;
+  expect(children[0]?.hass).toBe(nextHass);
 });
 it('provides local slider feedback without service calls until commit and rolls back failure', async () => {
   const card = new LightControlCard();

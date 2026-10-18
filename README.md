@@ -61,7 +61,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.2.0
+url: /local/ha-custom-dash.js?v=0.3.0
 type: module
 ```
 
@@ -96,13 +96,30 @@ Every card requires `type`. All cards accept `theme: auto` (default), `light`, o
 `dark`. Auto follows `hass.themes.darkMode`. Invalid configuration throws an error
 with a property path, so Home Assistant can show its standard error card.
 
-| Card                             | Required options                    | Optional options                                                 |
-| -------------------------------- | ----------------------------------- | ---------------------------------------------------------------- |
-| `custom:home-room-header-card`   | —                                   | `name`, `show_name`, `icon`, `temperature`, `humidity`, `lights` |
-| `custom:home-scene-card`         | `scenes` (nonempty scene item list) | `title`                                                          |
-| `custom:home-light-control-card` | `entity` (`light.*`)                | `name`, `icon`, `slider_live_update`                             |
-| `custom:home-room-lighting-card` | `lights` (nonempty light item list) | `title`, `slider_live_update`                                    |
-| `custom:home-device-card`        | `entity` (`media_player.*`)         | `name`, `icon`                                                   |
+| Card                             | Required options                      | Optional options                                                 |
+| -------------------------------- | ------------------------------------- | ---------------------------------------------------------------- |
+| `custom:home-room-header-card`   | —                                     | `name`, `show_name`, `icon`, `temperature`, `humidity`, `lights` |
+| `custom:home-scene-card`         | `scenes` (nonempty scene item list)   | `title`                                                          |
+| `custom:home-light-control-card` | `entity` (`light.*`)                  | `name`, `icon`, `slider_live_update`                             |
+| `custom:home-room-lighting-card` | `lights` (nonempty light item list)   | `title`, `slider_live_update`                                    |
+| `custom:home-device-card`        | `entity` (`media_player.*`)           | `name`, `icon`                                                   |
+| `custom:home-section-card`       | `title`, `cards` (nonempty card list) | —                                                                |
+
+Use `home-section-card` to give native or custom Lovelace cards the same
+section heading style as Scenes and Lighting. It creates its configured child
+cards through Home Assistant's `loadCardHelpers()` API and forwards `hass` state
+updates to each child. For example:
+
+```yaml
+type: custom:home-section-card
+title: Media
+cards:
+  - type: media-control
+    entity: media_player.example_display
+  - type: custom:bubble-card
+    card_type: button
+    entity: fan.example
+```
 
 A scene/light item has `entity`, optional `name`, and optional `icon` (an MDI name).
 Light items also accept `slider_live_update` to override the room card's setting.

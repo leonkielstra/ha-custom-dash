@@ -1,4 +1,8 @@
-import type { HomeAssistant, HassEntity } from '../src/ha/types';
+import type {
+  HomeAssistant,
+  HassEntity,
+  LovelaceCardConfig,
+} from '../src/ha/types';
 import { ui } from '../src/i18n/strings';
 import './style.css';
 
@@ -117,6 +121,16 @@ interface PreviewCard extends HTMLElement {
   setConfig(config: unknown): void;
   hass?: HomeAssistant;
 }
+window.loadCardHelpers = async () => ({
+  createCardElement(config: LovelaceCardConfig) {
+    if (!config.type.startsWith('custom:'))
+      throw new Error('The mock preview only creates project custom cards.');
+    const tag = config.type.slice('custom:'.length);
+    const card = document.createElement(tag) as PreviewCard;
+    card.setConfig(config);
+    return card;
+  },
+});
 const mounted: { card: PreviewCard; theme: 'light' | 'dark' }[] = [];
 const calls: {
   domain: string;
@@ -316,12 +330,15 @@ function renderRooms() {
       slider_live_update: sliderLiveUpdate,
       lights: localizedLights,
     });
-    const heading = document.createElement('h2');
-    heading.textContent = labels.media;
-    room.append(heading);
-    add('home-device-card', {
-      entity: 'media_player.example_display',
-      name: labels.device,
+    add('home-section-card', {
+      title: labels.media,
+      cards: [
+        {
+          type: 'custom:home-device-card',
+          entity: 'media_player.example_display',
+          name: labels.device,
+        },
+      ],
     });
     document.querySelector('main')!.append(room);
   }

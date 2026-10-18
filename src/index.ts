@@ -3,6 +3,7 @@ import { SceneCard } from './cards/scenes';
 import { LightControlCard } from './cards/light-control';
 import { RoomLightingCard } from './cards/room-lighting';
 import { DeviceCard } from './cards/device';
+import { SectionCard } from './cards/section';
 import { ui } from './i18n/strings';
 
 const text = ui(
@@ -29,6 +30,7 @@ const cards = [
     text.lightingDescription,
   ],
   ['home-device-card', DeviceCard, text.deviceCard, text.deviceDescription],
+  ['home-section-card', SectionCard, text.sectionCard, text.sectionDescription],
 ] as const;
 declare global {
   interface Window {

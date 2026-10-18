@@ -44,4 +44,11 @@ export interface LightingConfig extends CardConfig {
   slider_live_update?: boolean;
   lights: LightItem[];
 }
+export interface LovelaceCardConfig extends Record<string, unknown> {
+  type: string;
+}
+export interface SectionConfig extends CardConfig {
+  title: string;
+  cards: LovelaceCardConfig[];
+}
 export interface DeviceConfig extends CardConfig, EntityItem {}

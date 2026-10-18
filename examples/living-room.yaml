@@ -46,7 +46,8 @@ views:
                 icon: mdi:floor-lamp
               - entity: light.example_accent
                 name: Sfeerlampen
-          - type: custom:home-device-card
-            entity: media_player.example_display
-            name: Televisie in de woonkamer
-            icon: mdi:television
+          - type: custom:home-section-card
+            title: Media
+            cards:
+              - type: media-control
+                entity: media_player.example_display

@@ -4,6 +4,7 @@ import {
   headerConfig,
   lightConfig,
   lightingConfig,
+  sectionConfig,
   scenesConfig,
 } from '../src/ha/config';
 it('gives property paths for invalid configuration', () => {
@@ -25,6 +26,12 @@ it('gives property paths for invalid configuration', () => {
     lightConfig({ type: 'test', entity: 'light.example', theme: 'invalid' }),
   ).toThrow('theme');
   expect(() => headerConfig(null)).toThrow('config');
+  expect(() =>
+    sectionConfig({ type: 'test', title: 'Media', cards: [] }),
+  ).toThrow('cards: expected a non-empty list');
+  expect(() =>
+    sectionConfig({ type: 'test', title: 'Media', cards: [{ entity: 'x' }] }),
+  ).toThrow('cards[0].type');
 });
 it('rejects duplicate entity IDs and preserves explicit order', () => {
   const lights = [{ entity: 'light.example_b' }, { entity: 'light.example_a' }];
@@ -40,6 +47,16 @@ it('rejects duplicate entity IDs and preserves explicit order', () => {
     }),
   ).toThrow('duplicate');
   expect(headerConfig({ type: 'test' }).name).toBeUndefined();
+  expect(
+    sectionConfig({
+      type: 'test',
+      title: 'Media',
+      cards: [
+        { type: 'media-control', entity: 'media_player.example' },
+        { type: 'custom:bubble-card', card_type: 'button' },
+      ],
+    }).cards.map((card) => card.type),
+  ).toEqual(['media-control', 'custom:bubble-card']);
 });
 it('copies normalized configuration so callers cannot mutate light lists', () => {
   const raw = {

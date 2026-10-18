@@ -5,6 +5,8 @@ import type {
   HeaderConfig,
   LightConfig,
   LightingConfig,
+  LovelaceCardConfig,
+  SectionConfig,
   ScenesConfig,
 } from './types';
 
@@ -128,6 +130,23 @@ export function lightingConfig(value: unknown): LightingConfig {
         `lights[${index}].slider_live_update`,
       ),
     })),
+  };
+}
+export function sectionConfig(value: unknown): SectionConfig {
+  const c = object(value);
+  if (!Array.isArray(c.cards) || c.cards.length === 0)
+    throw new Error('cards: expected a non-empty list');
+  const cards = c.cards.map((card, index) => {
+    const child = object(card, `cards[${index}]`);
+    return {
+      ...child,
+      type: text(child.type, `cards[${index}].type`),
+    } as LovelaceCardConfig;
+  });
+  return {
+    ...base(value),
+    title: text(c.title, 'title'),
+    cards,
   };
 }
 export function deviceConfig(value: unknown): DeviceConfig {

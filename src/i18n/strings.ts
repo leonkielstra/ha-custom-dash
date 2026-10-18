@@ -94,6 +94,10 @@ const messages = {
     lightingDescription: 'Explicit lights and room-level controls.',
     deviceCard: 'Media device',
     deviceDescription: 'Compact media state and primary action.',
+    sectionCard: 'Section',
+    sectionDescription:
+      'A titled section containing other Home Assistant cards.',
+    sectionCardError: 'Could not load the cards in this section.',
   },
   nl: {
     actionFailed: 'Actie mislukt. Probeer het opnieuw.',
@@ -190,6 +194,10 @@ const messages = {
     lightingDescription: 'Ingestelde lampen en bediening voor de hele kamer.',
     deviceCard: 'Media-apparaat',
     deviceDescription: 'Compacte mediastatus en hoofdactie.',
+    sectionCard: 'Sectie',
+    sectionDescription:
+      'Een sectie met titel en andere Home Assistant-kaarten.',
+    sectionCardError: 'De kaarten in deze sectie konden niet worden geladen.',
   },
 } as const;
 
