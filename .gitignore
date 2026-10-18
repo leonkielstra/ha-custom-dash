@@ -151,3 +151,6 @@ vite.config.ts.timestamp-*
 # Local browser-test artifacts
 playwright-report/
 test-results/
+
+# Private dashboard configuration and entity exports
+/local/
