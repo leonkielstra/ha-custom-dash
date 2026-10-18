@@ -1,8 +1,8 @@
 # Implementation plan
 
-## Current milestone: reusable room cards
+## Current milestone: reusable room cards and Home overview
 
-Build a functioning living room vertical slice with TypeScript, Lit, and Vite.
+Build a functioning living room and Home overview with TypeScript, Lit, and Vite.
 The current product brief supersedes the earlier Bubble Card generation proposal:
 these are independent custom cards placed in an existing Home Assistant dashboard.
 Keep Home Assistant responsible for state, authentication, services, and layout.
@@ -11,8 +11,9 @@ HACS custom-repository installation remains a requirement.
 ## Decisions
 
 - Ship one bundled ES module, `dist/ha-custom-dash.js`, with Lit included.
-- Register five public cards: room header, scenes, individual light, room lighting,
-  and media device. Room lighting composes the same individual light component.
+- Register room header, scenes, individual light, room lighting, media device,
+  reusable section, Home hero, room shortcut, and appliance activity cards.
+  Room lighting composes the same individual light component.
 - Separate typed configuration/validation, Home Assistant helpers, state handling,
   and shared styles. Keep explicit light lists; no registry discovery.
 - Use CSS tokens with Home Assistant theme fallbacks and explicit light/dark
@@ -65,11 +66,29 @@ Do not publish or push during implementation. Document the resource URL
 A default-store listing is not required. Verify real HACS installation and upgrade
 before claiming them tested.
 
+## Home overview milestone
+
+Implement three independent cards in a regular Lovelace Sections view, with
+native heading/grid cards for floors and two-column room layout. Keep Woonkamer
+unchanged. The supplied private Home view is the configuration contract; preserve
+all entity IDs and future navigation targets under ignored `local/` only.
+
+- Hero: configured day/night images follow sun state independently of theme,
+  retain the last valid selection, and reuse localized sensor formatting.
+- Room: accessible client navigation, optional temperature and explicit lights,
+  deduplicated counts, and unknown states distinguished from lights that are off.
+- Activity: read-only contextual rows, actual progress/end times for programs,
+  explicitly indicative reference-duration progress for washer/dryer. Optional
+  reliable start entity takes precedence over approximate `last_changed`.
+- One per-card clock while timed activity is visible; clean up on disconnect/idle.
+  Notify HA of visibility changes and keep the hidden card connected for updates.
+- Extend the framework-free preview with Home scenarios and fictional entities;
+  validate the supplied private configuration separately. Reuse existing tokens,
+  scene component, build, and test tools without adding runtime dependencies.
+
 ## Future architecture
 
-Reserve hero, room summary, and contextual activity cards for a later milestone.
-Home overview should use a small configurable illustration, indoor/outdoor
-readings and weather, active appliances, favorites, and rooms grouped by floor.
+Future Home additions can include weather and appliance target temperatures.
 Humidity belongs in room headers only. Do not add a dedicated Lights tab.
 Use shared tokens/helpers without building speculative domain abstractions.
 

@@ -1,0 +1,192 @@
+# Fictional entities. Replace them with your own confirmed entity IDs.
+# Insert the Home view into your existing dashboard; future room paths are preserved.
+---
+title: Home
+views:
+  - title: Home
+    path: home
+    icon: mdi:home-outline
+    type: sections
+    max_columns: 1
+    sections:
+      - type: grid
+        cards:
+          - type: custom:home-hero-card
+            temperature: sensor.example_home_1
+            outdoor_temperature: sensor.example_home_2
+            sun_entity: sun.sun
+            image_day: '/local/images/dashboard/home-day.png'
+            image_night: '/local/images/dashboard/home-night.png'
+          - type: custom:home-activity-section-card
+            title: Actieve apparaten
+            hide_when_empty: true
+            appliances:
+              - type: washer
+                name: Wasmachine
+                icon: mdi:washing-machine
+                entity: binary_sensor.example_home_1
+                active_states:
+                  - 'on'
+                room: Washok
+                reference_duration_minutes: 120
+              - type: dryer
+                name: Wasdroger
+                icon: mdi:tumble-dryer
+                entity: binary_sensor.example_home_2
+                active_states:
+                  - 'on'
+                room: Washok
+                reference_duration_minutes: 120
+              - type: oven
+                name: Oven
+                icon: mdi:stove
+                entity: sensor.example_home_3
+                active_states:
+                  - run
+                  - pause
+                  - actionrequired
+                room: Keuken
+                current_temperature: sensor.example_home_4
+                progress: sensor.example_home_5
+                end_time: sensor.example_home_6
+              - type: dishwasher
+                name: Vaatwasser
+                icon: mdi:dishwasher
+                entity: sensor.example_home_7
+                active_states:
+                  - run
+                  - pause
+                  - actionrequired
+                room: Keuken
+                progress: sensor.example_home_8
+                end_time: sensor.example_home_9
+          - type: custom:home-scene-card
+            title: Favoriete scènes
+            scenes:
+              - entity: scene.example_home_1
+                name: Lezen
+                icon: mdi:book-open-page-variant-outline
+              - entity: scene.example_home_2
+                name: Ontspannen
+                icon: mdi:weather-night
+              - entity: scene.example_home_3
+                name: Werklicht
+                icon: mdi:lightbulb-on-outline
+      - type: grid
+        cards:
+          - type: heading
+            heading: Begane grond
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:home-room-card
+                name: Woonkamer
+                icon: mdi:sofa-outline
+                navigation_path: '/dashboard-home/woonkamer'
+                temperature: sensor.example_home_1
+                lights:
+                  - light.example_home_1
+                  - light.example_home_2
+                  - light.example_home_3
+                  - light.example_home_4
+                  - light.example_home_5
+              - type: custom:home-room-card
+                name: Keuken
+                icon: mdi:countertop-outline
+                navigation_path: '/dashboard-home/keuken'
+                lights:
+                  - light.example_home_6
+                  - light.example_home_7
+                  - light.example_home_8
+                  - light.example_home_9
+                  - light.example_home_10
+                  - light.example_home_11
+                  - light.example_home_12
+              - type: custom:home-room-card
+                name: Bijkeuken
+                icon: mdi:door-open
+                navigation_path: '/dashboard-home/bijkeuken'
+                temperature: sensor.example_home_10
+              - type: custom:home-room-card
+                name: Entree
+                icon: mdi:coat-rack
+                navigation_path: '/dashboard-home/entree'
+      - type: grid
+        cards:
+          - type: heading
+            heading: Eerste verdieping
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:home-room-card
+                name: Overloop
+                icon: mdi:stairs
+                navigation_path: '/dashboard-home/overloop'
+                temperature: sensor.example_home_11
+                lights:
+                  - light.example_home_13
+              - type: custom:home-room-card
+                name: Washok
+                icon: mdi:washing-machine
+                navigation_path: '/dashboard-home/washok'
+                temperature: sensor.example_home_12
+              - type: custom:home-room-card
+                name: Kantoor
+                icon: mdi:desk
+                navigation_path: '/dashboard-home/kantoor'
+                lights:
+                  - light.example_home_14
+                  - light.example_home_15
+                  - light.example_home_16
+              - type: custom:home-room-card
+                name: Slaapkamer
+                icon: mdi:bed-outline
+                navigation_path: '/dashboard-home/slaapkamer'
+                temperature: sensor.example_home_13
+                lights:
+                  - light.example_home_17
+                  - light.example_home_18
+                  - light.example_home_19
+              - type: custom:home-room-card
+                name: Badkamer
+                icon: mdi:shower
+                navigation_path: '/dashboard-home/badkamer'
+                temperature: sensor.example_home_14
+                lights:
+                  - light.example_home_20
+      - type: grid
+        cards:
+          - type: heading
+            heading: Tweede verdieping
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:home-room-card
+                name: Zolder
+                icon: mdi:home-roof
+                navigation_path: '/dashboard-home/zolder'
+                temperature: sensor.example_home_15
+      - type: grid
+        cards:
+          - type: heading
+            heading: Buiten
+          - type: grid
+            columns: 2
+            square: false
+            cards:
+              - type: custom:home-room-card
+                name: Achtertuin
+                icon: mdi:flower-outline
+                navigation_path: '/dashboard-home/achtertuin'
+                lights:
+                  - light.example_home_21
+              - type: custom:home-room-card
+                name: Oprit
+                icon: mdi:car-outline
+                navigation_path: '/dashboard-home/oprit'
+                lights:
+                  - light.example_home_22
+                  - light.example_home_23

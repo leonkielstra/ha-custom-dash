@@ -4,12 +4,23 @@ import { LightControlCard } from './cards/light-control';
 import { RoomLightingCard } from './cards/room-lighting';
 import { DeviceCard } from './cards/device';
 import { SectionCard } from './cards/section';
+import { HomeHeroCard } from './cards/home-hero';
+import { RoomCard } from './cards/room';
+import { ActivitySectionCard } from './cards/activity-section';
 import { ui } from './i18n/strings';
 
 const text = ui(
   typeof navigator === 'undefined' ? undefined : navigator.language,
 );
 const cards = [
+  ['home-hero-card', HomeHeroCard, text.heroCard, text.heroDescription],
+  ['home-room-card', RoomCard, text.roomCard, text.roomDescription],
+  [
+    'home-activity-section-card',
+    ActivitySectionCard,
+    text.activityCard,
+    text.activityDescription,
+  ],
   [
     'home-room-header-card',
     RoomHeaderCard,

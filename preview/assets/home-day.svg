@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 180">
+<title>Fictional house illustration — day preview fixture</title>
+<rect x="12" y="5" width="236" height="170" rx="24" fill="#ede8d9"/><circle cx="215" cy="27" r="15" fill="#e1c887"/>
+<path d="M22 143 139 116l99 29-113 30Z" fill="#839580"/>
+<path d="m54 78 75-39 64 43v66l-72 18-67-29Z" fill="#d79d72"/>
+<path d="m121 87 72-5v66l-72 18Z" fill="#bb805e"/>
+<path d="m43 78 81-50 80 51-12 16-69-43-69 43Z" fill="#855c4f" stroke="#694e44" stroke-width="2"/>
+<path d="m124 28 80 51-76 16-74-41Z" fill="#90614e"/>
+<path d="m137 39 56 36m-66-27 48 30m-61-22 42 26m-55-18 36 23" fill="none" stroke="#bd8d71" stroke-width="2"/>
+<path d="M155 31v28l14 9V35Z" fill="#b68a70"/>
+<path d="m65 94 19-8v22l-19 7Zm29-12 17-8v22l-17 7Zm-29 43 19-7v22l-19 7Zm74-18 17-4v23l-17 4Zm26-7 17-4v23l-17 4Z" fill="#bacfd0" stroke="#71574b" stroke-width="2"/>
+<path d="m94 116 17-6v48l-17-8Z" fill="#765846"/>
+<path d="m112 159 13 7 26-7 30 9-38 10-44-11Z" fill="#c9bea2"/>
+<path d="M36 143v-23m-10 3c-12-20 17-34 22-15 17 8 9 27-8 25-4 4-12 2-14-10Z" fill="#708c65" stroke="#657b58" stroke-width="2"/>
+<path d="M213 147v-20m-10-4c-8-14 10-29 17-15 15 2 17 22 1 24-9 7-17 1-18-9Z" fill="#6c8865"/>
+</svg>

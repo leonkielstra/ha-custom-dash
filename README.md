@@ -1,9 +1,10 @@
 # ha-custom-dash
 
-Warm, compact Home Assistant room cards built with TypeScript and Lit. The first
-milestone covers a room header, scenes, explicit lighting controls, and a compact
-media device. No backend, separate login, Bubble Card dependency, or automatic
-entity discovery is required.
+Warm, compact Home Assistant cards built with TypeScript and Lit: a Home overview,
+room summaries, contextual appliances, scenes, explicit lighting controls, and
+media. Use regular Lovelace views, Sections, headings, and grids for layout.
+No backend, separate login, Bubble Card dependency, or automatic entity discovery
+is required.
 
 ## Development
 
@@ -24,6 +25,13 @@ state change, or fail the next action. Mock service calls are shown below the
 cards. The preview does not connect to Home Assistant or request credentials.
 Its SVG icon stand-in is not included in the installed bundle; Home Assistant
 provides the real icons.
+
+Open <http://127.0.0.1:5173/preview/home.html> for the Home overview. Choose day/idle,
+night/washer, multiple appliances, unavailable entities, or rooms without lighting.
+The daylight control works independently of theme (including day in dark mode
+and night in light mode). Both previews support English and Dutch. Home fixtures
+mirror the twelve-room configuration structure with fictional entity IDs. Its SVG
+house illustrations are preview assets; configure your own production images.
 
 ```sh
 npm run check             # TypeScript, ESLint, formatting, unit tests, production build
@@ -61,7 +69,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.3.0
+url: /local/ha-custom-dash.js?v=0.4.0
 type: module
 ```
 
@@ -96,14 +104,17 @@ Every card requires `type`. All cards accept `theme: auto` (default), `light`, o
 `dark`. Auto follows `hass.themes.darkMode`. Invalid configuration throws an error
 with a property path, so Home Assistant can show its standard error card.
 
-| Card                             | Required options                      | Optional options                                                 |
-| -------------------------------- | ------------------------------------- | ---------------------------------------------------------------- |
-| `custom:home-room-header-card`   | —                                     | `name`, `show_name`, `icon`, `temperature`, `humidity`, `lights` |
-| `custom:home-scene-card`         | `scenes` (nonempty scene item list)   | `title`                                                          |
-| `custom:home-light-control-card` | `entity` (`light.*`)                  | `name`, `icon`, `slider_live_update`                             |
-| `custom:home-room-lighting-card` | `lights` (nonempty light item list)   | `title`, `slider_live_update`                                    |
-| `custom:home-device-card`        | `entity` (`media_player.*`)           | `name`, `icon`                                                   |
-| `custom:home-section-card`       | `title`, `cards` (nonempty card list) | —                                                                |
+| Card                                | Required options                                                               | Optional options                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| `custom:home-room-header-card`      | —                                                                              | `name`, `show_name`, `icon`, `temperature`, `humidity`, `lights` |
+| `custom:home-scene-card`            | `scenes` (nonempty scene item list)                                            | `title`                                                          |
+| `custom:home-light-control-card`    | `entity` (`light.*`)                                                           | `name`, `icon`, `slider_live_update`                             |
+| `custom:home-room-lighting-card`    | `lights` (nonempty light item list)                                            | `title`, `slider_live_update`                                    |
+| `custom:home-device-card`           | `entity` (`media_player.*`)                                                    | `name`, `icon`                                                   |
+| `custom:home-section-card`          | `title`, `cards` (nonempty card list)                                          | —                                                                |
+| `custom:home-hero-card`             | `temperature`, `outdoor_temperature`, `sun_entity`, `image_day`, `image_night` | —                                                                |
+| `custom:home-room-card`             | `name`                                                                         | `icon`, `navigation_path`, `temperature`, `lights`               |
+| `custom:home-activity-section-card` | `appliances` (list)                                                            | `title`, `hide_when_empty` (default `true`)                      |
 
 Use `home-section-card` to give native or custom Lovelace cards the same
 section heading style as Scenes and Lighting. It creates its configured child
@@ -128,8 +139,8 @@ are entity IDs; its `lights` is an explicit list of light entity IDs. Missing
 readings show an em dash. Values use the entity's unit and Home Assistant locale.
 The room title is hidden by default to avoid repeating the dashboard navigation
 title. Set `name` and `show_name: true` when the header is used outside a room view.
-Missing lights are counted as unavailable, not as off. Duplicate IDs in lists
-are rejected. Header and lighting lists are independent; configure the same IDs
+Missing lights are counted as unavailable, not as off. Duplicate IDs in header
+and lighting lists are rejected. Header and lighting lists are independent; configure the same IDs
 if their counts should match.
 
 Built-in card labels, accessibility text, common device states, and action
@@ -142,6 +153,78 @@ Media primary actions follow reported `supported_features`: turn on when off,
 pause when playing, play when supported, otherwise turn off if supported. No
 action is shown when the integration reports no appropriate capability. Missing,
 unknown, and unavailable entities disable actions.
+
+### Home overview
+
+[examples/home.yaml](examples/home.yaml) is a complete Home Sections view with
+native headings and two-column grids for all twelve room shortcuts. Insert its
+Home view first in your existing dashboard and replace the fictional entities.
+Only configure views you have implemented as actual dashboard views; the example
+preserves future navigation targets without generating room views or a strategy.
+Keep personal dashboard YAML and entity exports in the Git-ignored `local/` folder.
+
+The hero requires two temperature entity IDs, a `sun_entity`, and two image paths:
+
+```yaml
+type: custom:home-hero-card
+temperature: sensor.example_indoor_temperature
+outdoor_temperature: sensor.example_outdoor_temperature
+sun_entity: sun.sun
+image_day: /local/images/dashboard/home-day.png
+image_night: /local/images/dashboard/home-night.png
+```
+
+Copy the illustrations to `<config>/www/images/dashboard/` on your HA host.
+The illustration follows `above_horizon`/`below_horizon`, independently of theme;
+an unavailable sun retains the last valid selection, initially day. Failed images
+show a house icon. Temperature formatting uses the entity's actual unit and HA
+language; missing/invalid values show `—`. There is no weather or humidity entity.
+
+Room cards require only `name`. Optional `icon`, `temperature`, and `lights` add
+context. `navigation_path` accepts an internal path starting with `/`, using
+client-side navigation and normal link keyboard behavior. Without it, the card
+is an informational surface. Each configured light is counted once (duplicate
+IDs are deduplicated); groups are never expanded or discovered. Missing, unknown,
+and unavailable lights are reported separately. A room never reports lights off
+while an unknown light remains. Omitted or empty lists omit lighting status.
+Sections defaults allocate half a section to each room card; use native
+`type: grid`, `columns: 2`, `square: false` as in the supplied example if nesting.
+
+Appliance items support these properties:
+
+| Property                          | Meaning                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `type`                            | Required: `washer`, `dryer`, `oven`, or `dishwasher`                           |
+| `name`, `entity`, `active_states` | Required label, state entity, and nonempty string list of active states        |
+| `icon`, `room`                    | Optional icon and location label                                               |
+| `reference_duration_minutes`      | Optional positive reference duration for washer/dryer elapsed-time indication  |
+| `started_at_entity`               | Optional date-and-time helper or timestamp state for washer/dryer start        |
+| `current_temperature`             | Optional temperature sensor, using its reported unit                           |
+| `progress`                        | Optional actual program percentage sensor; only values from 0–100 are accepted |
+| `end_time`                        | Optional full program-end timestamp sensor for remaining time                  |
+
+Activity compares states exactly with `active_states`, preserves appliance order,
+and always excludes `unknown`/`unavailable`. `run`, `pause`, and `actionrequired`
+have translated status labels. Rows are read-only and make no service calls.
+The entire card hides when empty, including its heading and Sections grid slot.
+It notifies HA of visibility changes and remains connected to receive states.
+Set `hide_when_empty: false` to show an empty-state message instead.
+
+Washer/dryer bars are labeled **Tijdsindicatie / Time indication**: elapsed time
+relative to a reference duration, clamped at 100%. They do not assert cycle
+completion or remaining time. A valid `started_at_entity` takes priority. Without
+one, `last_changed` is approximate and elapsed text is marked indicative because
+HA restarts/restoration can reset that timestamp. A configured but invalid start
+helper does not silently fall back. Time-only/date-only helpers are insufficient.
+`input_datetime`'s absolute timestamp attribute is preferred; bare date-time state
+strings without a timezone use the browser's local timezone. Use a full timestamp
+with timezone or a date-and-time helper when reliable timing matters.
+
+Oven/dishwasher bars use actual configured progress only; temperature never
+substitutes for program progress. Remaining time uses a valid future `end_time`;
+invalid/past dates and unavailable progress are omitted. No target temperature is
+invented. One timer updates visible timed activity each minute, with cleanup when
+idle or disconnected. No helpers or automations are needed for the initial view.
 
 ### Lighting behavior
 
@@ -198,15 +281,15 @@ card's shadow root. Motion respects `prefers-reduced-motion`.
 
 ## Architecture and scope
 
-- `src/ha/`: typed HA contract, validation, entity helpers, command reconciliation.
+- `src/ha/`: typed HA contract, validation, entity/activity helpers, command reconciliation.
 - `src/ui/`: tokens and shared card lifecycle.
-- `src/cards/`: five understandable domain-specific Lit cards.
+- `src/cards/`: domain-specific Lit cards, including Home and reusable sections.
 - `preview/`: local mock host only; never distributed.
 - `tests/`: logic/component tests and real-browser tests with mock HA state.
 
-See [Plan.md](Plan.md) for decisions and future boundaries. Home overview, hero,
-room summaries, contextual appliances, climate controls, and a strategy that
-automatically assembles these cards remain future work. There is no Lights tab.
+See [Plan.md](Plan.md) for decisions and future boundaries. Climate controls,
+weather, and appliance target temperatures remain future work. There is no Lights
+tab or dashboard strategy.
 
 ## Releasing
 

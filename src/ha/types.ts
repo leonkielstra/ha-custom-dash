@@ -3,6 +3,7 @@ export interface HassEntity {
   entity_id: string;
   state: string;
   attributes: Record<string, unknown>;
+  last_changed?: string;
 }
 export interface HomeAssistant {
   states: Record<string, HassEntity | undefined>;
@@ -52,3 +53,37 @@ export interface SectionConfig extends CardConfig {
   cards: LovelaceCardConfig[];
 }
 export interface DeviceConfig extends CardConfig, EntityItem {}
+
+export interface HeroConfig extends CardConfig {
+  temperature: string;
+  outdoor_temperature: string;
+  sun_entity: string;
+  image_day: string;
+  image_night: string;
+}
+export interface RoomConfig extends CardConfig {
+  name: string;
+  icon?: string;
+  navigation_path?: string;
+  temperature?: string;
+  lights?: string[];
+}
+export type ApplianceType = 'washer' | 'dryer' | 'oven' | 'dishwasher';
+export interface ApplianceConfig {
+  type: ApplianceType;
+  name: string;
+  icon?: string;
+  entity: string;
+  active_states: string[];
+  room?: string;
+  reference_duration_minutes?: number;
+  started_at_entity?: string;
+  current_temperature?: string;
+  progress?: string;
+  end_time?: string;
+}
+export interface ActivityConfig extends CardConfig {
+  title?: string;
+  hide_when_empty: boolean;
+  appliances: ApplianceConfig[];
+}

@@ -1,0 +1,50 @@
+.home-preview {
+  grid-template-columns: repeat(2, minmax(0, 430px));
+}
+.home-preview[data-theme='dark'],
+.home-preview[data-theme='light'] {
+  grid-template-columns: minmax(0, 430px);
+}
+.home-page {
+  padding: 20px 16px;
+}
+.home-title h1 {
+  font-size: 24px;
+  font-weight: 650;
+  line-height: 1.2;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+.home-title span {
+  font-size: 12px;
+  opacity: 0.65;
+}
+.home-page > * + * {
+  margin-top: 24px;
+}
+.home-page > home-hero-card {
+  margin-top: 16px;
+}
+.home-page > [hidden] {
+  margin: 0;
+}
+.floor h2 {
+  font-size: 17px;
+  font-weight: 620;
+  margin: 0 0 10px;
+}
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  align-items: stretch;
+}
+@media (max-width: 700px) {
+  .home-preview {
+    padding: 12px 0;
+  }
+  .home-page {
+    padding: 16px 12px;
+    border-radius: 0;
+  }
+}

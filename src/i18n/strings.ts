@@ -2,6 +2,34 @@ export type Language = 'en' | 'nl';
 
 const messages = {
   en: {
+    indoors: 'Indoors',
+    outdoors: 'Outdoors',
+    houseImageUnavailable: 'House illustration unavailable',
+    lightGroupsOn: (count: number) =>
+      `${count} ${count === 1 ? 'light group' : 'light groups'} on`,
+    lightingOff: 'Lights off',
+    activeAppliances: 'Active appliances',
+    noActivity: 'No active appliances',
+    applianceRunning: 'Running',
+    appliancePaused: 'Paused',
+    applianceAttention: 'Action required',
+    washing: 'Washing',
+    drying: 'Drying',
+    elapsed: (duration: string, approximate: boolean) =>
+      `${approximate ? 'Indicative: ' : ''}${duration} elapsed`,
+    remaining: (duration: string) => `${duration} remaining`,
+    referenceProgress:
+      'Elapsed time relative to reference duration; not program completion',
+    referenceTime: 'Time indication',
+    programProgress: 'Program progress',
+    heroCard: 'Home hero',
+    heroDescription:
+      'Day/night house illustration and indoor/outdoor temperatures.',
+    roomCard: 'Room shortcut',
+    roomDescription:
+      'Room navigation with temperature and explicit lighting summary.',
+    activityCard: 'Appliance activity',
+    activityDescription: 'Contextual appliance activity, progress, and timing.',
     actionFailed: 'Action failed. Please try again.',
     couldNotUpdate: 'Could not update. Please try again.',
     noConfirmation: 'No confirmation received. Showing reported state.',
@@ -100,6 +128,35 @@ const messages = {
     sectionCardError: 'Could not load the cards in this section.',
   },
   nl: {
+    indoors: 'Binnen',
+    outdoors: 'Buiten',
+    houseImageUnavailable: 'Huisillustratie niet beschikbaar',
+    lightGroupsOn: (count: number) =>
+      `${count} ${count === 1 ? 'lichtgroep' : 'lichtgroepen'} aan`,
+    lightingOff: 'Verlichting uit',
+    activeAppliances: 'Actieve apparaten',
+    noActivity: 'Geen actieve apparaten',
+    applianceRunning: 'Bezig',
+    appliancePaused: 'Gepauzeerd',
+    applianceAttention: 'Actie nodig',
+    washing: 'Bezig met wassen',
+    drying: 'Bezig met drogen',
+    elapsed: (duration: string, approximate: boolean) =>
+      `${approximate ? 'Indicatief: ' : ''}${duration} bezig`,
+    remaining: (duration: string) => `Nog ${duration}`,
+    referenceProgress:
+      'Verstreken tijd ten opzichte van referentieduur; geen programmavoortgang',
+    referenceTime: 'Tijdsindicatie',
+    programProgress: 'Programmavoortgang',
+    heroCard: 'Home-hero',
+    heroDescription:
+      'Dag/nacht-huisillustratie en binnen- en buitentemperatuur.',
+    roomCard: 'Kamersnelkoppeling',
+    roomDescription:
+      'Kamernavigatie met temperatuur en ingestelde verlichting.',
+    activityCard: 'Apparaatactiviteit',
+    activityDescription:
+      'Contextuele apparaatactiviteit, voortgang en tijdsindicatie.',
     actionFailed: 'Actie mislukt. Probeer het opnieuw.',
     couldNotUpdate: 'Bijwerken mislukt. Probeer het opnieuw.',
     noConfirmation:

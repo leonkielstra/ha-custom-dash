@@ -6,38 +6,7 @@ import type {
 import { ui } from '../src/i18n/strings';
 import './style.css';
 
-// The host normally provides ha-icon. This tiny SVG stand-in exists ONLY here.
-const paths: Record<string, string> = {
-  'mdi:sofa-outline':
-    'M4 11V6h6v6h4V6h6v5M3 10H1v9h22v-9h-3v5H4zM4 19v3m16-3v3',
-  'mdi:book-open-page-variant-outline':
-    'M12 5C8 2 4 3 2 4v15c4-2 7-1 10 1 3-2 6-3 10-1V4c-4-2-7-1-10 1Zm0 0v15',
-  'mdi:weather-night': 'M20 15A9 9 0 0 1 9 4a9 9 0 1 0 11 11Z',
-  'mdi:movie-open-outline': 'M3 10h18v11H3zM3 8l17-5-1-3L2 5zM7 4l3 3m4-5 3 3',
-  'mdi:power': 'M12 2v10M6 5a9 9 0 1 0 12 0',
-  'mdi:power-standby': 'M12 2v10M6 5a9 9 0 1 0 12 0',
-  'mdi:lightbulb-outline': 'M9 18h6m-6 3h6M8 14a7 7 0 1 1 8 0l-1 2H9Z',
-  'mdi:light-recessed': 'M3 8a9 5 0 1 0 18 0 9 5 0 1 0-18 0m4 1a5 2 0 1 0 10 0',
-  'mdi:floor-lamp': 'M8 3h8l3 9H5Zm4 9v9m-5 0h10',
-  'mdi:television': 'M2 4h20v14H2Zm6 18h8m-4-4v4',
-  'mdi:play': 'M7 3v18l14-9Z',
-  'mdi:pause': 'M6 3v18m12-18v18',
-};
-class PreviewIcon extends HTMLElement {
-  private value = '';
-  set icon(value: string) {
-    this.value = value;
-    this.draw();
-  }
-  connectedCallback() {
-    this.draw();
-  }
-  private draw() {
-    const root = this.shadowRoot ?? this.attachShadow({ mode: 'open' });
-    root.innerHTML = `<style>:host{display:inline-flex;width:24px;height:24px}svg{width:100%;height:100%}</style><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${paths[this.value] ?? paths['mdi:lightbulb-outline']}"/></svg>`;
-  }
-}
-customElements.define('ha-icon', PreviewIcon);
+import './icons';
 const modulePath = new URLSearchParams(location.search).has('bundle')
   ? '/dist/ha-custom-dash.js'
   : '../src/index.ts';
@@ -227,7 +196,7 @@ function updateChrome() {
 
 document.body.innerHTML = `
   <header class="preview-bar">
-    <div><h1 id="preview-title"></h1><p id="preview-subtitle"></p></div>
+    <div><h1 id="preview-title"></h1><p id="preview-subtitle"></p><a href="/preview/home.html">Home preview</a></div>
     <div class="preview-controls">
       <label><span id="language-label"></span> <select id="language"><option value="en">English</option><option value="nl">Nederlands</option></select></label>
       <label><span id="theme-label"></span> <select id="theme"><option value="both">Both</option><option value="light">Light</option><option value="dark">Dark</option></select></label>

@@ -1,13 +1,17 @@
 import type {
+  ActivityConfig,
+  ApplianceConfig,
   CardConfig,
   DeviceConfig,
   EntityItem,
   HeaderConfig,
+  HeroConfig,
   LightConfig,
   LightingConfig,
   LovelaceCardConfig,
   SectionConfig,
   ScenesConfig,
+  RoomConfig,
 } from './types';
 
 type ObjectValue = Record<string, unknown>;
@@ -151,4 +155,101 @@ export function sectionConfig(value: unknown): SectionConfig {
 }
 export function deviceConfig(value: unknown): DeviceConfig {
   return { ...base(value), ...item(value, 'device', 'media_player') };
+}
+
+function optionalEntity(value: unknown, path: string): string | undefined {
+  return value === undefined ? undefined : entity(value, path);
+}
+
+export function heroConfig(value: unknown): HeroConfig {
+  const c = object(value);
+  return {
+    ...base(value),
+    temperature: entity(c.temperature, 'temperature'),
+    outdoor_temperature: entity(c.outdoor_temperature, 'outdoor_temperature'),
+    sun_entity: entity(c.sun_entity, 'sun_entity', 'sun'),
+    image_day: text(c.image_day, 'image_day'),
+    image_night: text(c.image_night, 'image_night'),
+  };
+}
+
+export function roomConfig(value: unknown): RoomConfig {
+  const c = object(value);
+  let lights: string[] | undefined;
+  if (c.lights !== undefined) {
+    if (!Array.isArray(c.lights))
+      throw new Error('lights: expected a list of light entity IDs');
+    lights = [
+      ...new Set(c.lights.map((v, i) => entity(v, `lights[${i}]`, 'light'))),
+    ];
+  }
+  const path = optionalText(c.navigation_path, 'navigation_path');
+  if (path && (!path.startsWith('/') || path.startsWith('//')))
+    throw new Error(
+      'navigation_path: expected an internal path starting with /',
+    );
+  return {
+    ...base(value),
+    name: text(c.name, 'name'),
+    icon: optionalText(c.icon, 'icon'),
+    navigation_path: path,
+    temperature: optionalEntity(c.temperature, 'temperature'),
+    lights,
+  };
+}
+
+export function activityConfig(value: unknown): ActivityConfig {
+  const c = object(value);
+  if (!Array.isArray(c.appliances))
+    throw new Error('appliances: expected a list');
+  const appliances = c.appliances.map((value, index): ApplianceConfig => {
+    const path = `appliances[${index}]`;
+    const a = object(value, path);
+    if (!['washer', 'dryer', 'oven', 'dishwasher'].includes(String(a.type)))
+      throw new Error(
+        `${path}.type: expected washer, dryer, oven, or dishwasher`,
+      );
+    if (!Array.isArray(a.active_states) || !a.active_states.length)
+      throw new Error(
+        `${path}.active_states: expected a non-empty list of strings`,
+      );
+    const duration = a.reference_duration_minutes;
+    if (
+      duration !== undefined &&
+      (typeof duration !== 'number' ||
+        !Number.isFinite(duration) ||
+        duration <= 0)
+    )
+      throw new Error(
+        `${path}.reference_duration_minutes: expected a positive number`,
+      );
+    return {
+      type: a.type as ApplianceConfig['type'],
+      name: text(a.name, `${path}.name`),
+      icon: optionalText(a.icon, `${path}.icon`),
+      entity: entity(a.entity, `${path}.entity`),
+      active_states: a.active_states.map((state, i) =>
+        text(state, `${path}.active_states[${i}]`),
+      ),
+      room: optionalText(a.room, `${path}.room`),
+      reference_duration_minutes: duration as number | undefined,
+      started_at_entity: optionalEntity(
+        a.started_at_entity,
+        `${path}.started_at_entity`,
+      ),
+      current_temperature: optionalEntity(
+        a.current_temperature,
+        `${path}.current_temperature`,
+      ),
+      progress: optionalEntity(a.progress, `${path}.progress`),
+      end_time: optionalEntity(a.end_time, `${path}.end_time`),
+    };
+  });
+  return {
+    ...base(value),
+    title: optionalText(c.title, 'title'),
+    hide_when_empty:
+      optionalBoolean(c.hide_when_empty, 'hide_when_empty') ?? true,
+    appliances,
+  };
 }
