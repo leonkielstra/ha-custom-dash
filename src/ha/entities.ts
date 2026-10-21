@@ -92,3 +92,16 @@ export function sameLight(actual: LightValue, wanted: LightValue): boolean {
       Math.abs((actual.brightness ?? 0) - wanted.brightness) <= 1)
   );
 }
+
+export function iconOf(
+  entity: HassEntity | undefined,
+  override: string | undefined,
+  fallback: string,
+): string {
+  return (
+    override ??
+    (typeof entity?.attributes.icon === 'string'
+      ? entity.attributes.icon
+      : fallback)
+  );
+}

@@ -32,6 +32,9 @@ The daylight control works independently of theme (including day in dark mode
 and night in light mode). Both previews support English and Dutch. Home fixtures
 mirror the twelve-room configuration structure with fictional entity IDs. Its SVG
 house illustrations are preview assets; configure your own production images.
+For comparison with `images/mockup-1.png`, open `/?reference=1` for the five-light
+room composition or `/preview/home.html?reference=1` for washer/oven activity.
+These use the same production components, with fictional preview entities.
 
 ```sh
 npm run check             # TypeScript, ESLint, formatting, unit tests, production build
@@ -59,6 +62,14 @@ a real Home Assistant instance.
    if your installation mode does not register it automatically. Avoid duplicates.
 5. Configure the cards in your existing dashboard using the example below.
 
+For matching page backgrounds and native cards, install the companion
+[Home Room theme](examples/home-room-theme.yaml) and select it in your HA profile.
+The theme YAML is also attached to GitHub releases for download.
+For example, with `frontend: themes: !include_dir_merge_named themes` configured,
+copy the file to `<config>/themes/home-room.yaml`, reload themes, and select
+**Home Room**. Both light and dark modes are included. This aligns native heading
+sizes, section gaps and surfaces through HA theme variables, without card-mod.
+
 To upgrade, download the new release in HACS and reload the browser. If an old
 version remains cached, perform a hard reload and check for duplicate resources.
 
@@ -69,7 +80,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.4.0
+url: /local/ha-custom-dash.js?v=0.5.0
 type: module
 ```
 
@@ -111,9 +122,10 @@ with a property path, so Home Assistant can show its standard error card.
 | `custom:home-light-control-card`    | `entity` (`light.*`)                                                           | `name`, `icon`, `slider_live_update`                             |
 | `custom:home-room-lighting-card`    | `lights` (nonempty light item list)                                            | `title`, `slider_live_update`                                    |
 | `custom:home-device-card`           | `entity` (`media_player.*`)                                                    | `name`, `icon`                                                   |
+| `custom:home-climate-card`          | `entity` (`climate.*`)                                                         | `name`, `icon`                                                   |
 | `custom:home-section-card`          | `title`, `cards` (nonempty card list)                                          | —                                                                |
-| `custom:home-hero-card`             | `temperature`, `outdoor_temperature`, `sun_entity`, `image_day`, `image_night` | —                                                                |
-| `custom:home-room-card`             | `name`                                                                         | `icon`, `navigation_path`, `temperature`, `lights`               |
+| `custom:home-hero-card`             | `temperature`, `outdoor_temperature`, `sun_entity`, `image_day`, `image_night` | `weather`                                                        |
+| `custom:home-room-card`             | `name`                                                                         | `icon`, `navigation_path`, `temperature`, `lights`, `icon_tone`  |
 | `custom:home-activity-section-card` | `appliances` (list)                                                            | `title`, `hide_when_empty` (default `true`)                      |
 
 Use `home-section-card` to give native or custom Lovelace cards the same
@@ -154,6 +166,24 @@ pause when playing, play when supported, otherwise turn off if supported. No
 action is shown when the integration reports no appropriate capability. Missing,
 unknown, and unavailable entities disable actions.
 
+The climate summary matches the mockup's compact row. It reads a configured
+thermostat's mode and current temperature, using HA's temperature unit, and opens
+HA's native more-info controls on click/keyboard activation. It does not issue
+thermostat commands itself:
+
+```yaml
+type: custom:home-section-card
+title: Klimaat
+cards:
+  - type: custom:home-climate-card
+    entity: climate.example_heating
+    name: Vloerverwarming
+```
+
+Light, media and climate icons prefer an explicit YAML `icon`, then the entity's
+reported icon, then a neutral fallback. Native media-control/fan cards remain
+supported inside `home-section-card` when you prefer their full native controls.
+
 ### Home overview
 
 [examples/home.yaml](examples/home.yaml) is a complete Home Sections view with
@@ -162,6 +192,13 @@ Home view first in your existing dashboard and replace the fictional entities.
 Only configure views you have implemented as actual dashboard views; the example
 preserves future navigation targets without generating room views or a strategy.
 Keep personal dashboard YAML and entity exports in the Git-ignored `local/` folder.
+
+[examples/dashboard.yaml](examples/dashboard.yaml) provides a complete alternative:
+Home plus all twelve room views, using subviews and the existing reusable cards.
+Set the dashboard URL to `/dashboard-home` or adjust the navigation prefixes.
+The Home shortcut and room detail share the same explicit light/temperature IDs.
+Rooms without configured controls get an empty-state message. Add scenes, media,
+fan or climate sections only when you have confirmed entities for those rooms.
 
 The hero requires two temperature entity IDs, a `sun_entity`, and two image paths:
 
@@ -178,7 +215,11 @@ Copy the illustrations to `<config>/www/images/dashboard/` on your HA host.
 The illustration follows `above_horizon`/`below_horizon`, independently of theme;
 an unavailable sun retains the last valid selection, initially day. Failed images
 show a house icon. Temperature formatting uses the entity's actual unit and HA
-language; missing/invalid values show `—`. There is no weather or humidity entity.
+language; missing/invalid values show `—`. Optional `weather: weather.example`
+adds a translated condition beneath the outdoor reading; the original schema
+still works without it. The illustration still follows only sun state. Humidity
+is not part of the hero. A native heading badge can show weather in the HA header
+instead; see [heading badges](https://www.home-assistant.io/dashboards/heading/).
 
 Room cards require only `name`. Optional `icon`, `temperature`, and `lights` add
 context. `navigation_path` accepts an internal path starting with `/`, using
@@ -187,6 +228,11 @@ is an informational surface. Each configured light is counted once (duplicate
 IDs are deduplicated); groups are never expanded or discovered. Missing, unknown,
 and unavailable lights are reported separately. A room never reports lights off
 while an unknown light remains. Omitted or empty lists omit lighting status.
+Cards use a horizontal icon/content layout with temperature below lighting status.
+At very narrow widths, the visible count shortens to e.g. `2 aan`; its full status
+remains accessible. Icon panels use restrained category tones inferred from common
+configured icons. Override with `icon_tone: teal`, `sand`, `blue`, `violet`, or
+`neutral`. Card surfaces never change color with lighting state.
 Sections defaults allocate half a section to each room card; use native
 `type: grid`, `columns: 2`, `square: false` as in the supplied example if nesting.
 
@@ -258,19 +304,28 @@ idle or disconnected. No helpers or automations are needed for the initial view.
 
 ### Theme tokens
 
-Cards respect Home Assistant text, font, and card-surface variables where suitable.
-Dark mode has explicit matching layout and palette. Set the following CSS variables
+Cards use explicit warm-neutral/charcoal defaults and a system font so unrelated
+HA card colors or fonts do not change the mockup's appearance. Their theme mode
+follows HA; explicit `home-room-*` overrides customize the design. Set these variables
 in a Home Assistant theme to customize the cards (HA theme keys omit the `--`):
 
-| CSS token                | Light default | Dark default |
-| ------------------------ | ------------- | ------------ |
-| `--home-room-background` | `#F7F6F2`     | `#141414`    |
-| `--home-room-surface`    | `#FFFFFF`     | `#242424`    |
-| `--home-room-secondary`  | `#EDECE7`     | `#303030`    |
-| `--home-room-text`       | `#242A27`     | `#F2F2F2`    |
-| `--home-room-muted`      | `#626C65`     | `#A8A8A8`    |
-| `--home-room-accent`     | `#397F79`     | `#76B9AE`    |
-| `--home-room-active`     | `#E2F0EC`     | `#29453F`    |
+| CSS token                  | Light default | Dark default |
+| -------------------------- | ------------- | ------------ |
+| `--home-room-background`   | `#F7F5EF`     | `#141414`    |
+| `--home-room-surface`      | `#FFFDF8`     | `#242424`    |
+| `--home-room-secondary`    | `#EEECE6`     | `#353535`    |
+| `--home-room-text`         | `#242A27`     | `#F2F2F2`    |
+| `--home-room-muted`        | `#69716C`     | `#A8A8A8`    |
+| `--home-room-accent`       | `#397F79`     | `#76B9AE`    |
+| `--home-room-active`       | `#E2F0EC`     | `#29453F`    |
+| `--home-room-control`      | `#397F79`     | `#397F79`    |
+| `--home-room-hero-surface` | `#FAECD8`     | `#242424`    |
+
+The same token family includes `sand`, `blue`, `violet` and their `*-surface`
+counterparts for small icon panels, plus `home-room-font-family` for an explicit
+font override. Section headings use 16px, standard labels 14px, metadata 12px,
+and compact room/activity summaries 11–13px. Icons and controls have intentional
+larger touch areas than their visible marks.
 
 The dark active token is reserved for small interactive or icon treatments; card
 surfaces remain neutral charcoal. The dashboard page background remains owned by
@@ -287,16 +342,19 @@ card's shadow root. Motion respects `prefers-reduced-motion`.
 - `preview/`: local mock host only; never distributed.
 - `tests/`: logic/component tests and real-browser tests with mock HA state.
 
-See [Plan.md](Plan.md) for decisions and future boundaries. Climate controls,
-weather, and appliance target temperatures remain future work. There is no Lights
-tab or dashboard strategy.
+See [Plan.md](Plan.md) and [the visual audit](docs/design-review.md) for decisions
+and component coverage. Appliance target temperatures remain future work. HA owns
+dashboard navigation, the top bar, native media/fan cards and thermostat details;
+the custom cards supply the content shown in the mockup. There is no Lights tab
+or dashboard strategy.
 
 ## Releasing
 
 CI runs the checks and browser tests. To prepare a release, push an explicitly
 approved version tag, then manually run the **Prepare release** workflow with that
 tag. It validates, builds, and creates a **draft** GitHub release containing
-`ha-custom-dash.js` and its map. Review and publish the draft for HACS users.
+`ha-custom-dash.js`, its map, and the companion theme YAML. Review and publish
+the draft for HACS users.
 The local build folder is ignored; release assets are the installation source.
 No release is published automatically by a source change.
 

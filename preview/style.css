@@ -12,7 +12,7 @@ body {
 }
 .preview-bar {
   padding: 24px 32px;
-  background: #f7f6f2;
+  background: #f7f5ef;
   border-bottom: 1px solid #deded7;
   display: flex;
   align-items: center;
@@ -77,9 +77,9 @@ select {
 }
 .room {
   min-width: 0;
-  background: #f7f6f2;
+  background: #f7f5ef;
   color: #242a27;
-  padding: 24px 16px;
+  padding: 20px 16px;
   border-radius: 16px;
 }
 .room.dark {
@@ -88,7 +88,7 @@ select {
   color-scheme: dark;
 }
 .room > * + * {
-  margin-top: 12px;
+  margin-top: 8px;
 }
 .room-top {
   display: flex;
@@ -103,8 +103,8 @@ select {
   opacity: 0.65;
 }
 .room-top p {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 550;
   margin: 0;
 }
 .room h2 {
@@ -146,9 +146,17 @@ select {
     gap: 16px;
   }
   .room {
-    padding: 16px 8px;
+    padding: 16px 12px;
   }
   .preview-note {
     padding: 0 16px 16px;
   }
+}
+
+.room.reference .room-top span {
+  display: none;
+}
+
+.room-top + home-room-header-card {
+  margin-top: 20px;
 }

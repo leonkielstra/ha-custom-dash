@@ -21,7 +21,7 @@ interface PreviewCard extends HTMLElement {
   setConfig(config: unknown): void;
   hass?: HomeAssistant;
 }
-let scenario: HomeScenario = 'day';
+let scenario: HomeScenario = params.has('reference') ? 'reference' : 'day';
 let states = fixtureStates(scenario);
 let language = 'nl';
 let theme: 'both' | 'light' | 'dark' = 'both';
@@ -52,7 +52,7 @@ document.body.innerHTML = `
     <div class="preview-controls">
       <label>Taal / language <select id="language"><option value="nl">Nederlands</option><option value="en">English</option></select></label>
       <label>Thema / theme <select id="theme"><option value="both">Both</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
-      <label>Scenario <select id="scenario"><option value="day">A · Day, idle</option><option value="night">B · Night, washer</option><option value="multiple">C · Multiple appliances</option><option value="unavailable">D · Unavailable entities</option><option value="no-lights">E · Rooms without lights</option></select></label>
+      <label>Scenario <select id="scenario"><option value="reference">Reference · washer and oven</option><option value="day">A · Day, idle</option><option value="night">B · Night, washer</option><option value="multiple">C · Multiple appliances</option><option value="unavailable">D · Unavailable entities</option><option value="no-lights">E · Rooms without lights</option></select></label>
       <label>Daglicht / daylight <select id="daylight"><option value="above_horizon">Day</option><option value="below_horizon">Night</option><option value="unavailable">Unavailable</option></select></label>
       <button id="long-name">Long room name</button>
     </div>
@@ -99,6 +99,7 @@ function render() {
   }
 }
 render();
+document.querySelector<HTMLSelectElement>('#scenario')!.value = scenario;
 document.querySelector('#theme')!.addEventListener('change', (event) => {
   theme = (event.target as HTMLSelectElement).value as typeof theme;
   document.querySelector<HTMLElement>('main')!.dataset.theme = theme;

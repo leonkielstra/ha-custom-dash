@@ -143,13 +143,15 @@ it('updates timing every minute and cleans up its single timer on idle/disconnec
   card.hass = hass('night');
   document.body.append(card);
   await card.updateComplete;
-  expect(card.shadowRoot!.textContent).toContain(
-    'Indicatief: 48 minuten bezig',
-  );
+  expect(
+    card.shadowRoot!.querySelector('.metric')!.getAttribute('aria-label'),
+  ).toBe('Indicatief: 48 minuten bezig');
   expect(vi.getTimerCount()).toBe(1);
   await vi.advanceTimersByTimeAsync(60000);
   await card.updateComplete;
-  expect(card.shadowRoot!.textContent).toContain('49 minuten bezig');
+  expect(
+    card.shadowRoot!.querySelector('.metric')!.getAttribute('aria-label'),
+  ).toBe('Indicatief: 49 minuten bezig');
   expect(vi.getTimerCount()).toBe(1);
   card.remove();
   expect(vi.getTimerCount()).toBe(0);
@@ -168,7 +170,9 @@ it('updates timing every minute and cleans up its single timer on idle/disconnec
   };
   card.hass = h;
   await card.updateComplete;
-  expect(card.shadowRoot!.textContent).toContain('0 minuten bezig');
+  expect(
+    card.shadowRoot!.querySelector('.metric')!.getAttribute('aria-label'),
+  ).toBe('Indicatief: 0 minuten bezig');
   expect(vi.getTimerCount()).toBe(1);
 });
 it('uses translated program statuses and actual progress without a temperature-based substitute', async () => {

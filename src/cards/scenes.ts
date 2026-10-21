@@ -18,25 +18,25 @@ export class SceneCard extends BaseCard<ScenesConfig> {
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        gap: 4px;
+        gap: 8px;
         padding: 8px 6px;
-        min-height: 68px;
+        min-height: 80px;
         background: var(--room-surface);
       }
       button span {
         max-width: 100%;
         overflow-wrap: anywhere;
-        font-size: 13px;
-        font-weight: 600;
+        font-size: var(--room-meta-size);
+        font-weight: 500;
       }
       button ha-icon {
-        color: var(--room-accent);
-        width: 21px;
-        height: 21px;
-        --mdc-icon-size: 21px;
+        color: var(--room-text);
+        width: 28px;
+        height: 28px;
+        --mdc-icon-size: 28px;
       }
       .feedback {
-        font-size: 12px;
+        font-size: var(--room-meta-size);
         color: var(--room-muted);
         margin-top: 0;
       }

@@ -3,6 +3,7 @@ import { SceneCard } from './cards/scenes';
 import { LightControlCard } from './cards/light-control';
 import { RoomLightingCard } from './cards/room-lighting';
 import { DeviceCard } from './cards/device';
+import { ClimateCard } from './cards/climate';
 import { SectionCard } from './cards/section';
 import { HomeHeroCard } from './cards/home-hero';
 import { RoomCard } from './cards/room';
@@ -13,6 +14,7 @@ const text = ui(
   typeof navigator === 'undefined' ? undefined : navigator.language,
 );
 const cards = [
+  ['home-climate-card', ClimateCard, text.climateCard, text.climateDescription],
   ['home-hero-card', HomeHeroCard, text.heroCard, text.heroDescription],
   ['home-room-card', RoomCard, text.roomCard, text.roomDescription],
   [

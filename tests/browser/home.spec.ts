@@ -56,12 +56,15 @@ test('activity collapses without a blank slot, reappears from state updates, and
   const gap =
     (await scenes.boundingBox())!.y -
     ((await hero.boundingBox())!.y + (await hero.boundingBox())!.height);
-  expect(gap).toBe(24);
+  expect(gap).toBe(8);
   await page.locator('#scenario').selectOption('multiple');
   await expect(section).toBeVisible();
   const rows = section.locator('ha-card');
   await expect(rows).toHaveCount(4);
-  await expect(rows.nth(0)).toContainText('Indicatief: 48 minuten bezig');
+  await expect(rows.nth(0).locator('.metric')).toHaveAttribute(
+    'aria-label',
+    'Indicatief: 48 minuten bezig',
+  );
   await expect(rows.nth(0)).toContainText('Tijdsindicatie');
   await expect(rows.nth(0).getByRole('progressbar')).toHaveAttribute(
     'aria-label',
@@ -79,8 +82,8 @@ test('activity collapses without a blank slot, reappears from state updates, and
     'value',
     '72',
   );
-  await expect(rows.nth(2)).toContainText('Nog 12 minuten');
-  await expect(rows.nth(3)).toContainText('Nog 38 minuten');
+  await expect(rows.nth(2)).toContainText('Nog 12 min');
+  await expect(rows.nth(3)).toContainText('Nog 38 min');
   await expect(rows.nth(3).getByRole('progressbar')).toHaveCount(0);
   await page.locator('#scenario').selectOption('day');
   await expect(section).toBeHidden();

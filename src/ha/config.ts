@@ -2,6 +2,7 @@ import type {
   ActivityConfig,
   ApplianceConfig,
   CardConfig,
+  ClimateConfig,
   DeviceConfig,
   EntityItem,
   HeaderConfig,
@@ -156,6 +157,9 @@ export function sectionConfig(value: unknown): SectionConfig {
 export function deviceConfig(value: unknown): DeviceConfig {
   return { ...base(value), ...item(value, 'device', 'media_player') };
 }
+export function climateConfig(value: unknown): ClimateConfig {
+  return { ...base(value), ...item(value, 'climate', 'climate') };
+}
 
 function optionalEntity(value: unknown, path: string): string | undefined {
   return value === undefined ? undefined : entity(value, path);
@@ -170,11 +174,20 @@ export function heroConfig(value: unknown): HeroConfig {
     sun_entity: entity(c.sun_entity, 'sun_entity', 'sun'),
     image_day: text(c.image_day, 'image_day'),
     image_night: text(c.image_night, 'image_night'),
+    weather:
+      c.weather === undefined
+        ? undefined
+        : entity(c.weather, 'weather', 'weather'),
   };
 }
 
 export function roomConfig(value: unknown): RoomConfig {
   const c = object(value);
+  if (
+    c.icon_tone !== undefined &&
+    !['teal', 'sand', 'blue', 'violet', 'neutral'].includes(String(c.icon_tone))
+  )
+    throw new Error('icon_tone: expected teal, sand, blue, violet, or neutral');
   let lights: string[] | undefined;
   if (c.lights !== undefined) {
     if (!Array.isArray(c.lights))
@@ -195,6 +208,7 @@ export function roomConfig(value: unknown): RoomConfig {
     navigation_path: path,
     temperature: optionalEntity(c.temperature, 'temperature'),
     lights,
+    icon_tone: c.icon_tone as RoomConfig['icon_tone'],
   };
 }
 

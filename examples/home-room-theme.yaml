@@ -1,0 +1,37 @@
+# Include this file in frontend.themes, then select Home Room in your HA profile.
+# This uses HA's theme variables; no card-mod/global CSS injection is required.
+Home Room:
+  primary-font-family: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+  ha-font-family-body: 'var(--primary-font-family)'
+  ha-font-family-heading: 'var(--primary-font-family)'
+  ha-card-border-radius: '16px'
+  ha-card-border-width: '0px'
+  ha-card-box-shadow: none
+  ha-view-sections-row-gap: '24px'
+  ha-view-sections-narrow-column-gap: '12px'
+  ha-view-sections-column-max-width: '430px'
+  ha-section-grid-row-gap: '8px'
+  ha-section-grid-column-gap: '8px'
+  ha-heading-card-title-font-size: '16px'
+  ha-heading-card-title-font-weight: '600'
+  modes:
+    light:
+      primary-background-color: '#F7F5EF'
+      secondary-background-color: '#EEECE6'
+      card-background-color: '#FFFDF8'
+      ha-card-background: '#FFFDF8'
+      primary-text-color: '#242A27'
+      secondary-text-color: '#69716C'
+      primary-color: '#397F79'
+      accent-color: '#397F79'
+      divider-color: '#E6E2D9'
+    dark:
+      primary-background-color: '#141414'
+      secondary-background-color: '#353535'
+      card-background-color: '#242424'
+      ha-card-background: '#242424'
+      primary-text-color: '#F2F2F2'
+      secondary-text-color: '#A8A8A8'
+      primary-color: '#76B9AE'
+      accent-color: '#76B9AE'
+      divider-color: '#363636'

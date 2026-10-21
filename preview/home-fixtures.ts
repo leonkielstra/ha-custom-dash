@@ -6,7 +6,7 @@ import type {
 } from '../src/ha/types';
 
 export type HomeScenario =
-  'day' | 'night' | 'multiple' | 'unavailable' | 'no-lights';
+  'day' | 'night' | 'multiple' | 'unavailable' | 'no-lights' | 'reference';
 // Public fixtures mirror the supplied configuration's structure, using fictional IDs only.
 const floors = [
   {
@@ -168,7 +168,7 @@ export function fixtureStates(
     add(scene.entity, new Date(now).toISOString());
   add(
     'binary_sensor.example_washer',
-    multiple || scenario === 'night' ? 'on' : 'off',
+    multiple || scenario === 'night' || scenario === 'reference' ? 'on' : 'off',
     {},
     new Date(now - 48 * 60000).toISOString(),
   );
@@ -178,7 +178,10 @@ export function fixtureStates(
     {},
     new Date(now - 135 * 60000).toISOString(),
   );
-  add('sensor.example_oven_status', multiple ? 'run' : 'idle');
+  add(
+    'sensor.example_oven_status',
+    multiple || scenario === 'reference' ? 'run' : 'idle',
+  );
   add('sensor.example_oven_temperature', '180', { unit_of_measurement: '°C' });
   add(
     'sensor.example_oven_progress',

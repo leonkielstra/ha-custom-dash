@@ -8,41 +8,53 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
     BaseCard.styles,
     css`
       ha-card {
-        padding: 12px 14px;
+        padding: 14px 16px;
+        min-height: 108px;
         display: flex;
-        gap: 12px;
+        gap: 16px;
         align-items: center;
       }
       .icon-box {
-        width: 46px;
-        height: 46px;
-        flex-basis: 46px;
+        width: 64px;
+        height: 76px;
+        flex-basis: 64px;
         color: var(--room-accent);
         background: var(--room-active);
         border-radius: 14px;
       }
+      .icon-box ha-icon {
+        width: 30px;
+        height: 30px;
+        --mdc-icon-size: 30px;
+      }
+      @media (max-width: 340px) {
+        .icon-box {
+          width: 56px;
+          flex-basis: 56px;
+        }
+      }
       .readings {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: baseline;
+        display: block;
         gap: 2px 7px;
         margin: 0;
         color: var(--room-muted);
       }
       .temperature {
         color: var(--room-text);
-        font-size: 19px;
+        font-size: 26px;
         line-height: 1.25;
-        font-weight: 650;
+        font-weight: 600;
         letter-spacing: -0.35px;
       }
       .humidity {
+        display: block;
+        margin-top: 3px;
         font-size: 13px;
       }
       .summary {
-        font-size: 12px;
+        font-size: var(--room-meta-size);
         line-height: 1.4;
-        margin-top: 2px;
+        margin-top: 8px;
       }
       .count {
         color: var(--room-accent);
@@ -92,10 +104,9 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
         ${c.show_name && c.name ? html`<p class="room-name">${c.name}</p>` : nothing}
         <p class="readings">
           ${c.temperature ? html`<span class="temperature" aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '°C')}</span>` : nothing}
-          ${c.temperature && c.humidity ? html`<span aria-hidden="true">·</span>` : nothing}
           ${c.humidity ? html`<span class="humidity">${sensorValue(this.hass, c.humidity, '%')} ${text.humidity}</span>` : nothing}
         </p>
-        ${lights.length ? html`<p class="summary">${text.roomLightsOn(count)}${unavailable ? html`<span class="muted"> · ${text.unavailableShort(unavailable)}</span>` : nothing}</p>` : nothing}
+        ${lights.length ? html`<p class="summary">${html`<span class="count">${count}</span>${text.roomLightsOn(count).slice(String(count).length)}`}${unavailable ? html`<span class="muted"> · ${text.unavailableShort(unavailable)}</span>` : nothing}</p>` : nothing}
       </div>
     </ha-card>`;
   }

@@ -31,7 +31,7 @@ export class RoomLightingCard extends BaseCard<LightingConfig> {
       }
       .availability {
         color: var(--room-muted);
-        font-size: 12px;
+        font-size: var(--room-meta-size);
         margin-bottom: 8px;
       }
     `,

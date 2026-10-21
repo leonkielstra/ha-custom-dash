@@ -4,7 +4,9 @@ test('renders section headings around reusable nested cards', async ({
 }) => {
   await page.goto('/?bundle=1');
   const room = page.locator('.room.light');
-  const section = room.locator('home-section-card');
+  const section = room
+    .locator('home-section-card')
+    .filter({ has: page.getByRole('heading', { name: 'Media', exact: true }) });
   await expect(section.getByRole('heading', { name: 'Media' })).toBeVisible();
   await expect(section.locator('home-device-card')).toHaveCount(1);
   await expect(

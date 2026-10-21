@@ -4,6 +4,7 @@ import { activityConfig } from '../ha/config';
 import {
   applianceActivities,
   durationText,
+  durationCompact,
   type ApplianceActivity,
 } from '../ha/activity';
 import { sensorValue } from '../ha/entities';
@@ -30,16 +31,15 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
       }
       ha-card {
         display: grid;
-        grid-template-columns: 36px minmax(0, 1fr);
+        grid-template-columns: 44px minmax(0, 1fr);
         align-items: center;
         gap: 12px;
-        padding: 12px 14px;
+        padding: 10px 12px;
+        min-height: 84px;
       }
       .icon-box {
-        width: 36px;
-        height: 36px;
-        color: var(--room-accent);
-        background: var(--room-active);
+        width: 44px;
+        height: 56px;
       }
       ha-icon {
         width: 21px;
@@ -48,25 +48,43 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
       }
       .content {
         min-width: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-areas: 'name metric' 'status timing' 'progress progress';
+        column-gap: 8px;
+        row-gap: 2px;
       }
       h3 {
-        font-size: 14px;
-        font-weight: 600;
+        grid-area: name;
+        font-size: 13px;
+        font-weight: 550;
       }
       .status {
-        font-size: 12px;
-        color: var(--room-muted);
-        overflow-wrap: anywhere;
-      }
-      .timing {
+        grid-area: status;
         font-size: 11px;
         color: var(--room-muted);
-        margin-top: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .metric {
+        grid-area: metric;
+        font-size: var(--room-label-size);
+        font-weight: 550;
+        text-align: end;
+      }
+
+      .timing {
+        grid-area: timing;
+        font-size: 11px;
+        color: var(--room-muted);
+        text-align: end;
+        max-width: 116px;
       }
       progress {
         display: block;
         width: 100%;
-        height: 5px;
+        height: 7px;
         min-width: 0;
         border: 0;
         border-radius: 6px;
@@ -79,23 +97,16 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
         background: var(--room-secondary);
       }
       progress::-webkit-progress-value {
-        background: var(--room-accent);
+        background: var(--room-control);
         border-radius: 6px;
       }
       progress::-moz-progress-bar {
-        background: var(--room-accent);
+        background: var(--room-control);
         border-radius: 6px;
       }
       .progress {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 8px;
-      }
-      .reference {
-        font-size: 10px;
-        color: var(--room-muted);
-        white-space: nowrap;
+        grid-area: progress;
+        margin-top: 6px;
       }
     `,
   ];
@@ -192,26 +203,36 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
         <h3>${this.config.title ?? text.activeAppliances}</h3>
       </div>
       <div class="activities">
-        ${activities.map(
-          (a) =>
-            html`<ha-card>
-              <span class="icon-box"
+        ${activities.map((a) => {
+          const temperature =
+            a.temperature !== undefined
+              ? sensorValue(this.hass, a.config.current_temperature, '')
+              : undefined;
+          const elapsed =
+            a.elapsedMinutes !== undefined
+              ? text.elapsed(
+                  durationText(a.elapsedMinutes, this.hass?.locale?.language),
+                  a.approximate,
+                )
+              : undefined;
+          const status = `${this.status(a)}${a.config.room ? ` · ${a.config.room}` : ''}`;
+          return html`<ha-card>
+            <span class=${a.config.type === 'oven' ? 'tone-sand' : 'tone-teal'}
+              ><span class="icon-box"
                 ><ha-icon
                   .icon=${a.config.icon ?? icons[a.config.type]}
                   aria-hidden="true"
-                ></ha-icon
-              ></span>
-              <div class="content">
-                <h3 class="name" title=${a.config.name}>${a.config.name}</h3>
-                <p class="status">
-                  ${this.status(a)}${a.config.room ? html` · ${a.config.room}` : nothing}${a.temperature !== undefined ? html` · ${sensorValue(this.hass, a.config.current_temperature, '')}` : nothing}
-                </p>
-                ${a.elapsedMinutes !== undefined ? html`<p class="timing">${text.elapsed(durationText(a.elapsedMinutes, this.hass?.locale?.language), a.approximate)}</p>` : nothing}
-                ${a.remainingMinutes !== undefined ? html`<p class="timing">${text.remaining(durationText(a.remainingMinutes, this.hass?.locale?.language))}</p>` : nothing}
-                ${a.progress !== undefined ? html`<div class="progress"><progress max="100" value=${a.progress} aria-label=${a.indicative ? text.referenceProgress : text.programProgress} aria-valuetext=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`} title=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`}></progress>${a.indicative ? html`<span class="reference">${text.referenceTime}</span>` : nothing}</div>` : nothing}
-              </div>
-            </ha-card>`,
-        )}
+                ></ha-icon></span
+            ></span>
+            <div class="content">
+              <h3 class="name" title=${a.config.name}>${a.config.name}</h3>
+              ${temperature ? html`<span class="metric">${temperature}</span>` : a.elapsedMinutes !== undefined ? html`<span class="metric" title=${elapsed} aria-label=${elapsed}>${durationCompact(a.elapsedMinutes, this.hass?.locale?.language)}</span>` : nothing}
+              <p class="status" title=${status}>${status}</p>
+              ${elapsed ? html`<p class="timing" title=${elapsed}>${text.referenceTime}</p>` : a.remainingMinutes !== undefined ? html`<p class="timing">${text.remaining(durationCompact(a.remainingMinutes, this.hass?.locale?.language))}</p>` : nothing}
+              ${a.progress !== undefined ? html`<div class="progress"><progress max="100" value=${a.progress} aria-label=${a.indicative ? text.referenceProgress : text.programProgress} aria-valuetext=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`} title=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`}></progress></div>` : nothing}
+            </div>
+          </ha-card>`;
+        })}
       </div>
       ${!activities.length ? html`<p class="muted">${text.noActivity}</p>` : nothing}
     </section>`;

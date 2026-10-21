@@ -9,17 +9,20 @@
   padding: 20px 16px;
 }
 .home-title h1 {
-  font-size: 24px;
-  font-weight: 650;
+  font-size: 28px;
+  font-weight: 600;
   line-height: 1.2;
   margin: 0;
   letter-spacing: -0.5px;
 }
 .home-title span {
-  font-size: 12px;
+  font-size: 13px;
   opacity: 0.65;
 }
 .home-page > * + * {
+  margin-top: 8px;
+}
+.home-page > .floor {
   margin-top: 24px;
 }
 .home-page > home-hero-card {
@@ -29,8 +32,8 @@
   margin: 0;
 }
 .floor h2 {
-  font-size: 17px;
-  font-weight: 620;
+  font-size: 16px;
+  font-weight: 600;
   margin: 0 0 10px;
 }
 .room-grid {

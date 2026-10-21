@@ -12,7 +12,7 @@ HACS custom-repository installation remains a requirement.
 
 - Ship one bundled ES module, `dist/ha-custom-dash.js`, with Lit included.
 - Register room header, scenes, individual light, room lighting, media device,
-  reusable section, Home hero, room shortcut, and appliance activity cards.
+  reusable section, Home hero, room shortcut, appliance activity, and climate summary cards.
   Room lighting composes the same individual light component.
 - Separate typed configuration/validation, Home Assistant helpers, state handling,
   and shared styles. Keep explicit light lists; no registry discovery.
@@ -88,9 +88,24 @@ all entity IDs and future navigation targets under ignored `local/` only.
 
 ## Future architecture
 
-Future Home additions can include weather and appliance target temperatures.
+Appliance target temperatures remain optional future work.
 Humidity belongs in room headers only. Do not add a dedicated Lights tab.
 Use shared tokens/helpers without building speculative domain abstractions.
+
+## Mockup fidelity and complete views
+
+See [docs/design-review.md](docs/design-review.md) for the visual audit and coverage.
+Use horizontal room shortcuts, right-aligned appliance metrics, a dominant indoor
+temperature, neutral scene icons, and cohesive compact lighting rows. Keep heading
+spacing inside reusable section components so it works in native Lovelace grids.
+The companion HA theme aligns page/native-card colors without DOM overrides.
+
+The climate summary opens HA's native controls. Hero weather is optional and
+localized; neither requires a binding in the existing Home schema. Icon tones are
+optional appearance overrides. All prior schemas and light interactions remain.
+Ship a full public example with Home and twelve room views using fictional IDs.
+Private missing room views use only the explicit confirmed temperature/light
+lists; existing views are preserved, with no invented climate/media bindings.
 
 ## Verification limits
 

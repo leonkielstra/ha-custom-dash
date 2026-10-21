@@ -35,12 +35,16 @@ const lights = [
   { entity: 'light.example_basic', name: 'On/off-only light' },
 ];
 let states: HomeAssistant['states'];
-let previewLanguage = 'en';
+const referenceMode = new URLSearchParams(location.search).has('reference');
+let previewLanguage = referenceMode ? 'nl' : 'en';
 let previewTheme: 'both' | 'light' | 'dark' = 'both';
 let previewWidth: 'phone' | 'wide' = 'phone';
 let sliderLiveUpdate = false;
 function initialStates(): HomeAssistant['states'] {
   return {
+    'climate.example_heating': makeEntity('climate.example_heating', 'auto', {
+      current_temperature: 20,
+    }),
     'sensor.example_temperature': makeEntity(
       'sensor.example_temperature',
       '20.4',
@@ -54,7 +58,11 @@ function initialStates(): HomeAssistant['states'] {
         item.entity,
         makeEntity(
           item.entity,
-          i === 5 ? 'unavailable' : i === 4 || i === 6 ? 'off' : 'on',
+          i === 5
+            ? 'unavailable'
+            : (!referenceMode && i === 4) || i === 6
+              ? 'off'
+              : 'on',
           {
             friendly_name: item.name,
             supported_color_modes: i === 6 ? ['onoff'] : ['brightness'],
@@ -112,6 +120,7 @@ function hass(theme: 'light' | 'dark'): HomeAssistant {
     states,
     locale: { language: previewLanguage },
     themes: { darkMode: theme === 'dark' },
+    config: { unit_system: { temperature: '°C' } },
     async callService(domain, service, data) {
       calls.push({ domain, service, data });
       document.querySelector('.service-log')!.textContent = calls
@@ -245,17 +254,29 @@ function renderRooms() {
         sceneNames: ['Read', 'Relax', 'Film'],
         device: 'Living room display',
       };
-  const localizedLights = lights.map((light, i) => ({
-    ...light,
-    name: labels.names[i],
-  }));
+  if (referenceMode && previewLanguage.startsWith('nl')) {
+    labels.names = [
+      'Spots',
+      'Piano',
+      'Wandlampen',
+      'Vloer- en tafellampen',
+      'Spots bank',
+    ];
+    labels.device = 'TV';
+  }
+  const localizedLights = lights
+    .slice(0, referenceMode ? 5 : lights.length)
+    .map((light, i) => ({
+      ...light,
+      name: labels.names[i],
+    }));
   const main = document.querySelector('main')!;
   main.replaceChildren();
   mounted.length = 0;
   main.dataset.width = previewWidth;
   for (const theme of ['light', 'dark'] as const) {
     const room = document.createElement('article');
-    room.className = `room ${theme}`;
+    room.className = `room ${theme}${referenceMode ? ' reference' : ''}`;
     room.hidden = previewTheme !== 'both' && previewTheme !== theme;
     room.setAttribute(
       'aria-label',
@@ -273,7 +294,7 @@ function renderRooms() {
       name: labels.room,
       temperature: 'sensor.example_temperature',
       humidity: 'sensor.example_humidity',
-      lights: lights.map((v) => v.entity),
+      lights: localizedLights.map((v) => v.entity),
     });
     add('home-scene-card', {
       scenes: [
@@ -306,6 +327,18 @@ function renderRooms() {
           type: 'custom:home-device-card',
           entity: 'media_player.example_display',
           name: labels.device,
+        },
+      ],
+    });
+    add('home-section-card', {
+      title: text.climate,
+      cards: [
+        {
+          type: 'custom:home-climate-card',
+          entity: 'climate.example_heating',
+          name: previewLanguage.startsWith('nl')
+            ? 'Vloerverwarming'
+            : 'Underfloor heating',
         },
       ],
     });
@@ -366,4 +399,10 @@ Object.assign(window, {
       update();
     },
   },
+});
+
+window.addEventListener('hass-more-info', (event) => {
+  const detail = (event as CustomEvent<{ entityId: string }>).detail;
+  document.querySelector('.service-log')!.textContent =
+    `More info: ${detail.entityId}`;
 });

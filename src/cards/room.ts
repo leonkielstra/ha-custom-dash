@@ -2,8 +2,23 @@ import { css, html, nothing } from 'lit';
 import { BaseCard } from '../ui/base-card';
 import { roomConfig } from '../ha/config';
 import { sensorValue } from '../ha/entities';
-import type { RoomConfig } from '../ha/types';
+import type { IconTone, RoomConfig } from '../ha/types';
 import { roomLights } from '../ha/overview';
+
+const iconTones: Record<string, IconTone> = {
+  'mdi:sofa-outline': 'teal',
+  'mdi:countertop-outline': 'sand',
+  'mdi:door-open': 'blue',
+  'mdi:coat-rack': 'sand',
+  'mdi:stairs': 'blue',
+  'mdi:washing-machine': 'blue',
+  'mdi:desk': 'blue',
+  'mdi:bed-outline': 'violet',
+  'mdi:shower': 'blue',
+  'mdi:home-roof': 'sand',
+  'mdi:flower-outline': 'teal',
+  'mdi:car-outline': 'sand',
+};
 
 export class RoomCard extends BaseCard<RoomConfig> {
   static styles = [
@@ -17,11 +32,12 @@ export class RoomCard extends BaseCard<RoomConfig> {
         height: 100%;
       }
       .room {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        padding: 12px;
-        min-height: 124px;
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        align-items: center;
+        column-gap: 10px;
+        padding: 8px;
+        min-height: 88px;
         height: 100%;
         border-radius: inherit;
         color: inherit;
@@ -35,44 +51,62 @@ export class RoomCard extends BaseCard<RoomConfig> {
         outline: 1px solid var(--room-accent);
         outline-offset: -1px;
       }
-      .top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        min-width: 0;
-      }
       .icon-box {
-        width: 36px;
-        height: 36px;
-        flex-basis: 36px;
+        width: 44px;
+        height: 64px;
         border-radius: 11px;
       }
       ha-icon {
-        width: 21px;
-        height: 21px;
-        --mdc-icon-size: 21px;
+        width: 24px;
+        height: 24px;
+        --mdc-icon-size: 24px;
+      }
+      .details {
+        min-width: 0;
+        container-type: inline-size;
+      }
+      .short {
+        display: none;
+      }
+      @container (max-width: 100px) {
+        .full {
+          display: none;
+        }
+        .short {
+          display: inline;
+        }
       }
       .temperature {
-        font-size: 14px;
-        font-weight: 600;
-        min-width: 0;
-        overflow-wrap: anywhere;
+        margin-top: 3px;
+        color: var(--room-muted);
+        font-size: 11px;
+        font-style: italic;
+        line-height: 15px;
       }
       h3 {
-        font-size: 15px;
-        line-height: 20px;
-        font-weight: 600;
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 550;
       }
       .status {
+        margin-top: 3px;
         color: var(--room-muted);
-        font-size: 12px;
-        line-height: 17px;
+        font-size: 11px;
+        line-height: 15px;
         overflow-wrap: anywhere;
       }
       .unavailable {
         display: block;
-        font-size: 11px;
+        font-size: 10px;
+      }
+      @media (max-width: 340px) {
+        .room {
+          grid-template-columns: 40px minmax(0, 1fr);
+          gap: 8px;
+        }
+        .icon-box {
+          width: 40px;
+        }
       }
     `,
   ];
@@ -109,31 +143,53 @@ export class RoomCard extends BaseCard<RoomConfig> {
     const c = this.config;
     const summary = roomLights(this.hass, c.lights);
     const text = this.strings;
-    const content = html` <div class="top ${summary.on ? 'active' : ''}">
+    const statusLabel = [
+      summary.on
+        ? text.lightGroupsOn(summary.on)
+        : summary.unavailable
+          ? ''
+          : text.lightingOff,
+      summary.unavailable ? text.unavailableShort(summary.unavailable) : '',
+    ]
+      .filter(Boolean)
+      .join(' · ');
+    const tone =
+      c.icon_tone ??
+      iconTones[c.icon ?? ''] ??
+      (summary.on ? 'teal' : 'neutral');
+    const content = html` <div class="${`tone-${tone}`}">
         <span class="icon-box"
           ><ha-icon
             .icon=${c.icon ?? 'mdi:home-outline'}
             aria-hidden="true"
           ></ha-icon
         ></span>
-        ${c.temperature ? html`<span class="temperature" aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '')}</span>` : nothing}
       </div>
-      <h3 class="name" title=${c.name}>${c.name}</h3>
-      ${
-        c.lights?.length
-          ? html`<p class="status">
-              ${summary.on ? text.lightGroupsOn(summary.on) : summary.unavailable ? nothing : text.lightingOff}
-              ${summary.unavailable ? html`<span class="unavailable">${text.unavailableShort(summary.unavailable)}</span>` : nothing}
-            </p>`
-          : nothing
-      }`;
+      <div class="details">
+        <h3 class="name" title=${c.name}>${c.name}</h3>
+        ${
+          c.lights?.length
+            ? html`<p class="status">
+                <span class="sr-only">${statusLabel}</span>
+                <span class="full" aria-hidden="true"
+                  >${summary.on ? text.lightGroupsOn(summary.on) : summary.unavailable ? nothing : text.lightingOff}</span
+                >
+                <span class="short" aria-hidden="true"
+                  >${summary.on ? `${summary.on} ${text.onLower}` : summary.unavailable ? nothing : text.off}</span
+                >
+                ${summary.unavailable ? html`<span class="unavailable" aria-hidden="true">${text.unavailableShort(summary.unavailable)}</span>` : nothing}
+              </p>`
+            : nothing
+        }
+        ${c.temperature ? html`<p class="temperature" aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '')}</p>` : nothing}
+      </div>`;
     return html`<ha-card
       >${
         c.navigation_path
           ? html`<a
               class="room"
               href=${c.navigation_path}
-              aria-label=${c.name}
+              aria-label=${[c.name, c.lights?.length ? statusLabel : '', c.temperature ? sensorValue(this.hass, c.temperature, '') : ''].filter(Boolean).join(', ')}
               @click=${this.navigate}
               >${content}</a
             >`

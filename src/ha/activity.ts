@@ -116,3 +116,12 @@ export function durationText(minutes: number, language?: string): string {
   const m = `${rest} ${nl ? (rest === 1 ? 'minuut' : 'minuten') : rest === 1 ? 'minute' : 'minutes'}`;
   return hours ? `${h}${rest ? ` ${m}` : ''}` : m;
 }
+
+/** Compact display only; complete elapsed wording remains the accessible label. */
+export function durationCompact(minutes: number, language?: string): string {
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return hours
+    ? `${hours} ${languageOf(language) === 'nl' ? 'u' : 'h'}${rest ? ` ${rest} min` : ''}`
+    : `${rest} min`;
+}

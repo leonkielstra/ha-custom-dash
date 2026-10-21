@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   available,
+  iconOf,
   brightnessPercent,
   brightnessRaw,
   sensorValue,
@@ -65,4 +66,17 @@ it('formats sensor values using the HA locale and preserves their actual unit', 
   expect(sensorValue(hass, 'sensor.missing', '°C')).toBe('—');
   hass.states['sensor.example'] = entity('unknown');
   expect(sensorValue(hass, 'sensor.example', '°C')).toBe('—');
+});
+
+it('prefers explicit icons, otherwise respects entity icons before a neutral default', () => {
+  const light = entity('on', { icon: 'mdi:wall-sconce' });
+  expect(iconOf(light, 'mdi:floor-lamp', 'mdi:lightbulb-outline')).toBe(
+    'mdi:floor-lamp',
+  );
+  expect(iconOf(light, undefined, 'mdi:lightbulb-outline')).toBe(
+    'mdi:wall-sconce',
+  );
+  expect(iconOf(undefined, undefined, 'mdi:lightbulb-outline')).toBe(
+    'mdi:lightbulb-outline',
+  );
 });

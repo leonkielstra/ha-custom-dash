@@ -51,3 +51,9 @@ views:
             cards:
               - type: media-control
                 entity: media_player.example_display
+          - type: custom:home-section-card
+            title: Klimaat
+            cards:
+              - type: custom:home-climate-card
+                entity: climate.example_heating
+                name: Vloerverwarming

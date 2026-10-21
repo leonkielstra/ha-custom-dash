@@ -14,6 +14,7 @@ export interface HomeAssistant {
   ): Promise<unknown>;
   locale?: { language?: string };
   themes?: { darkMode?: boolean };
+  config?: { unit_system?: { temperature?: string } };
 }
 export interface CardConfig {
   type: string;
@@ -53,6 +54,8 @@ export interface SectionConfig extends CardConfig {
   cards: LovelaceCardConfig[];
 }
 export interface DeviceConfig extends CardConfig, EntityItem {}
+export interface ClimateConfig extends CardConfig, EntityItem {}
+export type IconTone = 'teal' | 'sand' | 'blue' | 'violet' | 'neutral';
 
 export interface HeroConfig extends CardConfig {
   temperature: string;
@@ -60,6 +63,7 @@ export interface HeroConfig extends CardConfig {
   sun_entity: string;
   image_day: string;
   image_night: string;
+  weather?: string;
 }
 export interface RoomConfig extends CardConfig {
   name: string;
@@ -67,6 +71,7 @@ export interface RoomConfig extends CardConfig {
   navigation_path?: string;
   temperature?: string;
   lights?: string[];
+  icon_tone?: IconTone;
 }
 export type ApplianceType = 'washer' | 'dryer' | 'oven' | 'dishwasher';
 export interface ApplianceConfig {

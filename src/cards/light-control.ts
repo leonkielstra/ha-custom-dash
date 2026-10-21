@@ -3,6 +3,7 @@ import { BaseCard } from '../ui/base-card';
 import { lightConfig } from '../ha/config';
 import {
   available,
+  iconOf,
   brightnessRaw,
   entityStatus,
   lightValue,
@@ -20,24 +21,24 @@ export class LightControlCard extends BaseCard<LightConfig> {
     BaseCard.styles,
     css`
       ha-card {
-        padding: 10px 12px;
+        padding: 8px 12px;
       }
       .row {
         display: grid;
-        grid-template-columns: 44px minmax(0, 1fr) 44px;
-        grid-template-rows: 44px 32px;
+        grid-template-columns: 48px minmax(0, 1fr) 44px;
+        grid-template-rows: 44px 28px;
         grid-template-areas:
           'icon details toggle'
           'icon slider slider';
-        gap: 0 10px;
+        gap: 0 12px;
         align-items: center;
       }
       .icon-box {
         grid-area: icon;
         align-self: center;
-        width: 44px;
-        height: 44px;
-        flex-basis: 44px;
+        width: 48px;
+        height: 64px;
+        flex-basis: 48px;
         border-radius: 12px;
       }
       .icon-box ha-icon {
@@ -51,12 +52,12 @@ export class LightControlCard extends BaseCard<LightConfig> {
         padding: 0;
       }
       .label .name {
-        font-size: 14px;
+        font-size: var(--room-label-size);
         line-height: 1.35;
-        font-weight: 560;
+        font-weight: 550;
       }
       .state {
-        font-size: 12px;
+        font-size: var(--room-meta-size);
         color: var(--room-muted);
         line-height: 1.35;
         white-space: nowrap;
@@ -79,8 +80,8 @@ export class LightControlCard extends BaseCard<LightConfig> {
       }
       .switch-track {
         position: relative;
-        width: 34px;
-        height: 20px;
+        width: 36px;
+        height: 22px;
         border-radius: 999px;
         background: var(--room-secondary);
       }
@@ -88,8 +89,8 @@ export class LightControlCard extends BaseCard<LightConfig> {
         position: absolute;
         top: 3px;
         left: 3px;
-        width: 14px;
-        height: 14px;
+        width: 16px;
+        height: 16px;
         border-radius: 50%;
         background: var(--room-muted);
         content: '';
@@ -98,25 +99,25 @@ export class LightControlCard extends BaseCard<LightConfig> {
         color: var(--room-text);
       }
       .toggle[aria-pressed='true'] .switch-track {
-        background: var(--room-accent);
+        background: var(--room-control);
       }
       .toggle[aria-pressed='true'] .switch-track::after {
         transform: translateX(14px);
-        background: var(--room-surface);
+        background: #fffdf8;
       }
       input {
         grid-area: slider;
         width: 100%;
         margin: 0;
         min-width: 0;
-        height: 32px;
+        height: 28px;
         appearance: none;
         background: transparent;
         touch-action: pan-y;
         cursor: pointer;
       }
       input::-webkit-slider-runnable-track {
-        height: 6px;
+        height: 8px;
         border-radius: 8px;
         background: linear-gradient(
           to right,
@@ -125,30 +126,30 @@ export class LightControlCard extends BaseCard<LightConfig> {
         );
       }
       input::-moz-range-track {
-        height: 6px;
+        height: 8px;
         border-radius: 8px;
         background: var(--room-secondary);
       }
       input::-moz-range-progress {
-        height: 6px;
+        height: 8px;
         border-radius: 8px;
         background: var(--range-color, var(--room-accent));
       }
       input::-webkit-slider-thumb {
         appearance: none;
-        width: 20px;
-        height: 20px;
-        margin-top: -7px;
-        border: 2px solid var(--room-surface);
+        width: 18px;
+        height: 18px;
+        margin-top: -5px;
+        border: 1px solid var(--room-control);
         border-radius: 50%;
-        background: var(--range-color, var(--room-accent));
+        background: #fffdf8;
       }
       input::-moz-range-thumb {
         width: 16px;
         height: 16px;
-        border: 2px solid var(--room-surface);
+        border: 1px solid var(--room-control);
         border-radius: 50%;
-        background: var(--range-color, var(--room-accent));
+        background: #fffdf8;
       }
       input:disabled {
         opacity: 0.65;
@@ -297,7 +298,7 @@ export class LightControlCard extends BaseCard<LightConfig> {
       <div class="row">
         <div class="icon-box">
           <ha-icon
-            .icon=${this.config.icon ?? 'mdi:lightbulb-outline'}
+            .icon=${iconOf(entity, this.config.icon, 'mdi:lightbulb-outline')}
             aria-hidden="true"
           ></ha-icon>
         </div>
@@ -315,7 +316,7 @@ export class LightControlCard extends BaseCard<LightConfig> {
           <span class="switch-track" aria-hidden="true"></span>
         </button>
         <input
-          style=${`--range-fill: ${current.on && dimmable ? percent : 0}%; --range-color: ${current.on && dimmable ? 'var(--room-accent)' : 'var(--room-muted)'}`}
+          style=${`--range-fill: ${current.on && dimmable ? percent : 0}%; --range-color: ${current.on && dimmable ? 'var(--room-control)' : 'var(--room-muted)'}`}
           type="range"
           min="1"
           max="100"

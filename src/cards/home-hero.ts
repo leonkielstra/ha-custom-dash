@@ -2,6 +2,7 @@ import { css, html, nothing } from 'lit';
 import { BaseCard } from '../ui/base-card';
 import { heroConfig } from '../ha/config';
 import { sensorValue } from '../ha/entities';
+import { weatherLabel } from '../ha/weather';
 import type { HeroConfig } from '../ha/types';
 
 export class HomeHeroCard extends BaseCard<HeroConfig> {
@@ -13,8 +14,9 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
         display: grid;
         grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
         align-items: center;
-        gap: 16px;
+        gap: 12px;
         padding: 12px 16px;
+        background: var(--room-hero-surface);
         min-height: 156px;
       }
       .illustration {
@@ -41,19 +43,55 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
         gap: 12px;
         min-width: 0;
       }
-      dl > div {
+      dl > div:not(.outdoor) {
         display: flex;
         flex-direction: column-reverse;
       }
       dt {
-        font-size: 12px;
+        font-size: 13px;
+        color: var(--room-text);
+        font-weight: 550;
+      }
+      .outdoor {
+        border-top: 1px solid var(--room-border);
+        padding-top: 12px;
+      }
+      .outdoor .reading {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        align-items: baseline;
+        gap: 5px;
+      }
+      .outdoor dd {
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0;
+      }
+      .outdoor dt {
+        font-size: 11px;
         color: var(--room-muted);
+        font-weight: 400;
+      }
+      .weather {
+        font-size: 11px;
+        color: var(--room-muted);
+        margin-top: 3px;
+      }
+      @media (max-width: 340px) {
+        ha-card {
+          padding: 12px;
+          gap: 8px;
+        }
+        dd {
+          font-size: 26px;
+        }
       }
       dd {
         margin: 0;
-        font-size: clamp(20px, 5vw, 25px);
+        font-size: 28px;
         line-height: 1.2;
-        font-weight: 620;
+        font-weight: 600;
         letter-spacing: -0.5px;
         overflow-wrap: anywhere;
       }
@@ -74,6 +112,7 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
           this.config.temperature,
           this.config.outdoor_temperature,
           this.config.sun_entity,
+          ...(this.config.weather ? [this.config.weather] : []),
         ]
       : [];
   }
@@ -119,11 +158,14 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
           <dt>${text.indoors}</dt>
           <dd>${sensorValue(this.hass, this.config.temperature, '')}</dd>
         </div>
-        <div>
-          <dt>${text.outdoors}</dt>
-          <dd>
-            ${sensorValue(this.hass, this.config.outdoor_temperature, '')}
-          </dd>
+        <div class="outdoor">
+          <div class="reading">
+            <dt>${text.outdoors}</dt>
+            <dd>
+              ${sensorValue(this.hass, this.config.outdoor_temperature, '')}
+            </dd>
+          </div>
+          ${this.config.weather ? html`<p class="weather">${weatherLabel(this.hass?.states[this.config.weather], this.hass?.locale?.language)}</p>` : nothing}
         </div>
       </dl>
     </ha-card>`;

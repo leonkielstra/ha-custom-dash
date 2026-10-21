@@ -1,7 +1,7 @@
 import { css, html, nothing } from 'lit';
 import { BaseCard } from '../ui/base-card';
 import { deviceConfig } from '../ha/config';
-import { available, entityStatus, nameOf } from '../ha/entities';
+import { available, entityStatus, nameOf, iconOf } from '../ha/entities';
 import type { DeviceConfig } from '../ha/types';
 const TURN_ON = 128;
 const TURN_OFF = 256;
@@ -15,14 +15,30 @@ export class DeviceCard extends BaseCard<DeviceConfig> {
         display: flex;
         align-items: center;
         gap: 12px;
-        padding: 12px;
+        padding: 10px 12px;
+        min-height: 76px;
+      }
+      .icon-box {
+        width: 48px;
+        height: 52px;
+        flex-basis: 48px;
+      }
+      .name {
+        font-size: var(--room-label-size);
+        font-weight: 550;
+      }
+      .muted {
+        font-size: var(--room-meta-size);
+        margin-top: 3px;
       }
       .details {
         flex: 1;
         min-width: 0;
       }
       button {
-        color: var(--room-accent);
+        color: var(--room-text);
+        background: var(--room-secondary);
+        border-radius: 50%;
       }
       .error {
         padding: 8px 12px;
@@ -74,7 +90,7 @@ export class DeviceCard extends BaseCard<DeviceConfig> {
     return html`<ha-card class=${playing ? 'active' : ''}>
         <div class="icon-box">
           <ha-icon
-            .icon=${this.config.icon ?? 'mdi:television'}
+            .icon=${iconOf(entity, this.config.icon, 'mdi:television')}
             aria-hidden="true"
           ></ha-icon>
         </div>
