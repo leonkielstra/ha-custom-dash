@@ -7,7 +7,7 @@ views:
     path: home
     icon: mdi:home-outline
     type: sections
-    max_columns: 1
+    max_columns: 3
     sections:
       - type: grid
         cards:

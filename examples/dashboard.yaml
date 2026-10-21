@@ -7,7 +7,7 @@ views:
     path: home
     icon: mdi:home-outline
     type: sections
-    max_columns: 1
+    max_columns: 3
     sections:
       - type: grid
         cards:
@@ -193,9 +193,12 @@ views:
   - title: Woonkamer
     path: woonkamer
     icon: mdi:sofa-outline
-    type: masonry
-    cards:
-      - type: vertical-stack
+    type: sections
+    subview: true
+    max_columns: 2
+    sections:
+      - type: grid
+        column_span: 2
         cards:
           - type: custom:home-room-header-card
             icon: mdi:sofa-outline
@@ -219,6 +222,9 @@ views:
               - entity: scene.example_film
                 name: Film
                 icon: mdi:movie-open-outline
+      - type: grid
+        column_span: 2
+        cards:
           - type: custom:home-room-lighting-card
             title: Verlichting
             lights:
@@ -234,23 +240,26 @@ views:
                 icon: mdi:floor-lamp
               - entity: light.example_accent
                 name: Sfeerlampen
+      - type: grid
+        cards:
           - type: custom:home-section-card
             title: Media
             cards:
               - type: media-control
                 entity: media_player.example_display
+      - type: grid
+        cards:
           - type: custom:home-section-card
             title: Klimaat
             cards:
               - type: custom:home-climate-card
                 entity: climate.example_heating
                 name: Vloerverwarming
-    subview: true
   - title: Keuken
     path: keuken
     icon: mdi:countertop-outline
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -276,11 +285,12 @@ views:
               - entity: light.example_home_10
               - entity: light.example_home_11
               - entity: light.example_home_12
+        column_span: 2
   - title: Bijkeuken
     path: bijkeuken
     icon: mdi:door-open
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -292,7 +302,7 @@ views:
     path: entree
     icon: mdi:coat-rack
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -303,7 +313,7 @@ views:
     path: overloop
     icon: mdi:stairs
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -318,11 +328,12 @@ views:
             slider_live_update: true
             lights:
               - entity: light.example_home_13
+        column_span: 2
   - title: Washok
     path: washok
     icon: mdi:washing-machine
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -334,7 +345,7 @@ views:
     path: kantoor
     icon: mdi:desk
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -352,11 +363,12 @@ views:
               - entity: light.example_home_14
               - entity: light.example_home_15
               - entity: light.example_home_16
+        column_span: 2
   - title: Slaapkamer
     path: slaapkamer
     icon: mdi:bed-outline
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -375,11 +387,12 @@ views:
               - entity: light.example_home_17
               - entity: light.example_home_18
               - entity: light.example_home_19
+        column_span: 2
   - title: Badkamer
     path: badkamer
     icon: mdi:shower
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -394,11 +407,12 @@ views:
             slider_live_update: true
             lights:
               - entity: light.example_home_20
+        column_span: 2
   - title: Zolder
     path: zolder
     icon: mdi:home-roof
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -410,7 +424,7 @@ views:
     path: achtertuin
     icon: mdi:flower-outline
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -424,11 +438,12 @@ views:
             slider_live_update: true
             lights:
               - entity: light.example_home_21
+        column_span: 2
   - title: Oprit
     path: oprit
     icon: mdi:car-outline
     type: sections
-    max_columns: 1
+    max_columns: 2
     subview: true
     sections:
       - type: grid
@@ -444,3 +459,4 @@ views:
             lights:
               - entity: light.example_home_22
               - entity: light.example_home_23
+        column_span: 2

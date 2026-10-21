@@ -28,8 +28,13 @@ export abstract class BaseCard<C extends CardConfig> extends LitElement {
   getCardSize() {
     return 2;
   }
-  getGridOptions() {
-    return { columns: 12, min_columns: 6, rows: 'auto' };
+  getGridOptions(): {
+    columns: number | 'full';
+    min_columns: number;
+    rows: string;
+  } {
+    // A widened Sections section has 24+ cells. Twelve only fills half of it.
+    return { columns: 'full', min_columns: 6, rows: 'auto' };
   }
   protected shouldUpdate(changes: PropertyValues): boolean {
     if (changes.size !== 1 || !changes.has('hass')) return true;

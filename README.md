@@ -36,6 +36,12 @@ For comparison with `images/mockup-1.png`, open `/?reference=1` for the five-lig
 room composition or `/preview/home.html?reference=1` for washer/oven activity.
 These use the same production components, with fictional preview entities.
 
+Open <http://127.0.0.1:5173/preview/sections.html> to check desktop/mobile section
+placement. This mock host applies section spans and each card's `getGridOptions()`
+to reproduce width allocation. It is not the full Home Assistant frontend.
+The Phone/Wide selector in the original preview only changes its container width;
+it does not configure the installed Lovelace view.
+
 ```sh
 npm run check             # TypeScript, ESLint, formatting, unit tests, production build
 npx playwright install chromium
@@ -70,6 +76,36 @@ copy the file to `<config>/themes/home-room.yaml`, reload themes, and select
 **Home Room**. Both light and dark modes are included. This aligns native heading
 sizes, section gaps and surfaces through HA theme variables, without card-mod.
 
+### Responsive dashboard layout
+
+Use the updated [complete dashboard](examples/dashboard.yaml),
+[Home view](examples/home.yaml), or [living room view](examples/living-room.yaml).
+Home allows three section columns. Room views allow two, and sections containing
+lighting span both columns. Home Assistant reduces section spans on mobile.
+The theme's 430px limit applies to each column, not to the entire desktop view.
+
+Increasing `max_columns` alone does not widen a single section. For example:
+
+```yaml
+type: sections
+max_columns: 2
+sections:
+  - type: grid
+    column_span: 2
+    cards:
+      - type: custom:home-room-lighting-card
+        lights:
+          - entity: light.example_ceiling
+```
+
+Summary and control cards fill their section by default, including widened
+sections. Room shortcuts retain their half-section defaults. HA's `grid_options`
+can override card sizing explicitly. Lighting uses two internal columns once its
+available content width reaches 600px. Keep room content in native sections rather
+than one outer vertical stack, which prevents independent layout placement.
+Existing dashboards need these YAML layout changes; updating the JavaScript
+resource alone does not rewrite dashboard configuration.
+
 To upgrade, download the new release in HACS and reload the browser. If an old
 version remains cached, perform a hard reload and check for duplicate resources.
 
@@ -80,7 +116,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.5.0
+url: /local/ha-custom-dash.js?v=0.5.1
 type: module
 ```
 

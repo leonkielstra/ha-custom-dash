@@ -107,6 +107,18 @@ Ship a full public example with Home and twelve room views using fictional IDs.
 Private missing room views use only the explicit confirmed temperature/light
 lists; existing views are preserved, with no invented climate/media bindings.
 
+## Responsive Sections correction
+
+Use native Sections for room views as well as Home. Allow three columns on Home
+and two on room views; lighting sections span two columns and collapse on mobile.
+Keep the 430px theme limit per column. Summary/control cards request `columns:
+full`, since a fixed twelve cells occupies only half of a two-column section.
+Room shortcuts retain six cells. Group the private fan popup with its trigger
+inside the same native section so it cannot reserve a separate view column.
+Keep the popup in its own native card slot so it can hide that slot independently.
+The Sections fixture preview exercises card metadata and section spans, alongside
+the existing isolated component previews. It does not replace live HA verification.
+
 ## Verification limits
 
 Local browser tests use a mock `hass` object and cannot verify Home Assistant

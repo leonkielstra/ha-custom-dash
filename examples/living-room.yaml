@@ -1,13 +1,16 @@
 # All entity IDs and names are fictional. Replace them with your own entities.
 # Install the bundled resource before configuring this view.
+---
 title: Thuis
 views:
   - title: Woonkamer
     path: woonkamer
     icon: mdi:sofa-outline
-    type: masonry
-    cards:
-      - type: vertical-stack
+    type: sections
+    max_columns: 2
+    sections:
+      - type: grid
+        column_span: 2
         cards:
           - type: custom:home-room-header-card
             icon: mdi:sofa-outline
@@ -31,6 +34,9 @@ views:
               - entity: scene.example_film
                 name: Film
                 icon: mdi:movie-open-outline
+      - type: grid
+        column_span: 2
+        cards:
           - type: custom:home-room-lighting-card
             title: Verlichting
             lights:
@@ -46,11 +52,15 @@ views:
                 icon: mdi:floor-lamp
               - entity: light.example_accent
                 name: Sfeerlampen
+      - type: grid
+        cards:
           - type: custom:home-section-card
             title: Media
             cards:
               - type: media-control
                 entity: media_player.example_display
+      - type: grid
+        cards:
           - type: custom:home-section-card
             title: Klimaat
             cards:

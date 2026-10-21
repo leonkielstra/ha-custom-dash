@@ -1,0 +1,50 @@
+/* Mirrors Sections' span/grid sizing for fixture checks, not the full HA shell. */
+body[data-theme='dark'] {
+  background: #141414;
+  color: #f2f2f2;
+}
+body[data-theme='light'] {
+  background: #f7f5ef;
+  color: #242a27;
+}
+.sections-host {
+  container-type: inline-size;
+  padding: 16px;
+}
+.sections-view {
+  --columns: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: 24px 32px;
+  max-width: 430px;
+  margin: 0 auto;
+  align-items: start;
+}
+.layout-section {
+  --span: min(var(--requested-span, 1), var(--columns));
+  display: grid;
+  grid-column: span var(--span);
+  grid-template-columns: repeat(calc(12 * var(--span)), minmax(0, 1fr));
+  gap: 8px;
+  min-width: 0;
+}
+.layout-section > h2 {
+  grid-column: 1 / -1;
+  font-size: 16px;
+  margin: 0 0 4px;
+}
+.layout-card {
+  min-width: 0;
+}
+@container (min-width: 672px) {
+  .sections-view {
+    --columns: 2;
+    max-width: 892px;
+  }
+}
+@container (min-width: 1024px) {
+  .home-layout {
+    --columns: 3;
+    max-width: 1354px;
+  }
+}
