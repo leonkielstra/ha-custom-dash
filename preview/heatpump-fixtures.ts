@@ -1,0 +1,3096 @@
+// Fictional public fixtures. Values and chart traces are illustrative, not live HA data.
+import type { HomeAssistant } from '../src/ha/types';
+export interface HeatPumpPreviewView {
+  [key: string]: unknown;
+  title: string;
+  path: string;
+  sections: {
+    [key: string]: unknown;
+    column_span: number;
+    cards: Record<string, unknown>[];
+  }[];
+}
+export const dashboard: { title: string; views: HeatPumpPreviewView[] } = {
+  title: 'Warmtepomp',
+  views: [
+    {
+      title: 'Overzicht',
+      path: 'overzicht',
+      icon: 'mdi:heat-pump-outline',
+      type: 'sections',
+      max_columns: 3,
+      dense_section_placement: false,
+      sections: [
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Nu en comfort',
+              icon: 'mdi:home-thermometer-outline',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_0',
+                  state: 'off',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Systeemcontroller offline.** Bekijk Diagnose; meetwaarden kunnen achterlopen.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_1',
+                  state: 'off',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Buitenunit offline.** Bekijk Diagnose; meetwaarden kunnen achterlopen.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_2',
+                  state: 'off',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Kamerregeling offline.** Bekijk Diagnose; binnencomfort kan onvolledig zijn.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_3',
+                  state: 'on',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Storing gemeld.** De storingsvergrendeling is actief. Zie Diagnose.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_4',
+                  state: 'on',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content: '**Externe vergrendeling actief.** Zie Diagnose.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_5',
+                  state: 'on',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Elektrische bijverwarming actief.** Bekijk de werking in Diagnose als dit onverwacht is.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-heat-pump-status-card',
+              entity: 'sensor.example_heat_pump_6',
+              mode_entity: 'sensor.example_heat_pump_7',
+              operating_entity: 'sensor.example_heat_pump_8',
+              operating_states: ['heating'],
+              heating_states: ['climateCircuitOne'],
+              hot_water_states: ['domesticHotWater'],
+              compressor: 'binary_sensor.example_heat_pump_9',
+              fan_speed: 'sensor.example_heat_pump_10',
+              electric_power: 'sensor.example_heat_pump_11',
+              outdoor_temperature: 'sensor.example_heat_pump_12',
+              auxiliary_heating: 'binary_sensor.example_heat_pump_5',
+              controller_online: 'binary_sensor.example_heat_pump_0',
+              outdoor_online: 'binary_sensor.example_heat_pump_1',
+              fault_entity: 'binary_sensor.example_heat_pump_3',
+              external_lock: 'binary_sensor.example_heat_pump_4',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_13',
+                  name: 'Binnen',
+                  icon: 'mdi:home-thermometer-outline',
+                  secondary_entity: 'sensor.example_heat_pump_14',
+                  secondary_name: 'Gewenst',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_12',
+                  name: 'Buiten',
+                  icon: 'mdi:weather-partly-cloudy',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_15',
+                  name: 'Warmwater',
+                  icon: 'mdi:water-thermometer',
+                  secondary_entity: 'sensor.example_heat_pump_16',
+                  secondary_name: 'Doel',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_17',
+                  name: 'Aanvoer',
+                  icon: 'mdi:heating-coil',
+                  secondary_entity: 'sensor.example_heat_pump_18',
+                  secondary_name: 'Retour',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Vandaag',
+              layout: 'panel',
+              columns: 2,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_19',
+                  name: 'Verwarming',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_20',
+                  name: 'Warmwater',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_21',
+                  name: 'Compressorstarts',
+                  precision: 0,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_22',
+                  name: 'Compressor',
+                  format: 'duration_hours',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_23',
+                  name: 'Gem. looptijd',
+                  precision: 0,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_24',
+                  name: 'Kosten · vast tarief',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'screen',
+                  media_query: '(max-width: 1099px)',
+                },
+              ],
+              card: {
+                type: 'custom:apexcharts-card',
+                header: {
+                  show: true,
+                  title: 'Binnencomfort · 24 uur',
+                  show_states: false,
+                  colorize_states: false,
+                },
+                graph_span: '24h',
+                update_interval: '5min',
+                apex_config: {
+                  chart: {
+                    height: 180,
+                    toolbar: {
+                      show: false,
+                    },
+                    background: 'transparent',
+                    foreColor: 'var(--secondary-text-color)',
+                  },
+                  legend: {
+                    show: true,
+                    position: 'bottom',
+                    fontSize: '12px',
+                  },
+                  grid: {
+                    borderColor: 'var(--divider-color)',
+                  },
+                  markers: {
+                    size: 0,
+                  },
+                },
+                series: [
+                  {
+                    entity: 'sensor.example_heat_pump_13',
+                    name: 'Binnen',
+                    color: 'var(--primary-color)',
+                    curve: 'straight',
+                    stroke_width: 2,
+                    group_by: {
+                      func: 'avg',
+                      duration: '10min',
+                    },
+                  },
+                  {
+                    entity: 'sensor.example_heat_pump_14',
+                    name: 'Gewenst',
+                    color: '#D69A45',
+                    curve: 'stepline',
+                    stroke_width: 2,
+                    group_by: {
+                      func: 'last',
+                      duration: '10min',
+                    },
+                    stroke_dash: 5,
+                  },
+                  {
+                    entity: 'sensor.example_heat_pump_25',
+                    name: 'Referentie',
+                    color: '#9BA3AF',
+                    curve: 'straight',
+                    stroke_width: 2,
+                    group_by: {
+                      func: 'avg',
+                      duration: '10min',
+                    },
+                  },
+                ],
+                grid_options: {
+                  columns: 'full',
+                },
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-system-health-card',
+              items: [
+                {
+                  entity: 'binary_sensor.example_heat_pump_0',
+                  name: 'Systeemcontroller',
+                  updated: 'sensor.example_heat_pump_26',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_1',
+                  name: 'Buitenunit',
+                  updated: 'sensor.example_heat_pump_27',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_2',
+                  name: 'Kamerregeling',
+                  updated: 'sensor.example_heat_pump_28',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Energie en rendement',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_29',
+                  name: 'Verwarming · 7 dagen',
+                  precision: 2,
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 2,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Werking en trends',
+              icon: 'mdi:chart-line',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-heat-flow-card',
+              entity: 'sensor.example_heat_pump_6',
+              mode_entity: 'sensor.example_heat_pump_7',
+              operating_entity: 'sensor.example_heat_pump_8',
+              operating_states: ['heating'],
+              heating_states: ['climateCircuitOne'],
+              hot_water_states: ['domesticHotWater'],
+              compressor: 'binary_sensor.example_heat_pump_9',
+              fan_speed: 'sensor.example_heat_pump_10',
+              electric_power: 'sensor.example_heat_pump_11',
+              outdoor_temperature: 'sensor.example_heat_pump_12',
+              auxiliary_heating: 'binary_sensor.example_heat_pump_5',
+              controller_online: 'binary_sensor.example_heat_pump_0',
+              outdoor_online: 'binary_sensor.example_heat_pump_1',
+              fault_entity: 'binary_sensor.example_heat_pump_3',
+              external_lock: 'binary_sensor.example_heat_pump_4',
+              supply_temperature: 'sensor.example_heat_pump_17',
+              return_temperature: 'sensor.example_heat_pump_18',
+              temperature_difference: 'sensor.example_heat_pump_30',
+              pressure: 'sensor.example_heat_pump_31',
+              water_temperature: 'sensor.example_heat_pump_15',
+              water_target: 'sensor.example_heat_pump_16',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'screen',
+                  media_query: '(min-width: 1100px)',
+                },
+              ],
+              card: {
+                type: 'custom:apexcharts-card',
+                header: {
+                  show: true,
+                  title: 'Binnencomfort · 24 uur',
+                  show_states: false,
+                  colorize_states: false,
+                },
+                graph_span: '24h',
+                update_interval: '5min',
+                apex_config: {
+                  chart: {
+                    height: 180,
+                    toolbar: {
+                      show: false,
+                    },
+                    background: 'transparent',
+                    foreColor: 'var(--secondary-text-color)',
+                  },
+                  legend: {
+                    show: true,
+                    position: 'bottom',
+                    fontSize: '12px',
+                  },
+                  grid: {
+                    borderColor: 'var(--divider-color)',
+                  },
+                  markers: {
+                    size: 0,
+                  },
+                },
+                series: [
+                  {
+                    entity: 'sensor.example_heat_pump_13',
+                    name: 'Binnen',
+                    color: 'var(--primary-color)',
+                    curve: 'straight',
+                    stroke_width: 2,
+                    group_by: {
+                      func: 'avg',
+                      duration: '10min',
+                    },
+                  },
+                  {
+                    entity: 'sensor.example_heat_pump_14',
+                    name: 'Gewenst',
+                    color: '#D69A45',
+                    curve: 'stepline',
+                    stroke_width: 2,
+                    group_by: {
+                      func: 'last',
+                      duration: '10min',
+                    },
+                    stroke_dash: 5,
+                  },
+                  {
+                    entity: 'sensor.example_heat_pump_25',
+                    name: 'Referentie',
+                    color: '#9BA3AF',
+                    curve: 'straight',
+                    stroke_width: 2,
+                    group_by: {
+                      func: 'avg',
+                      duration: '10min',
+                    },
+                  },
+                ],
+                grid_options: {
+                  columns: 'full',
+                },
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Elektrisch en thermisch vermogen · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 180,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_11',
+                  name: 'Elektrisch',
+                  color: '#D69A45',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_6',
+                  name: 'Thermisch',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'history-graph',
+              title: 'Bedrijf · 24 uur',
+              hours_to_show: 24,
+              entities: [
+                {
+                  entity: 'binary_sensor.example_heat_pump_9',
+                  name: 'Compressor',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_5',
+                  name: 'Bijverwarming',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_7',
+                  name: 'Warmtebestemming',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              columns: 2,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_29',
+                  name: 'Rendement verwarming · 7 dagen',
+                  precision: 2,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_31',
+                  name: 'Systeemdruk',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                '**Meer detail:** Afstelling toont comfort en pendelgedrag, Warmwater toont opslag en doeltemperatuur, Energie toont verbruik en rendement, Diagnose bevat alle componentwaarden. Ophaaltijd is niet de oorspronkelijke meettijd.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Afstelling',
+      path: 'afstelling',
+      icon: 'mdi:tune-vertical',
+      type: 'sections',
+      max_columns: 3,
+      dense_section_placement: false,
+      sections: [
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Comfort en stooklijn',
+              icon: 'mdi:home-thermometer',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              layout: 'strip',
+              columns: 3,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_32',
+                  name: 'Helling',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_33',
+                  name: 'Verschuiving',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_34',
+                  name: 'Afwijking',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Actueel comfort',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_13',
+                  name: 'Binnen',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_14',
+                  name: 'Gewenst',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_25',
+                  name: 'Referentietemperatuur',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_34',
+                  name: 'Afwijking',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'sensor.example_heat_pump_35',
+                  state_not: 'unknown',
+                },
+                {
+                  condition: 'state',
+                  entity: 'sensor.example_heat_pump_35',
+                  state_not: 'unavailable',
+                },
+              ],
+              card: {
+                type: 'custom:home-metric-card',
+                columns: 1,
+                items: [
+                  {
+                    entity: 'sensor.example_heat_pump_35',
+                    name: 'Luchtvochtigheid',
+                  },
+                ],
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Binnencomfort · 7 dagen',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '7d',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 230,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_13',
+                  name: 'Binnen',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '1h',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_14',
+                  name: 'Gewenst',
+                  color: '#D69A45',
+                  curve: 'stepline',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'last',
+                    duration: '1h',
+                  },
+                  stroke_dash: 5,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_25',
+                  name: 'Referentie',
+                  color: '#9BA3AF',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '1h',
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Temperatuurafwijking en buiten · 7 dagen',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '7d',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 220,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+                annotations: {
+                  yaxis: [
+                    {
+                      y: 0,
+                      yAxisIndex: 0,
+                      borderColor: '#9BA3AF',
+                      strokeDashArray: 4,
+                      label: {
+                        text: 'Op doel',
+                      },
+                    },
+                  ],
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_34',
+                  name: 'Afwijking',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '1h',
+                  },
+                  yaxis_id: 'afwijking',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_12',
+                  name: 'Buiten',
+                  color: '#7A9DBA',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '1h',
+                  },
+                  yaxis_id: 'buiten',
+                },
+              ],
+              yaxis: [
+                {
+                  id: 'afwijking',
+                  decimals: 1,
+                  apex_config: {
+                    title: {
+                      text: 'Afwijking · °C',
+                    },
+                  },
+                },
+                {
+                  id: 'buiten',
+                  opposite: true,
+                  decimals: 0,
+                  apex_config: {
+                    title: {
+                      text: 'Buiten · °C',
+                    },
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                'Instellingen zijn **alleen uitleesbaar**. Vergelijk meerdere dagen met vergelijkbare buitentemperaturen. Warmwaterbedrijf, ontdooicycli en zoninstraling kunnen het temperatuurverloop beïnvloeden; een oorzaak wordt hier niet automatisch vastgesteld.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Aanvoer en regeling',
+              icon: 'mdi:heating-coil',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              columns: 2,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_17',
+                  name: 'Aanvoer',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_18',
+                  name: 'Retour',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_30',
+                  name: 'Temperatuurverschil',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_12',
+                  name: 'Buiten',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Verwarmingscircuit · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 220,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_17',
+                  name: 'Aanvoer',
+                  color: '#D69A45',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                  yaxis_id: 'water',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_18',
+                  name: 'Retour',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                  yaxis_id: 'water',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_12',
+                  name: 'Buiten',
+                  color: '#7A9DBA',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                  yaxis_id: 'buiten',
+                },
+              ],
+              yaxis: [
+                {
+                  id: 'water',
+                  decimals: 0,
+                  apex_config: {
+                    title: {
+                      text: 'Water · °C',
+                    },
+                  },
+                },
+                {
+                  id: 'buiten',
+                  opposite: true,
+                  decimals: 0,
+                  apex_config: {
+                    title: {
+                      text: 'Buiten · °C',
+                    },
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Aanvoer, retour en buiten · 72 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '72h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 240,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_17',
+                  name: 'Aanvoer',
+                  color: '#D69A45',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '15min',
+                  },
+                  yaxis_id: 'water',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_18',
+                  name: 'Retour',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '15min',
+                  },
+                  yaxis_id: 'water',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_12',
+                  name: 'Buiten',
+                  color: '#7A9DBA',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '15min',
+                  },
+                  yaxis_id: 'buiten',
+                },
+              ],
+              yaxis: [
+                {
+                  id: 'water',
+                  decimals: 0,
+                  apex_config: {
+                    title: {
+                      text: 'Water · °C',
+                    },
+                  },
+                },
+                {
+                  id: 'buiten',
+                  opposite: true,
+                  decimals: 0,
+                  apex_config: {
+                    title: {
+                      text: 'Buiten · °C',
+                    },
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Bedrijf en regeling',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_36',
+                  name: 'Verwarmingsmodus',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_37',
+                  name: 'Verwarmingsprogramma',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_8',
+                  name: 'Bedrijfsstatus',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_38',
+                  name: 'Compressorfase',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_5',
+                  name: 'Elektrische bijverwarming',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_30',
+                  name: 'Verschil aanvoer/retour',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_31',
+                  name: 'Systeemdruk',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_10',
+                  name: 'Ventilator',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Compressor en pendelgedrag',
+              icon: 'mdi:engine',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              layout: 'strip',
+              columns: 3,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_21',
+                  name: 'Starts vandaag',
+                  precision: 0,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_22',
+                  name: 'Draaiuren vandaag',
+                  format: 'duration_hours',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_23',
+                  name: 'Gemiddelde looptijd',
+                  precision: 0,
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Compressorfase',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_38',
+                  name: 'Compressorfase',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'history-graph',
+              title: 'Compressor en bijverwarming · 24 uur',
+              hours_to_show: 24,
+              entities: [
+                {
+                  entity: 'binary_sensor.example_heat_pump_9',
+                  name: 'Compressor',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_5',
+                  name: 'Bijverwarming',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Modulatie en elektrisch vermogen · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 240,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_39',
+                  name: 'Toerental',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '5min',
+                  },
+                  yaxis_id: 'rpm',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_40',
+                  name: 'Gewenst toerental',
+                  color: '#9BA3AF',
+                  curve: 'stepline',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'last',
+                    duration: '5min',
+                  },
+                  yaxis_id: 'rpm',
+                  stroke_dash: 5,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_11',
+                  name: 'Elektrisch vermogen',
+                  color: '#D69A45',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '5min',
+                  },
+                  yaxis_id: 'power',
+                },
+              ],
+              yaxis: [
+                {
+                  id: 'rpm',
+                  decimals: 0,
+                  apex_config: {
+                    title: {
+                      text: 'Toerental · rpm',
+                    },
+                  },
+                },
+                {
+                  id: 'power',
+                  opposite: true,
+                  decimals: 2,
+                  min: 0,
+                  apex_config: {
+                    title: {
+                      text: 'Elektrisch · kW',
+                    },
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'statistics-graph',
+              title: 'Compressorstarts per dag · 14 dagen',
+              days_to_show: 14,
+              period: 'day',
+              chart_type: 'bar',
+              stat_types: ['change'],
+              entities: [
+                {
+                  entity: 'sensor.example_heat_pump_41',
+                  name: 'Starts',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                'Starts per dag vereisen langetermijnstatistieken van de cumulatieve teller. Controleer bij ontbrekende balken de state_class en statistiekbeschikbaarheid. Dagelijkse starts en looptijden zijn benaderingen bij afgeronde of minder frequent opgehaalde API-tellers. Deze configuratie maakt geen helpers aan.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Warmwater',
+      path: 'warmwater',
+      icon: 'mdi:water-thermometer-outline',
+      type: 'sections',
+      max_columns: 3,
+      dense_section_placement: false,
+      sections: [
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Opslag en doel',
+              icon: 'mdi:water-thermometer',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              columns: 2,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_15',
+                  name: 'Warmwatertemperatuur',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_16',
+                  name: 'Ingesteld',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Warmwateropslag',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_15',
+                  name: 'Warmwatertemperatuur',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_16',
+                  name: 'Ingesteld',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_42',
+                  name: 'Hygiëneprogramma',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Warmtebestemming',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_7',
+                  name: 'Driewegklep',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_8',
+                  name: 'Bedrijfsstatus',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_9',
+                  name: 'Compressor',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_43',
+                  name: 'Warmwatercirculatiepomp',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                'De instelling is een **uitleesbare doeltemperatuur**, geen beschikbare bediening. Een ingeschakelde warmwaterfunctie of circulatiepomp betekent niet vanzelf dat water wordt opgewarmd. Er wordt geen resterende opwarmtijd geschat.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 2,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Temperatuur en verbruik',
+              icon: 'mdi:chart-line',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Warmwater · 48 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '48h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 240,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_15',
+                  name: 'Opslag',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_16',
+                  name: 'Ingesteld',
+                  color: '#D69A45',
+                  curve: 'stepline',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'last',
+                    duration: '10min',
+                  },
+                  stroke_dash: 5,
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              columns: 2,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_20',
+                  name: 'Stroom vandaag',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_44',
+                  name: 'Warmte vandaag',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_45',
+                  name: 'Rendement vandaag',
+                  precision: 2,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_46',
+                  name: 'Rendement · 7 dagen',
+                  precision: 2,
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                'Rendement is warmte gedeeld door elektriciteit over **dezelfde periode**; dit is geen momentane COP.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Energie',
+      path: 'energie',
+      icon: 'mdi:chart-bar',
+      type: 'sections',
+      max_columns: 3,
+      dense_section_placement: false,
+      sections: [
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Vandaag en totalen',
+              icon: 'mdi:lightning-bolt',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              columns: 2,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_19',
+                  name: 'Stroom verwarming',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_20',
+                  name: 'Stroom warmwater',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_47',
+                  name: 'Warmte verwarming',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_44',
+                  name: 'Warmte warmwater',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'sensor.example_heat_pump_24',
+                  state_not: 'unknown',
+                },
+                {
+                  condition: 'state',
+                  entity: 'sensor.example_heat_pump_24',
+                  state_not: 'unavailable',
+                },
+              ],
+              card: {
+                type: 'custom:home-metric-card',
+                columns: 1,
+                items: [
+                  {
+                    entity: 'sensor.example_heat_pump_24',
+                    name: 'Kosten vandaag · vast tarief',
+                  },
+                ],
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Overig verbruik en productie',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_48',
+                  name: 'Koeling elektriciteit',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_49',
+                  name: 'Koeling productie',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_50',
+                  name: 'Totale elektriciteit dit jaar',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              columns: 2,
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_29',
+                  name: 'Verwarming · 7 dagen',
+                  precision: 2,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_46',
+                  name: 'Warmwater · 7 dagen',
+                  precision: 2,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_51',
+                  name: 'Verwarming · vandaag',
+                  precision: 2,
+                },
+                {
+                  entity: 'sensor.example_heat_pump_45',
+                  name: 'Warmwater · vandaag',
+                  precision: 2,
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                '**Rendement = warmte / elektriciteit over dezelfde periode.** Dit is geen momentane COP. Een ontbrekende waarde wordt niet vervangen door nul. Kosten zijn een berekening bij vast tarief, niet noodzakelijk de actuele energierekening.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 2,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Verbruik en warmteproductie',
+              icon: 'mdi:chart-bar',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'statistics-graph',
+              title: 'Elektriciteit per dag · 14 dagen',
+              days_to_show: 14,
+              period: 'day',
+              chart_type: 'bar',
+              stat_types: ['change'],
+              entities: [
+                {
+                  entity: 'sensor.example_heat_pump_52',
+                  name: 'Verwarming',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_53',
+                  name: 'Warmwater',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_54',
+                  name: 'Koeling',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'statistics-graph',
+              title: 'Warmteproductie per dag · 14 dagen',
+              days_to_show: 14,
+              period: 'day',
+              chart_type: 'bar',
+              stat_types: ['change'],
+              entities: [
+                {
+                  entity: 'sensor.example_heat_pump_55',
+                  name: 'Verwarming',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_56',
+                  name: 'Warmwater',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_57',
+                  name: 'Koeling',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'statistics-graph',
+              title: 'Totaal elektriciteit per dag · 30 dagen',
+              days_to_show: 30,
+              period: 'day',
+              chart_type: 'bar',
+              stat_types: ['change'],
+              entities: [
+                {
+                  entity: 'sensor.example_heat_pump_50',
+                  name: 'Elektriciteit totaal',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Voortschrijdend rendement · 7 dagen',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '7d',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 230,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_29',
+                  name: 'Verwarming',
+                  color: 'var(--primary-color)',
+                  curve: 'stepline',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'last',
+                    duration: '6h',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_46',
+                  name: 'Warmwater',
+                  color: '#D69A45',
+                  curve: 'stepline',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'last',
+                    duration: '6h',
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                'De rendementsgrafiek toont snapshots van het **voortschrijdende 7-daagse rendement**, geen afzonderlijke dagrendementen. Dagbalken gebruiken verandering van cumulatieve jaarmeters en vereisen geldige langetermijnstatistieken en correcte verwerking van tellerresets. Ontbrekende statistieken zijn geen nulverbruik.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      title: 'Diagnose',
+      path: 'diagnose',
+      icon: 'mdi:stethoscope',
+      type: 'sections',
+      max_columns: 3,
+      dense_section_placement: false,
+      sections: [
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Verbinding en storingen',
+              icon: 'mdi:cloud-check-outline',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_0',
+                  state: 'off',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Systeemcontroller offline.** Bekijk Diagnose; meetwaarden kunnen achterlopen.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_1',
+                  state: 'off',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Buitenunit offline.** Bekijk Diagnose; meetwaarden kunnen achterlopen.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_2',
+                  state: 'off',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Kamerregeling offline.** Bekijk Diagnose; binnencomfort kan onvolledig zijn.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_3',
+                  state: 'on',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Storing gemeld.** De storingsvergrendeling is actief. Zie Diagnose.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_4',
+                  state: 'on',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content: '**Externe vergrendeling actief.** Zie Diagnose.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'conditional',
+              conditions: [
+                {
+                  condition: 'state',
+                  entity: 'binary_sensor.example_heat_pump_5',
+                  state: 'on',
+                },
+              ],
+              card: {
+                type: 'markdown',
+                content:
+                  '**Elektrische bijverwarming actief.** Bekijk de werking in Diagnose als dit onverwacht is.',
+              },
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Bereikbaarheid',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'binary_sensor.example_heat_pump_0',
+                  name: 'Systeemcontroller',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_1',
+                  name: 'Buitenunit',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_2',
+                  name: 'Kamerregeling',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_58',
+                  name: 'Gatewaystatus',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_59',
+                  name: 'API-verzoeken · 24 uur',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Gegevens opgehaald',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_26',
+                  name: 'Systeemcontroller',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_27',
+                  name: 'Buitenunit',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_28',
+                  name: 'Kamerregeling',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Vergrendelingen',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'binary_sensor.example_heat_pump_3',
+                  name: 'Storing',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_4',
+                  name: 'Externe vergrendeling',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                'Online-status en API-verzoekenteller verversen elk uur. **Gegevens opgehaald is de cloud-ophaaltijd**, niet noodzakelijk de oorspronkelijke meettijd. Een online-indicator is geen garantie voor recente metingen. Ontbrekende meetwaarden blijven Onbekend of Niet beschikbaar.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Compressor en inverter',
+              icon: 'mdi:engine',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Componentwaarden',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_39',
+                  name: 'Toerental',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_40',
+                  name: 'Gewenst toerental',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_60',
+                  name: 'Invertervermogen',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_61',
+                  name: 'Inverterstroom',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_62',
+                  name: 'Draaiuren totaal',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_41',
+                  name: 'Starts totaal',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_10',
+                  name: 'Ventilator',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Compressortoerental · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 220,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_39',
+                  name: 'Werkelijk',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_40',
+                  name: 'Gewenst',
+                  color: '#D69A45',
+                  curve: 'stepline',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'last',
+                    duration: '10min',
+                  },
+                  stroke_dash: 5,
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Invertervermogen · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 200,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_60',
+                  name: 'Inverter',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Hydrauliek en instellingen',
+              icon: 'mdi:pipe',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Pompen en klep',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'binary_sensor.example_heat_pump_63',
+                  name: 'Interne pomp',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_64',
+                  name: 'Interne pomp percentage',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_65',
+                  name: 'Verwarmingscirculatiepomp',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_43',
+                  name: 'Warmwatercirculatiepomp',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_7',
+                  name: 'Driewegklep',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_31',
+                  name: 'Systeemdruk',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Systeemdruk · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 200,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_31',
+                  name: 'Druk',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Installatie-instellingen',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_32',
+                  name: 'Stooklijn helling',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_33',
+                  name: 'Stooklijn verschuiving',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_66',
+                  name: 'Geluidsreductiemodus',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_42',
+                  name: 'Warmwaterhygiëne',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+        {
+          type: 'grid',
+          column_span: 1,
+          cards: [
+            {
+              type: 'heading',
+              heading: 'Thermiek en kamerregeling',
+              icon: 'mdi:thermometer-lines',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Verdamper en condensor · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 220,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_67',
+                  name: 'Verdamper',
+                  color: '#7A9DBA',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_68',
+                  name: 'Condensor',
+                  color: '#D69A45',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:apexcharts-card',
+              header: {
+                show: true,
+                title: 'Compressor en invertertemperatuur · 24 uur',
+                show_states: false,
+                colorize_states: false,
+              },
+              graph_span: '24h',
+              update_interval: '5min',
+              apex_config: {
+                chart: {
+                  height: 220,
+                  toolbar: {
+                    show: false,
+                  },
+                  background: 'transparent',
+                  foreColor: 'var(--secondary-text-color)',
+                },
+                legend: {
+                  show: true,
+                  position: 'bottom',
+                  fontSize: '12px',
+                },
+                grid: {
+                  borderColor: 'var(--divider-color)',
+                },
+                markers: {
+                  size: 0,
+                },
+              },
+              series: [
+                {
+                  entity: 'sensor.example_heat_pump_69',
+                  name: 'Inlaat',
+                  color: 'var(--primary-color)',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_70',
+                  name: 'Uitlaat',
+                  color: '#CB5B55',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+                {
+                  entity: 'sensor.example_heat_pump_71',
+                  name: 'Inverter',
+                  color: '#9BA3AF',
+                  curve: 'straight',
+                  stroke_width: 2,
+                  group_by: {
+                    func: 'avg',
+                    duration: '10min',
+                  },
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'custom:home-metric-card',
+              title: 'Kamerregeling',
+              layout: 'list',
+              items: [
+                {
+                  entity: 'sensor.example_heat_pump_14',
+                  name: 'Verwarmingsinstelling',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_72',
+                  name: 'Koelinstelling',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_73',
+                  name: 'Comfortinstelling',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_74',
+                  name: 'Normaalinstelling',
+                },
+                {
+                  entity: 'sensor.example_heat_pump_34',
+                  name: 'Afwijking',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_75',
+                  name: 'Raam open',
+                },
+                {
+                  entity: 'binary_sensor.example_heat_pump_76',
+                  name: 'Condensatierisico',
+                },
+              ],
+              grid_options: {
+                columns: 'full',
+              },
+            },
+            {
+              type: 'markdown',
+              content:
+                'Instellingen zijn alleen uitleesbaar. Grafiekaggregatie maakt trends leesbaar en verhoogt **niet** de meetfrequentie van de cloud-API. Er worden geen niet-gemeten oorzaken, grenswaarden of storingsdiagnoses afgeleid.',
+              grid_options: {
+                columns: 'full',
+              },
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+export const initialStates: HomeAssistant['states'] = {
+  'binary_sensor.example_heat_pump_0': {
+    entity_id: 'binary_sensor.example_heat_pump_0',
+    state: 'on',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'binary_sensor.example_heat_pump_1': {
+    entity_id: 'binary_sensor.example_heat_pump_1',
+    state: 'on',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'binary_sensor.example_heat_pump_2': {
+    entity_id: 'binary_sensor.example_heat_pump_2',
+    state: 'on',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'binary_sensor.example_heat_pump_3': {
+    entity_id: 'binary_sensor.example_heat_pump_3',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'binary_sensor.example_heat_pump_4': {
+    entity_id: 'binary_sensor.example_heat_pump_4',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'binary_sensor.example_heat_pump_5': {
+    entity_id: 'binary_sensor.example_heat_pump_5',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'sensor.example_heat_pump_6': {
+    entity_id: 'sensor.example_heat_pump_6',
+    state: '3.497',
+    attributes: {
+      friendly_name: 'Example sensor',
+      unit_of_measurement: 'kW',
+    },
+  },
+  'sensor.example_heat_pump_7': {
+    entity_id: 'sensor.example_heat_pump_7',
+    state: 'domesticHotWater',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'sensor.example_heat_pump_8': {
+    entity_id: 'sensor.example_heat_pump_8',
+    state: 'heating',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'binary_sensor.example_heat_pump_9': {
+    entity_id: 'binary_sensor.example_heat_pump_9',
+    state: 'on',
+    attributes: {
+      friendly_name: 'Example sensor',
+    },
+  },
+  'sensor.example_heat_pump_10': {
+    entity_id: 'sensor.example_heat_pump_10',
+    state: '42',
+    attributes: {
+      friendly_name: 'Example sensor',
+      unit_of_measurement: '%',
+    },
+  },
+  'sensor.example_heat_pump_11': {
+    entity_id: 'sensor.example_heat_pump_11',
+    state: '1.116',
+    attributes: {
+      friendly_name: 'Example sensor',
+      unit_of_measurement: 'kW',
+    },
+  },
+  'sensor.example_heat_pump_12': {
+    entity_id: 'sensor.example_heat_pump_12',
+    state: '9.6',
+    attributes: {
+      friendly_name: 'Example sensor',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_13': {
+    entity_id: 'sensor.example_heat_pump_13',
+    state: '20.4',
+    attributes: {
+      friendly_name: 'Binnen',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_14': {
+    entity_id: 'sensor.example_heat_pump_14',
+    state: '20.5',
+    attributes: {
+      friendly_name: 'Binnen',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_15': {
+    entity_id: 'sensor.example_heat_pump_15',
+    state: '48.3',
+    attributes: {
+      friendly_name: 'Warmwater',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_16': {
+    entity_id: 'sensor.example_heat_pump_16',
+    state: '50',
+    attributes: {
+      friendly_name: 'Warmwater',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_17': {
+    entity_id: 'sensor.example_heat_pump_17',
+    state: '57.9',
+    attributes: {
+      friendly_name: 'Aanvoer',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_18': {
+    entity_id: 'sensor.example_heat_pump_18',
+    state: '53.9',
+    attributes: {
+      friendly_name: 'Aanvoer',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_19': {
+    entity_id: 'sensor.example_heat_pump_19',
+    state: '3.4',
+    attributes: {
+      friendly_name: 'Verwarming',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_20': {
+    entity_id: 'sensor.example_heat_pump_20',
+    state: '4',
+    attributes: {
+      friendly_name: 'Warmwater',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_21': {
+    entity_id: 'sensor.example_heat_pump_21',
+    state: '7',
+    attributes: {
+      friendly_name: 'Compressorstarts',
+    },
+  },
+  'sensor.example_heat_pump_22': {
+    entity_id: 'sensor.example_heat_pump_22',
+    state: '5.2',
+    attributes: {
+      friendly_name: 'Compressor',
+      unit_of_measurement: 'h',
+    },
+  },
+  'sensor.example_heat_pump_23': {
+    entity_id: 'sensor.example_heat_pump_23',
+    state: '44',
+    attributes: {
+      friendly_name: 'Gem. looptijd',
+      unit_of_measurement: 'min',
+    },
+  },
+  'sensor.example_heat_pump_24': {
+    entity_id: 'sensor.example_heat_pump_24',
+    state: '1.92',
+    attributes: {
+      friendly_name: 'Kosten · vast tarief',
+      unit_of_measurement: 'EUR',
+    },
+  },
+  'sensor.example_heat_pump_25': {
+    entity_id: 'sensor.example_heat_pump_25',
+    state: '20.4',
+    attributes: {
+      friendly_name: 'Referentie',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_26': {
+    entity_id: 'sensor.example_heat_pump_26',
+    state: '2026-10-22T21:11:00Z',
+    attributes: {
+      friendly_name: 'Systeemcontroller',
+    },
+  },
+  'sensor.example_heat_pump_27': {
+    entity_id: 'sensor.example_heat_pump_27',
+    state: '2026-10-22T21:11:00Z',
+    attributes: {
+      friendly_name: 'Buitenunit',
+    },
+  },
+  'sensor.example_heat_pump_28': {
+    entity_id: 'sensor.example_heat_pump_28',
+    state: '2026-10-22T21:11:00Z',
+    attributes: {
+      friendly_name: 'Kamerregeling',
+    },
+  },
+  'sensor.example_heat_pump_29': {
+    entity_id: 'sensor.example_heat_pump_29',
+    state: '6.65',
+    attributes: {
+      friendly_name: 'Verwarming · 7 dagen',
+    },
+  },
+  'sensor.example_heat_pump_30': {
+    entity_id: 'sensor.example_heat_pump_30',
+    state: '4',
+    attributes: {
+      friendly_name: 'Example sensor',
+      unit_of_measurement: 'K',
+    },
+  },
+  'sensor.example_heat_pump_31': {
+    entity_id: 'sensor.example_heat_pump_31',
+    state: '1.8',
+    attributes: {
+      friendly_name: 'Example sensor',
+      unit_of_measurement: 'bar',
+    },
+  },
+  'sensor.example_heat_pump_32': {
+    entity_id: 'sensor.example_heat_pump_32',
+    state: '0.6',
+    attributes: {
+      friendly_name: 'Helling',
+    },
+  },
+  'sensor.example_heat_pump_33': {
+    entity_id: 'sensor.example_heat_pump_33',
+    state: '-4',
+    attributes: {
+      friendly_name: 'Verschuiving',
+    },
+  },
+  'sensor.example_heat_pump_34': {
+    entity_id: 'sensor.example_heat_pump_34',
+    state: '-0.1',
+    attributes: {
+      friendly_name: 'Afwijking',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_35': {
+    entity_id: 'sensor.example_heat_pump_35',
+    state: '54.6',
+    attributes: {
+      friendly_name: 'Example sensor',
+      unit_of_measurement: '%',
+    },
+  },
+  'sensor.example_heat_pump_36': {
+    entity_id: 'sensor.example_heat_pump_36',
+    state: 'heating',
+    attributes: {
+      friendly_name: 'Verwarmingsmodus',
+    },
+  },
+  'sensor.example_heat_pump_37': {
+    entity_id: 'sensor.example_heat_pump_37',
+    state: 'roomsEnergySaving',
+    attributes: {
+      friendly_name: 'Verwarmingsprogramma',
+    },
+  },
+  'sensor.example_heat_pump_38': {
+    entity_id: 'sensor.example_heat_pump_38',
+    state: 'heating',
+    attributes: {
+      friendly_name: 'Compressorfase',
+    },
+  },
+  'sensor.example_heat_pump_39': {
+    entity_id: 'sensor.example_heat_pump_39',
+    state: '3200',
+    attributes: {
+      friendly_name: 'Toerental',
+      unit_of_measurement: 'rpm',
+    },
+  },
+  'sensor.example_heat_pump_40': {
+    entity_id: 'sensor.example_heat_pump_40',
+    state: '3250',
+    attributes: {
+      friendly_name: 'Gewenst toerental',
+      unit_of_measurement: 'rpm',
+    },
+  },
+  'sensor.example_heat_pump_41': {
+    entity_id: 'sensor.example_heat_pump_41',
+    state: '1082',
+    attributes: {
+      friendly_name: 'Starts',
+    },
+  },
+  'binary_sensor.example_heat_pump_42': {
+    entity_id: 'binary_sensor.example_heat_pump_42',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Hygiëneprogramma',
+    },
+  },
+  'binary_sensor.example_heat_pump_43': {
+    entity_id: 'binary_sensor.example_heat_pump_43',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Warmwatercirculatiepomp',
+    },
+  },
+  'sensor.example_heat_pump_44': {
+    entity_id: 'sensor.example_heat_pump_44',
+    state: '17.4',
+    attributes: {
+      friendly_name: 'Warmte vandaag',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_45': {
+    entity_id: 'sensor.example_heat_pump_45',
+    state: '4.35',
+    attributes: {
+      friendly_name: 'Rendement vandaag',
+    },
+  },
+  'sensor.example_heat_pump_46': {
+    entity_id: 'sensor.example_heat_pump_46',
+    state: '4.35',
+    attributes: {
+      friendly_name: 'Rendement · 7 dagen',
+    },
+  },
+  'sensor.example_heat_pump_47': {
+    entity_id: 'sensor.example_heat_pump_47',
+    state: '23.4',
+    attributes: {
+      friendly_name: 'Warmte verwarming',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_48': {
+    entity_id: 'sensor.example_heat_pump_48',
+    state: '0',
+    attributes: {
+      friendly_name: 'Koeling elektriciteit',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_49': {
+    entity_id: 'sensor.example_heat_pump_49',
+    state: '0',
+    attributes: {
+      friendly_name: 'Koeling productie',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_50': {
+    entity_id: 'sensor.example_heat_pump_50',
+    state: '4',
+    attributes: {
+      friendly_name: 'Totale elektriciteit dit jaar',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_51': {
+    entity_id: 'sensor.example_heat_pump_51',
+    state: '6.65',
+    attributes: {
+      friendly_name: 'Verwarming · vandaag',
+    },
+  },
+  'sensor.example_heat_pump_52': {
+    entity_id: 'sensor.example_heat_pump_52',
+    state: '3.4',
+    attributes: {
+      friendly_name: 'Verwarming',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_53': {
+    entity_id: 'sensor.example_heat_pump_53',
+    state: '4',
+    attributes: {
+      friendly_name: 'Warmwater',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_54': {
+    entity_id: 'sensor.example_heat_pump_54',
+    state: '0',
+    attributes: {
+      friendly_name: 'Koeling',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_55': {
+    entity_id: 'sensor.example_heat_pump_55',
+    state: '23.4',
+    attributes: {
+      friendly_name: 'Verwarming',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_56': {
+    entity_id: 'sensor.example_heat_pump_56',
+    state: '17.4',
+    attributes: {
+      friendly_name: 'Warmwater',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_57': {
+    entity_id: 'sensor.example_heat_pump_57',
+    state: '0',
+    attributes: {
+      friendly_name: 'Koeling',
+      unit_of_measurement: 'kWh',
+    },
+  },
+  'sensor.example_heat_pump_58': {
+    entity_id: 'sensor.example_heat_pump_58',
+    state: 'connected',
+    attributes: {
+      friendly_name: 'Gatewaystatus',
+    },
+  },
+  'sensor.example_heat_pump_59': {
+    entity_id: 'sensor.example_heat_pump_59',
+    state: '416',
+    attributes: {
+      friendly_name: 'API-verzoeken · 24 uur',
+    },
+  },
+  'sensor.example_heat_pump_60': {
+    entity_id: 'sensor.example_heat_pump_60',
+    state: '1080',
+    attributes: {
+      friendly_name: 'Invertervermogen',
+      unit_of_measurement: 'W',
+    },
+  },
+  'sensor.example_heat_pump_61': {
+    entity_id: 'sensor.example_heat_pump_61',
+    state: '4.8',
+    attributes: {
+      friendly_name: 'Inverterstroom',
+      unit_of_measurement: 'A',
+    },
+  },
+  'sensor.example_heat_pump_62': {
+    entity_id: 'sensor.example_heat_pump_62',
+    state: '2048',
+    attributes: {
+      friendly_name: 'Draaiuren totaal',
+      unit_of_measurement: 'h',
+    },
+  },
+  'binary_sensor.example_heat_pump_63': {
+    entity_id: 'binary_sensor.example_heat_pump_63',
+    state: 'on',
+    attributes: {
+      friendly_name: 'Interne pomp',
+    },
+  },
+  'sensor.example_heat_pump_64': {
+    entity_id: 'sensor.example_heat_pump_64',
+    state: '60',
+    attributes: {
+      friendly_name: 'Interne pomp percentage',
+      unit_of_measurement: '%',
+    },
+  },
+  'binary_sensor.example_heat_pump_65': {
+    entity_id: 'binary_sensor.example_heat_pump_65',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Verwarmingscirculatiepomp',
+    },
+  },
+  'sensor.example_heat_pump_66': {
+    entity_id: 'sensor.example_heat_pump_66',
+    state: 'unknown',
+    attributes: {
+      friendly_name: 'Geluidsreductiemodus',
+    },
+  },
+  'sensor.example_heat_pump_67': {
+    entity_id: 'sensor.example_heat_pump_67',
+    state: '4.2',
+    attributes: {
+      friendly_name: 'Verdamper',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_68': {
+    entity_id: 'sensor.example_heat_pump_68',
+    state: '59.4',
+    attributes: {
+      friendly_name: 'Condensor',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_69': {
+    entity_id: 'sensor.example_heat_pump_69',
+    state: '6.8',
+    attributes: {
+      friendly_name: 'Inlaat',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_70': {
+    entity_id: 'sensor.example_heat_pump_70',
+    state: '74.5',
+    attributes: {
+      friendly_name: 'Uitlaat',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_71': {
+    entity_id: 'sensor.example_heat_pump_71',
+    state: '41.2',
+    attributes: {
+      friendly_name: 'Inverter',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_72': {
+    entity_id: 'sensor.example_heat_pump_72',
+    state: '24',
+    attributes: {
+      friendly_name: 'Koelinstelling',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_73': {
+    entity_id: 'sensor.example_heat_pump_73',
+    state: '21',
+    attributes: {
+      friendly_name: 'Comfortinstelling',
+      unit_of_measurement: '°C',
+    },
+  },
+  'sensor.example_heat_pump_74': {
+    entity_id: 'sensor.example_heat_pump_74',
+    state: '20.5',
+    attributes: {
+      friendly_name: 'Normaalinstelling',
+      unit_of_measurement: '°C',
+    },
+  },
+  'binary_sensor.example_heat_pump_75': {
+    entity_id: 'binary_sensor.example_heat_pump_75',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Raam open',
+    },
+  },
+  'binary_sensor.example_heat_pump_76': {
+    entity_id: 'binary_sensor.example_heat_pump_76',
+    state: 'off',
+    attributes: {
+      friendly_name: 'Condensatierisico',
+    },
+  },
+};
+export const entities = {
+  operation: 'sensor.example_heat_pump_8',
+  valve: 'sensor.example_heat_pump_7',
+  compressor: 'binary_sensor.example_heat_pump_9',
+  output: 'sensor.example_heat_pump_6',
+  fan: 'sensor.example_heat_pump_10',
+  controller: 'binary_sensor.example_heat_pump_0',
+  outdoor: 'binary_sensor.example_heat_pump_1',
+  fault: 'binary_sensor.example_heat_pump_3',
+  auxiliary: 'binary_sensor.example_heat_pump_5',
+  temperature: 'sensor.example_heat_pump_13',
+};

@@ -1,5 +1,17 @@
 // The host normally provides ha-icon. This tiny SVG stand-in exists ONLY here.
 const paths: Record<string, string> = {
+  'mdi:radiator': 'M4 5h3v14H4Zm6 0h3v14h-3Zm6 0h3v14h-3M1 9h3m15 6h3',
+  'mdi:water-boiler': 'M7 3h10v18H7ZM10 3V1m4 2V1M10 8h4m-4 4h4m-4 4h4',
+  'mdi:access-point':
+    'M10 12a2 2 0 1 0 4 0 2 2 0 1 0-4 0M7 7a7 7 0 0 0 0 10m10-10a7 7 0 0 1 0 10M4 4a11 11 0 0 0 0 16M20 4a11 11 0 0 1 0 16',
+  'mdi:alert-circle-outline':
+    'M12 3a9 9 0 1 0 0 18 9 9 0 1 0 0-18M12 7v6m0 3v1',
+  'mdi:home-thermometer-outline':
+    'M2 11 10 3l8 8M4 9v12h8m3-8V8a2 2 0 0 1 4 0v7a4 4 0 1 1-4 0',
+  'mdi:weather-partly-cloudy':
+    'M5 7V3m-3 7H0m8-6 2-2M3 5 1 3M4 12a5 5 0 1 1 9-5M7 20a4 4 0 1 1 1-8 5 5 0 0 1 9-1 4 4 0 1 1 2 9Z',
+  'mdi:water-thermometer':
+    'M8 2c-1 4-6 7-6 12a6 6 0 0 0 10 4m4-5V5a2 2 0 0 1 4 0v8a4 4 0 1 1-4 0',
   'mdi:heat-pump-outline': 'M3 3h18v18H3ZM7 7h10v10H7ZM12 7v10M7 12h10',
   'mdi:heating-coil':
     'M7 3c-6 5 6 7 0 12s0 6 0 6m5-18c-6 5 6 7 0 12s0 6 0 6m5-18c-6 5 6 7 0 12s0 6 0 6',

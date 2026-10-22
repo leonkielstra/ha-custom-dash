@@ -101,3 +101,50 @@ export interface ActivityConfig extends CardConfig {
   hide_when_empty: boolean;
   appliances: ApplianceConfig[];
 }
+
+export interface HeatPumpCardConfig extends CardConfig {
+  entity: string;
+  mode_entity: string;
+  operating_entity: string;
+  operating_states: string[];
+  heating_states: string[];
+  hot_water_states: string[];
+  minimum_heat_output?: number;
+  compressor?: string;
+  fan_speed?: string;
+  electric_power?: string;
+  outdoor_temperature?: string;
+  auxiliary_heating?: string;
+  controller_online?: string;
+  outdoor_online?: string;
+  fault_entity?: string;
+  external_lock?: string;
+  supply_temperature?: string;
+  return_temperature?: string;
+  temperature_difference?: string;
+  pressure?: string;
+  water_temperature?: string;
+  water_target?: string;
+  title?: string;
+}
+export interface MetricItem {
+  entity: string;
+  name: string;
+  icon?: string;
+  secondary_entity?: string;
+  secondary_name?: string;
+  precision?: number;
+  format?: 'number' | 'state' | 'duration_hours' | 'timestamp';
+  navigation_path?: string;
+  state_labels?: Record<string, string>;
+}
+export interface MetricCardConfig extends CardConfig {
+  title?: string;
+  layout: 'grid' | 'panel' | 'strip' | 'list';
+  columns: number;
+  items: MetricItem[];
+}
+export interface SystemHealthConfig extends CardConfig {
+  title?: string;
+  items: { entity: string; name: string; updated?: string; icon?: string }[];
+}

@@ -8,12 +8,40 @@ import { SectionCard } from './cards/section';
 import { HomeHeroCard } from './cards/home-hero';
 import { RoomCard } from './cards/room';
 import { ActivitySectionCard } from './cards/activity-section';
+import { HeatPumpStatusCard } from './cards/heat-pump-status';
+import { HeatFlowCard } from './cards/heat-flow';
+import { MetricCard } from './cards/metrics';
+import { SystemHealthCard } from './cards/system-health';
 import { ui } from './i18n/strings';
 
 const text = ui(
   typeof navigator === 'undefined' ? undefined : navigator.language,
 );
 const cards = [
+  [
+    'home-heat-pump-status-card',
+    HeatPumpStatusCard,
+    text.heatPump.statusCard,
+    text.heatPump.statusDescription,
+  ],
+  [
+    'home-heat-flow-card',
+    HeatFlowCard,
+    text.heatPump.flowCard,
+    text.heatPump.flowDescription,
+  ],
+  [
+    'home-metric-card',
+    MetricCard,
+    text.heatPump.metricCard,
+    text.heatPump.metricDescription,
+  ],
+  [
+    'home-system-health-card',
+    SystemHealthCard,
+    text.heatPump.healthCard,
+    text.heatPump.healthDescription,
+  ],
   ['home-climate-card', ClimateCard, text.climateCard, text.climateDescription],
   ['home-hero-card', HomeHeroCard, text.heroCard, text.heroDescription],
   ['home-room-card', RoomCard, text.roomCard, text.roomDescription],

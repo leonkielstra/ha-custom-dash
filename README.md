@@ -6,6 +6,13 @@ media. Use regular Lovelace views, Sections, headings, and grids for layout.
 No backend, separate login, Bubble Card dependency, or automatic entity discovery
 is required.
 
+## Heat-pump dashboard
+
+The reusable heat-pump cards add operating status, a heat-routing schematic,
+compact metric groups, and connection summaries. See [the configuration guide](docs/heatpump.md)
+and [complete fictional dashboard YAML](examples/heatpump.yaml). The five-view
+preview is available at `/preview/heatpump.html`; chart traces there are illustrative.
+
 ## Development
 
 Use Node 22.13+ (22 LTS recommended) or Node 24+ and npm. Node 23 is not supported
