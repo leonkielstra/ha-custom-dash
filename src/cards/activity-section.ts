@@ -19,6 +19,7 @@ const icons: Record<ApplianceType, string> = {
 };
 
 export class ActivitySectionCard extends BaseCard<ActivityConfig> {
+  static readonly editorType = 'home-activity-section-card' as const;
   static properties = { ...BaseCard.properties, now: { state: true } };
   static styles = [
     BaseCard.styles,

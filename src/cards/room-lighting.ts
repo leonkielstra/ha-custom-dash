@@ -5,6 +5,7 @@ import { lightingConfig } from '../ha/config';
 import { available } from '../ha/entities';
 import type { LightingConfig } from '../ha/types';
 export class RoomLightingCard extends BaseCard<LightingConfig> {
+  static readonly editorType = 'home-room-lighting-card' as const;
   static styles = [
     BaseCard.styles,
     css`

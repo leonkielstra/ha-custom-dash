@@ -4,6 +4,7 @@ import { scenesConfig } from '../ha/config';
 import { available, nameOf } from '../ha/entities';
 import type { ScenesConfig } from '../ha/types';
 export class SceneCard extends BaseCard<ScenesConfig> {
+  static readonly editorType = 'home-scene-card' as const;
   static properties = { ...BaseCard.properties, activated: { state: true } };
   static styles = [
     BaseCard.styles,

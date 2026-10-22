@@ -5,6 +5,7 @@ import { metricValue } from '../ha/heat-pump';
 import type { SystemHealthConfig } from '../ha/types';
 
 export class SystemHealthCard extends BaseCard<SystemHealthConfig> {
+  static readonly editorType = 'home-system-health-card' as const;
   static styles = [
     BaseCard.styles,
     css`

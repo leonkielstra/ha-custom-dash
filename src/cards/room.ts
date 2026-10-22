@@ -21,6 +21,7 @@ const iconTones: Record<string, IconTone> = {
 };
 
 export class RoomCard extends BaseCard<RoomConfig> {
+  static readonly editorType = 'home-room-card' as const;
   static styles = [
     BaseCard.styles,
     css`

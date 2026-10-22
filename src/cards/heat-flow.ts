@@ -5,6 +5,7 @@ import { heatPumpStatus, metricValue } from '../ha/heat-pump';
 import type { HeatPumpCardConfig } from '../ha/types';
 
 export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
+  static readonly editorType = 'home-heat-flow-card' as const;
   static styles = [
     BaseCard.styles,
     css`

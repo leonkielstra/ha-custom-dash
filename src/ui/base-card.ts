@@ -8,7 +8,30 @@ import {
 import type { CardConfig, HomeAssistant } from '../ha/types';
 import { sharedStyles } from './styles';
 import { localizedError, ui } from '../i18n/strings';
+import { cardForm } from '../editor/forms';
+import { cardStub } from '../editor/stubs';
+import type { EditorType } from '../editor/types';
+import '../editor/card-editor';
 export abstract class BaseCard<C extends CardConfig> extends LitElement {
+  static readonly editorType: EditorType | undefined;
+  static getConfigForm(language?: string) {
+    if (!this.editorType)
+      throw new Error('Every card must declare its visual editor type.');
+    return cardForm(this.editorType, language);
+  }
+  static getConfigElement() {
+    this.getConfigForm();
+    return document.createElement('home-card-editor');
+  }
+  static getStubConfig(
+    hass?: HomeAssistant,
+    entities: string[] = [],
+    entitiesFallback: string[] = [],
+  ) {
+    if (!this.editorType)
+      throw new Error('Every card must declare its visual editor type.');
+    return cardStub(this.editorType, hass, entities, entitiesFallback);
+  }
   static properties = {
     hass: { attribute: false },
     config: { state: true },

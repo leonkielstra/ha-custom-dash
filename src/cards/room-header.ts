@@ -4,6 +4,7 @@ import { headerConfig } from '../ha/config';
 import { available, sensorValue } from '../ha/entities';
 import type { HeaderConfig } from '../ha/types';
 export class RoomHeaderCard extends BaseCard<HeaderConfig> {
+  static readonly editorType = 'home-room-header-card' as const;
   static styles = [
     BaseCard.styles,
     css`

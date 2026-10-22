@@ -8,6 +8,7 @@ const TURN_OFF = 256;
 const PAUSE = 1;
 const PLAY = 16384;
 export class DeviceCard extends BaseCard<DeviceConfig> {
+  static readonly editorType = 'home-device-card' as const;
   static styles = [
     BaseCard.styles,
     css`

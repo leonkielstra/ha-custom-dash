@@ -23,6 +23,7 @@ declare global {
 }
 
 export class SectionCard extends BaseCard<SectionConfig> {
+  static readonly editorType = 'home-section-card' as const;
   static styles = [
     BaseCard.styles,
     css`

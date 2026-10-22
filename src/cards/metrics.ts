@@ -5,6 +5,7 @@ import { metricValue } from '../ha/heat-pump';
 import type { MetricCardConfig, MetricItem } from '../ha/types';
 
 export class MetricCard extends BaseCard<MetricCardConfig> {
+  static readonly editorType = 'home-metric-card' as const;
   static styles = [
     BaseCard.styles,
     css`

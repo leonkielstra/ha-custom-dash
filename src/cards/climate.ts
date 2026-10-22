@@ -7,6 +7,7 @@ import type { ClimateConfig } from '../ha/types';
 
 /** A compact thermostat shortcut; HA owns the full thermostat controls. */
 export class ClimateCard extends BaseCard<ClimateConfig> {
+  static readonly editorType = 'home-climate-card' as const;
   static styles = [
     BaseCard.styles,
     css`

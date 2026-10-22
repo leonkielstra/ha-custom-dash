@@ -6,6 +6,7 @@ import { weatherLabel } from '../ha/weather';
 import type { HeroConfig } from '../ha/types';
 
 export class HomeHeroCard extends BaseCard<HeroConfig> {
+  static readonly editorType = 'home-hero-card' as const;
   static properties = { ...BaseCard.properties, imageFailed: { state: true } };
   static styles = [
     BaseCard.styles,

@@ -6,6 +6,13 @@ media. Use regular Lovelace views, Sections, headings, and grids for layout.
 No backend, separate login, Bubble Card dependency, or automatic entity discovery
 is required.
 
+## Visual editor
+
+All 14 cards support Home Assistant’s visual editor and picker, including lists,
+metric state labels, and section child cards. YAML remains supported. See the
+[visual editor guide](docs/visual-editor.md); preview it locally at `/preview/editor.html`.
+Visual editing is required for every new configurable element.
+
 ## Heat-pump dashboard
 
 The reusable heat-pump cards add operating status, a heat-routing schematic,

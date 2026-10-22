@@ -16,6 +16,7 @@ import { ConfirmedCommand } from '../ha/command';
 import type { LightConfig } from '../ha/types';
 import { localizedError } from '../i18n/strings';
 export class LightControlCard extends BaseCard<LightConfig> {
+  static readonly editorType = 'home-light-control-card' as const;
   static properties = { ...BaseCard.properties, draft: { state: true } };
   static styles = [
     BaseCard.styles,
