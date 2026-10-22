@@ -44,6 +44,10 @@ const labels: Record<string, readonly [string, string]> = {
   weather: ['Weather entity', 'Weerentiteit'],
   appliances: ['Appliances', 'Apparaten'],
   hide_when_empty: ['Hide when empty', 'Verbergen als er geen activiteit is'],
+  show_inactive: [
+    'Also show inactive appliances',
+    'Ook inactieve apparaten tonen',
+  ],
   type: ['Appliance type', 'Type apparaat'],
   active_states: ['Active states', 'Actieve statussen'],
   room: ['Room label', 'Kamerlabel'],

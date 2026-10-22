@@ -3,6 +3,10 @@ import { activityConfig, heroConfig, roomConfig } from '../src/ha/config';
 import { activities, hero, roomGroups } from '../preview/home-fixtures';
 
 it('accepts the Home schema without helpers, and all twelve room shapes', () => {
+  expect(activityConfig(activities).show_inactive).toBe(false);
+  expect(
+    activityConfig({ ...activities, show_inactive: true }).show_inactive,
+  ).toBe(true);
   expect(heroConfig(hero)).toMatchObject(hero);
   expect(activityConfig(activities).appliances).toHaveLength(4);
   const rooms = roomGroups.flatMap((floor) => floor.rooms).map(roomConfig);
@@ -70,4 +74,7 @@ it('reports specific paths for invalid hero, room, and appliance configuration',
   expect(() =>
     activityConfig({ ...activities, hide_when_empty: 'true' }),
   ).toThrow('hide_when_empty');
+  expect(() =>
+    activityConfig({ ...activities, show_inactive: 'true' }),
+  ).toThrow('show_inactive');
 });

@@ -152,7 +152,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.8.1
+url: /local/ha-custom-dash.js?v=0.8.2
 type: module
 ```
 

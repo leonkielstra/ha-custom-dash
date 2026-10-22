@@ -135,6 +135,55 @@ it('hides the entire empty activity card and emits HA visibility notifications o
   expect(card.hidden).toBe(false);
   expect(card.shadowRoot!.textContent).toContain('Geen actieve apparaten');
 });
+it('keeps room appliance rows visible with honest idle, error, scheduled and unavailable labels', async () => {
+  const card = new ActivitySectionCard();
+  card.setConfig({
+    ...activities,
+    show_inactive: true,
+    hide_when_empty: false,
+  });
+  card.hass = hass();
+  document.body.append(card);
+  await card.updateComplete;
+  const rows = () => [...card.shadowRoot!.querySelectorAll('ha-card')];
+  expect(rows()).toHaveLength(4);
+  expect(card.hidden).toBe(false);
+  expect(rows().every((row) => row.textContent?.includes('Niet actief'))).toBe(
+    true,
+  );
+  expect(card.shadowRoot!.querySelector('progress')).toBeNull();
+  const cases = [
+    ['off', 'Niet actief'],
+    ['ready', 'Gereed om te starten'],
+    ['error', 'Storing gemeld'],
+    ['aborting', 'Programma wordt afgebroken'],
+    ['delayedstart', 'Start gepland'],
+    ['unavailable', 'Niet beschikbaar'],
+    ['unknown', 'Onbekend'],
+    ['unexpected_value', 'Onbekend'],
+  ] as const;
+  const entity = activities.appliances[0]!.entity;
+  for (const [state, label] of cases) {
+    card.hass = {
+      ...card.hass!,
+      states: {
+        ...card.hass!.states,
+        [entity]: { entity_id: entity, state, attributes: {} },
+      },
+    };
+    await card.updateComplete;
+    expect(rows()[0]!.querySelector('.status')?.textContent).toContain(label);
+    expect(rows()).toHaveLength(4);
+  }
+  card.hass = { ...card.hass!, locale: { language: 'en' } };
+  await card.updateComplete;
+  expect(rows()[0]!.querySelector('.status')?.textContent).toContain('Unknown');
+  card.hass = hass('multiple');
+  await card.updateComplete;
+  expect(rows()[0]!.textContent).toContain('Bezig met wassen');
+  expect(rows()[0]!.querySelector('progress')).not.toBeNull();
+  expect(card.hass.callService).not.toHaveBeenCalled();
+});
 it('updates timing every minute and cleans up its single timer on idle/disconnect/reconnect', async () => {
   vi.useFakeTimers();
   vi.setSystemTime(now);

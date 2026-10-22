@@ -433,6 +433,7 @@ export function activityConfig(value: unknown): ActivityConfig {
     title: optionalText(c.title, 'title'),
     hide_when_empty:
       optionalBoolean(c.hide_when_empty, 'hide_when_empty') ?? true,
+    show_inactive: optionalBoolean(c.show_inactive, 'show_inactive') ?? false,
     appliances,
   };
 }

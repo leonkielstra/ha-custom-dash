@@ -77,3 +77,33 @@ See HA's [date/time helper](https://www.home-assistant.io/integrations/input_dat
 [state trigger](https://www.home-assistant.io/docs/automation/trigger/) and
 [package](https://www.home-assistant.io/docs/configuration/packages/) documentation.
 The package has been checked structurally, not executed on a live HA instance.
+
+## Always-visible room details
+
+Use the same activity card in a room view with `show_inactive: true`:
+
+```yaml
+type: custom:home-activity-section-card
+title: Appliances
+show_inactive: true
+hide_when_empty: false
+appliances:
+  - type: washer
+    name: Washing machine
+    entity: binary_sensor.example_washer
+    active_states: ['on']
+    finished_at_entity: input_datetime.example_washer_finished
+    finished_for_minutes: 60
+```
+
+`show_inactive` defaults to false, preserving the contextual Home screen.
+`hide_when_empty: false` alone only keeps the section visible; `show_inactive`
+keeps each configured appliance row visible. It is also a checkbox in the visual
+editor. An expired completion becomes “Not active” / “Niet actief” in a room,
+while it disappears from the default Home activity list.
+
+Idle rows have no stale progress, elapsed runtime or remaining-time estimate.
+An oven can still display its separately measured current temperature. Unknown,
+unavailable, fault, stopping, ready and delayed-start states have distinct
+localized labels; missing or unrecognized states are never called inactive.
+Active rows and valid recent-completion rows retain their existing behavior.

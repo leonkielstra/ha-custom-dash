@@ -94,7 +94,12 @@ function render() {
     add(hero, summary);
     const homeActivities = {
       ...activities,
-      appliances: [...activities.appliances, heatPump],
+      ...(params.has('room-appliances')
+        ? { title: 'Apparaten', show_inactive: true, hide_when_empty: false }
+        : {}),
+      appliances: params.has('room-appliances')
+        ? activities.appliances
+        : [...activities.appliances, heatPump],
     };
     add(homeActivities, summary);
     add(scenes, summary);

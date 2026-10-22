@@ -174,6 +174,7 @@ it('covers each supported configuration field instead of hiding list options beh
       'title',
       'appliances',
       'hide_when_empty',
+      'show_inactive',
       'theme',
     ],
     'home-system-health-card': ['title', 'items', 'theme'],

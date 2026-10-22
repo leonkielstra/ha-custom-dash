@@ -56,14 +56,16 @@ export interface ApplianceActivity {
   heatOutput?: number;
   fanSpeed?: number;
   finishedMinutesAgo?: number;
+  inactive?: boolean;
 }
 
 export function applianceActivities(
   hass: HomeAssistant | undefined,
   appliances: ApplianceConfig[],
   now: number,
+  showInactive = false,
 ): ApplianceActivity[] {
-  return appliances.flatMap<ApplianceActivity>((config) => {
+  const activities = appliances.flatMap<ApplianceActivity>((config) => {
     const entity = hass?.states[config.entity];
     if (config.type === 'heat_pump') {
       const operating = hass?.states[config.operating_entity ?? ''];
@@ -184,6 +186,35 @@ export function applianceActivities(
         ),
       },
     ];
+  });
+  if (!showInactive) return activities;
+  const byConfig = new Map(
+    activities.map((activity) => [activity.config, activity]),
+  );
+  return appliances.map((config) => {
+    const activity = byConfig.get(config);
+    if (activity) return activity;
+    const entity = hass?.states[config.entity];
+    const reportedState = entity?.state;
+    const state = !available(entity)
+      ? reportedState === 'unavailable'
+        ? 'unavailable'
+        : 'unknown'
+      : config.type === 'heat_pump'
+        ? numericState(entity) === 0
+          ? 'idle'
+          : 'unknown'
+        : entity.state;
+    return {
+      config,
+      state,
+      inactive: true,
+      indicative: false,
+      approximate: false,
+      temperature: available(entity)
+        ? numericState(hass?.states[config.current_temperature ?? ''])
+        : undefined,
+    };
   });
 }
 

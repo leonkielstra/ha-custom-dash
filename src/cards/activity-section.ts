@@ -161,6 +161,7 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
       this.hass,
       this.config?.appliances ?? [],
       this.now,
+      this.config?.show_inactive,
     );
   }
   protected willUpdate() {
@@ -199,6 +200,20 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
   }
   private status(activity: ApplianceActivity) {
     const text = this.strings;
+    if (activity.inactive) {
+      if (activity.state === 'unavailable') return text.unavailable;
+      if (activity.state === 'error') return text.applianceError;
+      if (activity.state === 'aborting') return text.applianceAborting;
+      if (activity.state === 'delayedstart') return text.applianceScheduled;
+      if (activity.state === 'ready') return text.applianceReady;
+      if (
+        ['off', 'idle', 'inactive', 'standby', 'finished'].includes(
+          activity.state,
+        )
+      )
+        return text.applianceIdle;
+      return text.unknown;
+    }
     if (activity.state === 'finished') return text.applianceFinished;
     if (activity.state === 'heat_pump_hot_water') return text.heatingWater;
     if (activity.state === 'heat_pump_heating') return text.heatingHome;
@@ -239,7 +254,7 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
               class=${a.config.type === 'oven' || a.config.type === 'heat_pump' ? 'tone-sand' : 'tone-teal'}
               ><span class="icon-box"
                 ><ha-icon
-                  .icon=${a.state === 'finished' ? 'mdi:check-circle-outline' : (a.config.icon ?? icons[a.config.type])}
+                  .icon=${a.state === 'finished' && !a.inactive ? 'mdi:check-circle-outline' : (a.config.icon ?? icons[a.config.type])}
                   aria-hidden="true"
                 ></ha-icon></span
             ></span>

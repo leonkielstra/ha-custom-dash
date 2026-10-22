@@ -32,7 +32,9 @@ export function toEditorData(config: EditorConfig): EditorConfig {
 export function editorDefaults(type: EditorType): Record<string, unknown> {
   return {
     theme: 'auto',
-    ...(type === 'home-activity-section-card' ? { hide_when_empty: true } : {}),
+    ...(type === 'home-activity-section-card'
+      ? { hide_when_empty: true, show_inactive: false }
+      : {}),
     ...(type === 'home-room-header-card' ? { show_name: false } : {}),
     ...(type === 'home-metric-card' ? { layout: 'grid', columns: 2 } : {}),
   };

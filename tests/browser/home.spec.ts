@@ -1,5 +1,55 @@
 import { expect, test } from '@playwright/test';
 
+test('room appliance rows stay visible and distinguish idle, running and unavailable states', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/preview/home.html?bundle=1&room-appliances=1');
+  await page.locator('#theme').selectOption('dark');
+  const card = page.locator('.home-page.dark home-activity-section-card');
+  await expect(card.locator('ha-card')).toHaveCount(4);
+  for (const status of await card.locator('.status').all())
+    await expect(status).toContainText('Niet actief');
+  await expect(card.locator('progress')).toHaveCount(0);
+  await page.evaluate(() => {
+    (
+      window as unknown as {
+        homePreview: { setState(id: string, state: string): void };
+      }
+    ).homePreview.setState('binary_sensor.example_washer', 'on');
+  });
+  await expect(card.locator('.status').first()).toContainText(
+    'Bezig met wassen',
+  );
+  await expect(card.locator('ha-card')).toHaveCount(4);
+  await expect(card.locator('progress')).toHaveCount(1);
+  await page.evaluate(() => {
+    (
+      window as unknown as {
+        homePreview: { setState(id: string, state: string): void };
+      }
+    ).homePreview.setState('binary_sensor.example_washer', 'unavailable');
+  });
+  await expect(card.locator('.status').first()).toContainText(
+    'Niet beschikbaar',
+  );
+  await expect(card.locator('progress')).toHaveCount(0);
+  for (const width of [390, 320]) {
+    await page.setViewportSize({ width, height: 844 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await card.screenshot({
+      path: `test-results/room-appliances-${width}-dark.png`,
+    });
+  }
+  await page.locator('#language').selectOption('en');
+  await expect(card.locator('.status').first()).toContainText('Unavailable');
+  await expect(card.locator('.status').nth(1)).toContainText('Not active');
+});
+
 test('heat-pump activity uses a compact neutral row, localizes, and responds to live valve and output updates', async ({
   page,
 }) => {

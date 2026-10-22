@@ -141,3 +141,24 @@ it('keeps finished cards visible, updates elapsed text, expires without hass eve
   card.remove();
   expect(vi.getTimerCount()).toBe(0);
 });
+it('returns completed room appliances to idle at expiry without hiding them or keeping stale progress', async () => {
+  vi.useFakeTimers();
+  vi.setSystemTime(now);
+  const card = new ActivitySectionCard();
+  card.setConfig({
+    type: 'custom:home-activity-section-card',
+    appliances: [config],
+    show_inactive: true,
+  });
+  card.hass = hass(59);
+  document.body.append(card);
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('Klaar');
+  await vi.advanceTimersByTimeAsync(60000);
+  await card.updateComplete;
+  expect(card.hidden).toBe(false);
+  expect(card.shadowRoot!.textContent).toContain('Niet actief');
+  expect(card.shadowRoot!.querySelectorAll('ha-card')).toHaveLength(1);
+  expect(card.shadowRoot!.querySelector('progress')).toBeNull();
+  expect(vi.getTimerCount()).toBe(0);
+});

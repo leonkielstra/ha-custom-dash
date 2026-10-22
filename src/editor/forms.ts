@@ -306,6 +306,7 @@ export function cardForm(
       schema = [
         text('title'),
         bool('hide_when_empty'),
+        bool('show_inactive'),
         objects(
           'appliances',
           [

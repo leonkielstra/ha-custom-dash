@@ -103,6 +103,7 @@ export interface ApplianceConfig {
 export interface ActivityConfig extends CardConfig {
   title?: string;
   hide_when_empty: boolean;
+  show_inactive?: boolean;
   appliances: ApplianceConfig[];
 }
 
