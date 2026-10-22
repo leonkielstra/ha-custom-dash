@@ -73,7 +73,8 @@ export interface RoomConfig extends CardConfig {
   lights?: string[];
   icon_tone?: IconTone;
 }
-export type ApplianceType = 'washer' | 'dryer' | 'oven' | 'dishwasher';
+export type ApplianceType =
+  'washer' | 'dryer' | 'oven' | 'dishwasher' | 'heat_pump';
 export interface ApplianceConfig {
   type: ApplianceType;
   name: string;
@@ -86,6 +87,14 @@ export interface ApplianceConfig {
   current_temperature?: string;
   progress?: string;
   end_time?: string;
+  mode_entity?: string;
+  operating_entity?: string;
+  operating_states?: string[];
+  fan_speed?: string;
+  heating_states?: string[];
+  hot_water_states?: string[];
+  /** Minimum thermal output in kW, exclusive. */
+  minimum_heat_output?: number;
 }
 export interface ActivityConfig extends CardConfig {
   title?: string;

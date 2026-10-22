@@ -1,12 +1,20 @@
 import type {
   ActivityConfig,
+  ApplianceConfig,
   HassEntity,
   HomeAssistant,
   RoomConfig,
 } from '../src/ha/types';
 
 export type HomeScenario =
-  'day' | 'night' | 'multiple' | 'unavailable' | 'no-lights' | 'reference';
+  | 'day'
+  | 'night'
+  | 'multiple'
+  | 'unavailable'
+  | 'no-lights'
+  | 'reference'
+  | 'hot-water'
+  | 'heating';
 // Public fixtures mirror the supplied configuration's structure, using fictional IDs only.
 const floors = [
   {
@@ -113,6 +121,18 @@ export const activities: ActivityConfig = {
     },
   ],
 };
+export const heatPump: ApplianceConfig = {
+  type: 'heat_pump',
+  name: 'Warmtepomp',
+  entity: 'sensor.example_heat_output',
+  active_states: [],
+  mode_entity: 'sensor.example_heat_pump_valve',
+  hot_water_states: ['domesticHotWater'],
+  heating_states: ['climateCircuitOne'],
+  operating_entity: 'sensor.example_heat_pump_operation',
+  operating_states: ['heating'],
+  fan_speed: 'sensor.example_heat_pump_fan_speed',
+};
 export const scenes = {
   type: 'custom:home-scene-card',
   title: 'Favoriete scènes',
@@ -152,7 +172,21 @@ export function fixtureStates(
       last_changed: lastChanged,
     } satisfies HassEntity;
   };
+  add(
+    heatPump.entity,
+    scenario === 'hot-water' || scenario === 'heating' ? '3.497' : '0',
+    { unit_of_measurement: 'kW' },
+  );
+  add(
+    heatPump.mode_entity!,
+    scenario === 'hot-water' ? 'domesticHotWater' : 'climateCircuitOne',
+  );
+  add(
+    heatPump.operating_entity!,
+    scenario === 'hot-water' || scenario === 'heating' ? 'heating' : 'standby',
+  );
   const multiple = scenario === 'multiple' || scenario === 'unavailable';
+  add(heatPump.fan_speed!, '42', { unit_of_measurement: '%' });
   add('sun.sun', scenario === 'night' ? 'below_horizon' : 'above_horizon');
   add(hero.temperature, '20.4', { unit_of_measurement: '°C' });
   add(hero.outdoor_temperature, '11.1', { unit_of_measurement: '°C' });

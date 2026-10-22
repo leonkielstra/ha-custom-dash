@@ -1,6 +1,7 @@
 import type { CardConfig, HomeAssistant, HassEntity } from '../src/ha/types';
 import {
   activities,
+  heatPump,
   fixtureStates,
   hero,
   roomGroups,
@@ -52,7 +53,7 @@ document.body.innerHTML = `
     <div class="preview-controls">
       <label>Taal / language <select id="language"><option value="nl">Nederlands</option><option value="en">English</option></select></label>
       <label>Thema / theme <select id="theme"><option value="both">Both</option><option value="light">Light</option><option value="dark">Dark</option></select></label>
-      <label>Scenario <select id="scenario"><option value="reference">Reference · washer and oven</option><option value="day">A · Day, idle</option><option value="night">B · Night, washer</option><option value="multiple">C · Multiple appliances</option><option value="unavailable">D · Unavailable entities</option><option value="no-lights">E · Rooms without lights</option></select></label>
+      <label>Scenario <select id="scenario"><option value="reference">Reference · washer and oven</option><option value="day">A · Day, idle</option><option value="night">B · Night, washer</option><option value="multiple">C · Multiple appliances</option><option value="unavailable">D · Unavailable entities</option><option value="no-lights">E · Rooms without lights</option><option value="hot-water">F · Heat pump, hot water</option><option value="heating">G · Heat pump, space heating</option></select></label>
       <label>Daglicht / daylight <select id="daylight"><option value="above_horizon">Day</option><option value="below_horizon">Night</option><option value="unavailable">Unavailable</option></select></label>
       <button id="long-name">Long room name</button>
     </div>
@@ -91,7 +92,11 @@ function render() {
       mounted.push({ card, theme: mode });
     };
     add(hero, summary);
-    add(activities, summary);
+    const homeActivities = {
+      ...activities,
+      appliances: [...activities.appliances, heatPump],
+    };
+    add(homeActivities, summary);
     add(scenes, summary);
     for (const group of roomGroups) {
       const section = document.createElement('section');

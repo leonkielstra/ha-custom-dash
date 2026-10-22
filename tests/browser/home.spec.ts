@@ -1,5 +1,75 @@
 import { expect, test } from '@playwright/test';
 
+test('heat-pump activity uses a compact neutral row, localizes, and responds to live valve and output updates', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/preview/home.html?bundle=1');
+  await page.locator('#scenario').selectOption('hot-water');
+  for (const theme of ['dark', 'light']) {
+    await page.locator('#theme').selectOption(theme);
+    const view = page.locator(`.home-page.${theme}`);
+    const section = view.locator('home-activity-section-card');
+    await expect(section.locator('ha-card')).toHaveCount(1);
+    await expect(section).toContainText('Warm water wordt opgewarmd');
+    await expect(section).toContainText('3,5kW');
+    await expect(section).toContainText('Ventilator 42%');
+    await expect(section.locator('progress')).toHaveCount(0);
+    expect(
+      await section
+        .locator('ha-card')
+        .evaluate((el) => getComputedStyle(el).backgroundColor),
+    ).toBe(theme === 'dark' ? 'rgb(36, 36, 36)' : 'rgb(255, 253, 248)');
+    expect(
+      await section
+        .locator('.status')
+        .evaluate((el) => el.scrollWidth <= el.clientWidth),
+    ).toBe(true);
+    await view.screenshot({ path: `test-results/heat-pump-390-${theme}.png` });
+  }
+  await page.locator('#theme').selectOption('dark');
+  await page.setViewportSize({ width: 320, height: 844 });
+  const view = page.locator('.home-page.dark');
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(
+    await view
+      .locator('home-activity-section-card .status')
+      .evaluate((el) => el.scrollWidth <= el.clientWidth),
+  ).toBe(true);
+  await view.screenshot({ path: 'test-results/heat-pump-320-dark.png' });
+  await page.locator('#scenario').selectOption('heating');
+  const section = view.locator('home-activity-section-card');
+  await expect(section).toContainText('Woning wordt verwarmd');
+  await page.locator('#language').selectOption('en');
+  await expect(section).toContainText('Heating the home');
+  await expect(section).toContainText('Fan speed 42%');
+  const setState = async (id: string, state: string) =>
+    page.evaluate(
+      ({ id, state }) => {
+        (
+          window as unknown as {
+            homePreview: { setState(id: string, state: string): void };
+          }
+        ).homePreview.setState(id, state);
+      },
+      { id, state },
+    );
+  await setState('sensor.example_heat_pump_valve', 'unavailable');
+  await expect(section).toContainText('Heat pump active');
+  await setState('sensor.example_heat_output', '0');
+  await expect(section).toBeHidden();
+  await setState('sensor.example_heat_output', '3.497');
+  await expect(section).toBeVisible();
+  await setState('sensor.example_heat_pump_fan_speed', '65');
+  await expect(section).toContainText('Fan speed 65%');
+  await setState('sensor.example_heat_pump_operation', 'standby');
+  await expect(section).toBeHidden();
+});
+
 test('Home bundle renders all twelve rooms and switches illustrations independently of theme', async ({
   page,
 }) => {

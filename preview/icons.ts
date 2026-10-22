@@ -1,5 +1,6 @@
 // The host normally provides ha-icon. This tiny SVG stand-in exists ONLY here.
 const paths: Record<string, string> = {
+  'mdi:heat-pump-outline': 'M3 3h18v18H3ZM7 7h10v10H7ZM12 7v10M7 12h10',
   'mdi:heating-coil':
     'M7 3c-6 5 6 7 0 12s0 6 0 6m5-18c-6 5 6 7 0 12s0 6 0 6m5-18c-6 5 6 7 0 12s0 6 0 6',
   'mdi:chevron-right': 'm9 5 7 7-7 7',

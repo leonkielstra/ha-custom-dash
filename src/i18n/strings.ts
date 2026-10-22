@@ -37,6 +37,11 @@ const messages = {
     applianceAttention: 'Action required',
     washing: 'Washing',
     drying: 'Drying',
+    heatingWater: 'Heating hot water',
+    heatingHome: 'Heating the home',
+    heatPumpActive: 'Heat pump active',
+    heatOutput: 'Reported heat output',
+    fanSpeed: 'Fan speed',
     elapsed: (duration: string, approximate: boolean) =>
       `${approximate ? 'Indicative: ' : ''}${duration} elapsed`,
     remaining: (duration: string) => `${duration} remaining`,
@@ -191,6 +196,11 @@ const messages = {
     applianceAttention: 'Actie nodig',
     washing: 'Bezig met wassen',
     drying: 'Bezig met drogen',
+    heatingWater: 'Warm water wordt opgewarmd',
+    heatingHome: 'Woning wordt verwarmd',
+    heatPumpActive: 'Warmtepomp actief',
+    heatOutput: 'Gemeld warmtevermogen',
+    fanSpeed: 'Ventilator',
     elapsed: (duration: string, approximate: boolean) =>
       `${approximate ? 'Indicatief: ' : ''}${duration} bezig`,
     remaining: (duration: string) => `Nog ${duration}`,

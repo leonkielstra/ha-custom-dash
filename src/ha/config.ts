@@ -219,13 +219,52 @@ export function activityConfig(value: unknown): ActivityConfig {
   const appliances = c.appliances.map((value, index): ApplianceConfig => {
     const path = `appliances[${index}]`;
     const a = object(value, path);
-    if (!['washer', 'dryer', 'oven', 'dishwasher'].includes(String(a.type)))
+    const heatPump = a.type === 'heat_pump';
+    if (
+      !['washer', 'dryer', 'oven', 'dishwasher', 'heat_pump'].includes(
+        String(a.type),
+      )
+    )
       throw new Error(
-        `${path}.type: expected washer, dryer, oven, or dishwasher`,
+        `${path}.type: expected washer, dryer, oven, dishwasher, or heat_pump`,
       );
-    if (!Array.isArray(a.active_states) || !a.active_states.length)
+    if (
+      !heatPump &&
+      (!Array.isArray(a.active_states) || !a.active_states.length)
+    )
       throw new Error(
         `${path}.active_states: expected a non-empty list of strings`,
+      );
+    const stateList = (value: unknown, key: string): string[] => {
+      if (value === undefined) return [];
+      if (!Array.isArray(value))
+        throw new Error(`${path}.${key}: expected a list of strings`);
+      return value.map((state, i) => text(state, `${path}.${key}[${i}]`));
+    };
+    const heatingStates = stateList(a.heating_states, 'heating_states');
+    const hotWaterStates = stateList(a.hot_water_states, 'hot_water_states');
+    const operatingEntity = optionalEntity(
+      a.operating_entity,
+      `${path}.operating_entity`,
+    );
+    const operatingStates = stateList(a.operating_states, 'operating_states');
+    if (operatingEntity && !operatingStates.length)
+      throw new Error(
+        `${path}.operating_states: required with operating_entity`,
+      );
+    if (heatingStates.some((state) => hotWaterStates.includes(state)))
+      throw new Error(
+        `${path}.heating_states: must not overlap hot_water_states`,
+      );
+    const minimumOutput = a.minimum_heat_output;
+    if (
+      minimumOutput !== undefined &&
+      (typeof minimumOutput !== 'number' ||
+        !Number.isFinite(minimumOutput) ||
+        minimumOutput < 0)
+    )
+      throw new Error(
+        `${path}.minimum_heat_output: expected a non-negative number in kW`,
       );
     const duration = a.reference_duration_minutes;
     if (
@@ -242,9 +281,11 @@ export function activityConfig(value: unknown): ActivityConfig {
       name: text(a.name, `${path}.name`),
       icon: optionalText(a.icon, `${path}.icon`),
       entity: entity(a.entity, `${path}.entity`),
-      active_states: a.active_states.map((state, i) =>
-        text(state, `${path}.active_states[${i}]`),
-      ),
+      active_states: heatPump
+        ? []
+        : (a.active_states as unknown[]).map((state, i) =>
+            text(state, `${path}.active_states[${i}]`),
+          ),
       room: optionalText(a.room, `${path}.room`),
       reference_duration_minutes: duration as number | undefined,
       started_at_entity: optionalEntity(
@@ -257,6 +298,15 @@ export function activityConfig(value: unknown): ActivityConfig {
       ),
       progress: optionalEntity(a.progress, `${path}.progress`),
       end_time: optionalEntity(a.end_time, `${path}.end_time`),
+      mode_entity: heatPump
+        ? entity(a.mode_entity, `${path}.mode_entity`)
+        : undefined,
+      operating_entity: operatingEntity,
+      operating_states: operatingStates,
+      fan_speed: optionalEntity(a.fan_speed, `${path}.fan_speed`),
+      heating_states: heatingStates,
+      hot_water_states: hotWaterStates,
+      minimum_heat_output: minimumOutput as number | undefined,
     };
   });
   return {

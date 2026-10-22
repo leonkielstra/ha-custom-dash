@@ -127,7 +127,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.6.0
+url: /local/ha-custom-dash.js?v=0.7.0
 type: module
 ```
 
@@ -285,16 +285,16 @@ Sections defaults allocate half a section to each room card; use native
 
 Appliance items support these properties:
 
-| Property                          | Meaning                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------ |
-| `type`                            | Required: `washer`, `dryer`, `oven`, or `dishwasher`                           |
-| `name`, `entity`, `active_states` | Required label, state entity, and nonempty string list of active states        |
-| `icon`, `room`                    | Optional icon and location label                                               |
-| `reference_duration_minutes`      | Optional positive reference duration for washer/dryer elapsed-time indication  |
-| `started_at_entity`               | Optional date-and-time helper or timestamp state for washer/dryer start        |
-| `current_temperature`             | Optional temperature sensor, using its reported unit                           |
-| `progress`                        | Optional actual program percentage sensor; only values from 0–100 are accepted |
-| `end_time`                        | Optional full program-end timestamp sensor for remaining time                  |
+| Property                          | Meaning                                                                                                                                    |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `type`                            | Required: `washer`, `dryer`, `oven`, `dishwasher`, or `heat_pump`                                                                          |
+| `name`, `entity`, `active_states` | Required label, state entity, and nonempty string list of active states; heat pumps use thermal power as `entity` and omit `active_states` |
+| `icon`, `room`                    | Optional icon and location label                                                                                                           |
+| `reference_duration_minutes`      | Optional positive reference duration for washer/dryer elapsed-time indication                                                              |
+| `started_at_entity`               | Optional date-and-time helper or timestamp state for washer/dryer start                                                                    |
+| `current_temperature`             | Optional temperature sensor, using its reported unit                                                                                       |
+| `progress`                        | Optional actual program percentage sensor; only values from 0–100 are accepted                                                             |
+| `end_time`                        | Optional full program-end timestamp sensor for remaining time                                                                              |
 
 Activity compares states exactly with `active_states`, preserves appliance order,
 and always excludes `unknown`/`unavailable`. `run`, `pause`, and `actionrequired`
@@ -318,6 +318,53 @@ substitutes for program progress. Remaining time uses a valid future `end_time`;
 invalid/past dates and unavailable progress are omitted. No target temperature is
 invented. One timer updates visible timed activity each minute, with cleanup when
 idle or disconnected. No helpers or automations are needed for the initial view.
+
+### Heat-pump activity
+
+Add a `heat_pump` item to the existing activity section. The configured `entity`
+must report **thermal output**, with `W` or `kW` units. Electrical consumption,
+enabled operating modes, and circulation pumps do not establish heat production.
+The row appears only when reported thermal output exceeds `minimum_heat_output`
+(optional, in kW, default `0`). Zero, negative, missing, invalid, or unavailable
+output hides the row. Unsupported or absent units also hide it.
+
+```yaml
+- type: heat_pump
+  name: Warmtepomp
+  entity: sensor.example_heat_output
+  mode_entity: sensor.example_heat_pump_valve
+  hot_water_states:
+    - domesticHotWater
+  heating_states:
+    - climateCircuitOne
+  operating_entity: sensor.example_heat_pump_operation
+  operating_states:
+    - heating
+  fan_speed: sensor.example_heat_pump_fan_speed
+```
+
+`mode_entity` is required. `hot_water_states` and `heating_states` are optional
+lists of exact, case-sensitive valve states; both default to empty and must not
+overlap. Configure values reported by your integration. A hot-water match displays
+“Warm water wordt opgewarmd”; a heating match displays “Woning wordt verwarmd”.
+An unrecognized, unavailable, or missing valve state displays “Warmtepomp actief”
+while thermal output is positive. English equivalents follow HA's language setting.
+The reported output appears alongside the status. No progress or remaining time
+is inferred, and no helpers, automations, or service calls are needed.
+Optional `fan_speed` shows the fan's reported percentage as a small secondary
+detail while active. Missing, unavailable, invalid, or out-of-range percentages
+are omitted, as are sensors reporting units other than `%` (an absent unit uses `%`).
+
+This is a summary of the integration's latest reported output and valve position,
+not an independent measurement of compressor activity. Optional `operating_entity`
+and its nonempty `operating_states` list add a second activity check: if configured,
+only a matching available operating state permits the row to appear. This suppresses
+activity during standby even if the last reported output is still positive. Unknown,
+unavailable, missing, and unlisted operating states also suppress the row. Configure
+only states verified on your installation; cooling is not inferred from a heating
+circuit valve position. A retained valve position
+alone never shows an activity. The Home preview includes separate hot-water and
+space-heating scenarios, with fictional entity IDs.
 
 ### Lighting behavior
 

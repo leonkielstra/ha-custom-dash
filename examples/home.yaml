@@ -21,6 +21,18 @@ views:
             title: Actieve apparaten
             hide_when_empty: true
             appliances:
+              - type: heat_pump
+                name: Warmtepomp
+                entity: sensor.example_heat_output
+                mode_entity: sensor.example_heat_pump_valve
+                hot_water_states:
+                  - domesticHotWater
+                heating_states:
+                  - climateCircuitOne
+                operating_entity: sensor.example_heat_pump_operation
+                operating_states:
+                  - heating
+                fan_speed: sensor.example_heat_pump_fan_speed
               - type: washer
                 name: Wasmachine
                 icon: mdi:washing-machine

@@ -53,6 +53,8 @@ export interface ApplianceActivity {
   approximate: boolean;
   remainingMinutes?: number;
   temperature?: number;
+  heatOutput?: number;
+  fanSpeed?: number;
 }
 
 export function applianceActivities(
@@ -60,8 +62,56 @@ export function applianceActivities(
   appliances: ApplianceConfig[],
   now: number,
 ): ApplianceActivity[] {
-  return appliances.flatMap((config) => {
+  return appliances.flatMap<ApplianceActivity>((config) => {
     const entity = hass?.states[config.entity];
+    if (config.type === 'heat_pump') {
+      const operating = hass?.states[config.operating_entity ?? ''];
+      if (
+        config.operating_entity &&
+        (!available(operating) ||
+          !config.operating_states?.includes(operating.state))
+      )
+        return [];
+      const output = numericState(entity);
+      const unit = entity?.attributes.unit_of_measurement;
+      const kw =
+        output === undefined
+          ? undefined
+          : unit === 'kW'
+            ? output
+            : unit === 'W'
+              ? output / 1000
+              : undefined;
+      // Settings and pump activity do not establish actual heat production.
+      if (kw === undefined || kw <= (config.minimum_heat_output ?? 0))
+        return [];
+      const mode = hass?.states[config.mode_entity ?? ''];
+      const fan = hass?.states[config.fan_speed ?? ''];
+      const fanSpeed = numericState(fan);
+      const fanUnit = fan?.attributes.unit_of_measurement;
+      const state =
+        available(mode) && config.hot_water_states?.includes(mode.state)
+          ? 'heat_pump_hot_water'
+          : available(mode) && config.heating_states?.includes(mode.state)
+            ? 'heat_pump_heating'
+            : 'heat_pump_active';
+      return [
+        {
+          config,
+          state,
+          heatOutput: kw,
+          fanSpeed:
+            fanSpeed !== undefined &&
+            fanSpeed >= 0 &&
+            fanSpeed <= 100 &&
+            (fanUnit === undefined || fanUnit === '%')
+              ? fanSpeed
+              : undefined,
+          indicative: false,
+          approximate: false,
+        },
+      ];
+    }
     if (!available(entity) || !config.active_states.includes(entity.state))
       return [];
     const timedByReference =
