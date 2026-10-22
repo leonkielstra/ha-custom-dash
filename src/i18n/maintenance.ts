@@ -1,0 +1,73 @@
+import { languageOf } from './strings';
+export function maintenanceText(language?: string) {
+  return languageOf(language) === 'nl'
+    ? {
+        title: 'Onderhoud',
+        subtitle: 'Een rustig overzicht van wat aandacht vraagt',
+        attention: 'Aandacht nodig',
+        allGood: 'Alles in orde',
+        allGoodDetail: 'Geen aandachtspunten in de beschikbare metingen.',
+        checking: 'Niet alles is bekend',
+        unknown: 'Status niet beschikbaar of niet bevestigd',
+        check: (name: string) => `Controleer de status van ${name}`,
+        count: (n: number) =>
+          `${n} ${n === 1 ? 'aandachtspunt' : 'aandachtspunten'}`,
+        urgent: (n: number) => `${n} urgent`,
+        soon: (n: number) => `${n} overige`,
+        flagged: (n: number) => `${n} ${n === 1 ? 'melding' : 'meldingen'}`,
+        days: (n: number) => `${n} ${n === 1 ? 'dag' : 'dagen'}`,
+        backupsUpdates: 'Back-ups & updates',
+        unavailable: (n: number) => `${n} niet bevestigd`,
+        categories: {
+          batteries: 'Batterijen',
+          supplies: 'Verbruiksartikelen',
+          backups: 'Back-ups',
+          updates: 'Updates',
+          devices: 'Apparaten',
+        },
+        healthy: 'In orde',
+        update: 'Update beschikbaar',
+        updated: 'Bijgewerkt',
+        details: 'Details bekijken',
+        remaining: (n: string) => `${n}% resterend`,
+        ago: (n: string) => `${n} geleden`,
+        open: (name: string) => `Details van ${name} bekijken`,
+        card: 'Onderhoudsoverzicht',
+        description:
+          'Acties, batterijen, verbruiksartikelen, back-ups en updates.',
+      }
+    : {
+        title: 'Maintenance',
+        subtitle: 'A calm overview of what needs attention',
+        attention: 'Needs attention',
+        allGood: 'All clear',
+        allGoodDetail: 'No issues in the available readings.',
+        checking: 'Some states are unconfirmed',
+        unknown: 'State unavailable or unconfirmed',
+        check: (name: string) => `Check the status of ${name}`,
+        count: (n: number) =>
+          `${n} ${n === 1 ? 'item needs' : 'items need'} attention`,
+        urgent: (n: number) => `${n} urgent`,
+        soon: (n: number) => `${n} need attention`,
+        flagged: (n: number) => `${n} ${n === 1 ? 'notice' : 'notices'}`,
+        days: (n: number) => `${n} ${n === 1 ? 'day' : 'days'}`,
+        backupsUpdates: 'Backups & updates',
+        unavailable: (n: number) => `${n} unconfirmed`,
+        categories: {
+          batteries: 'Batteries',
+          supplies: 'Supplies',
+          backups: 'Backups',
+          updates: 'Updates',
+          devices: 'Devices',
+        },
+        healthy: 'All clear',
+        update: 'Update available',
+        updated: 'Up to date',
+        details: 'View details',
+        remaining: (n: string) => `${n}% remaining`,
+        ago: (n: string) => `${n} ago`,
+        open: (name: string) => `View details for ${name}`,
+        card: 'Maintenance overview',
+        description: 'Actions, batteries, supplies, backups and updates.',
+      };
+}

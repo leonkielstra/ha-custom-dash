@@ -1,0 +1,77 @@
+# Home Assistant package: install once, separately from Lovelace dashboard YAML.
+# Replace fictional source entity IDs. Do not set `initial`: helpers restore state.
+input_datetime:
+  example_washer_finished:
+    name: Washing machine finished at
+    has_date: true
+    has_time: true
+  example_dryer_finished:
+    name: Dryer finished at
+    has_date: true
+    has_time: true
+  example_dishwasher_finished:
+    name: Dishwasher finished at
+    has_date: true
+    has_time: true
+
+automation:
+  - id: home_cards_example_washer_completion
+    alias: Home cards - washing machine completion
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.example_washer
+        from: 'on'
+        to: 'off'
+        id: finished
+      - trigger: state
+        entity_id: binary_sensor.example_washer
+        to: 'on'
+        id: started
+    actions:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.example_washer_finished
+        data:
+          timestamp: "{{ now().timestamp() if trigger.id == 'finished' else 946684800 }}"
+  - id: home_cards_example_dryer_completion
+    alias: Home cards - dryer completion
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.example_dryer
+        from: 'on'
+        to: 'off'
+        id: finished
+      - trigger: state
+        entity_id: binary_sensor.example_dryer
+        to: 'on'
+        id: started
+    actions:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.example_dryer_finished
+        data:
+          timestamp: "{{ now().timestamp() if trigger.id == 'finished' else 946684800 }}"
+  - id: home_cards_example_dishwasher_completion
+    alias: Home cards - dishwasher completion
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: sensor.example_dishwasher
+        from:
+          - run
+          - pause
+          - actionrequired
+        to: finished
+        id: finished
+      - trigger: state
+        entity_id: sensor.example_dishwasher
+        to: run
+        id: started
+    actions:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.example_dishwasher_finished
+        data:
+          timestamp: "{{ now().timestamp() if trigger.id == 'finished' else 946684800 }}"

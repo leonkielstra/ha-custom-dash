@@ -12,7 +12,7 @@ test('all registered cards open the shared visual editor with valid picker defau
     .evaluateAll((options) =>
       options.map((o) => (o as HTMLOptionElement).value),
     );
-  expect(types).toHaveLength(14);
+  expect(types).toHaveLength(15);
   for (const type of types) {
     await page.locator('#editor-card').selectOption(type);
     await expect(

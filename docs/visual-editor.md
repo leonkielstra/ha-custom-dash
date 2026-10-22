@@ -1,6 +1,6 @@
 # Visual card configuration
 
-All 14 registered cards support Home Assistant's simple visual editor and card
+All 15 registered cards support Home Assistant's simple visual editor and card
 picker. Existing YAML configurations continue to work with the same schema.
 Load the updated bundle, choose a community card in **Add card**, and configure
 it through entity pickers, text fields, dropdowns and repeatable lists.
@@ -61,7 +61,7 @@ booleans/zero, nested-card changes, list ordering and state-label editing.
 
 ## Local preview
 
-Run `npm run dev` and open `/preview/editor.html`. Select any of the 14 cards,
+Run `npm run dev` and open `/preview/editor.html`. Select any of the 15 cards,
 edit values and inspect its live card preview. The page uses fictional entities
 and a small native-form stand-in; it is not an embedded Home Assistant frontend.
 Production uses the real native selectors and child-card editor.

@@ -145,6 +145,7 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
         [
           a.entity,
           a.started_at_entity,
+          a.finished_at_entity,
           a.current_temperature,
           a.progress,
           a.end_time,
@@ -183,7 +184,9 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
       this.isConnected &&
       activities.some(
         (a) =>
-          a.elapsedMinutes !== undefined || a.remainingMinutes !== undefined,
+          a.elapsedMinutes !== undefined ||
+          a.remainingMinutes !== undefined ||
+          a.finishedMinutesAgo !== undefined,
       );
     if (!needsClock) this.stopTimer();
     else if (this.timer === undefined)
@@ -196,6 +199,7 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
   }
   private status(activity: ApplianceActivity) {
     const text = this.strings;
+    if (activity.state === 'finished') return text.applianceFinished;
     if (activity.state === 'heat_pump_hot_water') return text.heatingWater;
     if (activity.state === 'heat_pump_heating') return text.heatingHome;
     if (activity.state === 'heat_pump_active') return text.heatPumpActive;
@@ -234,7 +238,7 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
             <span class=${a.config.type === 'oven' ? 'tone-sand' : 'tone-teal'}
               ><span class="icon-box"
                 ><ha-icon
-                  .icon=${a.config.icon ?? icons[a.config.type]}
+                  .icon=${a.state === 'finished' ? 'mdi:check-circle-outline' : (a.config.icon ?? icons[a.config.type])}
                   aria-hidden="true"
                 ></ha-icon></span
             ></span>
@@ -242,6 +246,7 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
               <h3 class="name" title=${a.config.name}>${a.config.name}</h3>
               ${a.heatOutput !== undefined ? html`<span class="metric" title=${text.heatOutput}>${sensorValue(this.hass, a.config.entity, '')}</span>` : temperature ? html`<span class="metric">${temperature}</span>` : a.elapsedMinutes !== undefined ? html`<span class="metric" title=${elapsed} aria-label=${elapsed}>${durationCompact(a.elapsedMinutes, this.hass?.locale?.language)}</span>` : nothing}
               <p class="status" title=${status}>${status}</p>
+              ${a.finishedMinutesAgo !== undefined ? html`<p class="timing">${text.finishedAgo(durationCompact(a.finishedMinutesAgo, this.hass?.locale?.language))}</p>` : nothing}
               ${a.fanSpeed !== undefined ? html`<p class="fan-speed">${text.fanSpeed} ${sensorValue(this.hass, a.config.fan_speed, '%')}</p>` : nothing}
               ${elapsed ? html`<p class="timing" title=${elapsed}>${text.referenceTime}</p>` : a.remainingMinutes !== undefined ? html`<p class="timing">${text.remaining(durationCompact(a.remainingMinutes, this.hass?.locale?.language))}</p>` : nothing}
               ${a.progress !== undefined ? html`<div class="progress"><progress max="100" value=${a.progress} aria-label=${a.indicative ? text.referenceProgress : text.programProgress} aria-valuetext=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`} title=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`}></progress></div>` : nothing}

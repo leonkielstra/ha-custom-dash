@@ -206,6 +206,43 @@ export function cardForm(
     icon(),
   ];
   switch (type) {
+    case 'home-maintenance-card':
+      schema = [
+        text('title'),
+        objects(
+          'items',
+          [
+            entity('entity', undefined, true),
+            text('name', true),
+            text('action', true),
+            select(
+              'kind',
+              ['level', 'state', 'update', 'stale'],
+              language,
+              true,
+            ),
+            select(
+              'category',
+              ['batteries', 'supplies', 'backups', 'updates', 'devices'],
+              language,
+            ),
+            text('room'),
+            icon(),
+            number('threshold', 0, 100, 'any'),
+            number('critical_threshold', 0, 100, 'any'),
+            number('max_age_hours', 0, undefined, 'any'),
+            strings('problem_states'),
+            strings('healthy_states'),
+            select('severity', ['warning', 'urgent'], language),
+            text('normal_text'),
+            text('problem_text'),
+          ],
+          language,
+          'name',
+          false,
+        ),
+      ];
+      break;
     case 'home-room-header-card':
       schema = [
         text('name'),
@@ -285,6 +322,9 @@ export function cardForm(
             text('room'),
             number('reference_duration_minutes', 0, undefined, 'any'),
             entity('started_at_entity'),
+            entity('finished_at_entity'),
+            number('finished_for_minutes', 0, undefined, 'any'),
+            strings('finished_states'),
             entity('current_temperature'),
             entity('progress'),
             entity('end_time'),

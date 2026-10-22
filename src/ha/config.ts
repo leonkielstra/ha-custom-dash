@@ -13,6 +13,8 @@ import type {
   SectionConfig,
   ScenesConfig,
   RoomConfig,
+  MaintenanceConfig,
+  MaintenanceItem,
 } from './types';
 
 type ObjectValue = Record<string, unknown>;
@@ -20,6 +22,95 @@ function object(value: unknown, path = 'config'): ObjectValue {
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error(`${path}: expected an object`);
   return value as ObjectValue;
+}
+
+export function maintenanceConfig(value: unknown): MaintenanceConfig {
+  const c = object(value);
+  if (!Array.isArray(c.items)) throw new Error('items: expected a list');
+  const result = c.items.map((value, i): MaintenanceItem => {
+    const path = `items[${i}]`;
+    const item = object(value, path);
+    const kind = item.kind;
+    if (!['level', 'state', 'update', 'stale'].includes(String(kind)))
+      throw new Error(`${path}.kind: expected level, state, update, or stale`);
+    const category =
+      item.category ??
+      (kind === 'level'
+        ? 'batteries'
+        : kind === 'stale'
+          ? 'backups'
+          : kind === 'update'
+            ? 'updates'
+            : 'devices');
+    if (
+      !['batteries', 'supplies', 'backups', 'updates', 'devices'].includes(
+        String(category),
+      )
+    )
+      throw new Error(
+        `${path}.category: expected batteries, supplies, backups, updates, or devices`,
+      );
+    const number = (key: string, fallback: number, max = Infinity) => {
+      const n = item[key] ?? fallback;
+      if (typeof n !== 'number' || !Number.isFinite(n) || n < 0 || n > max)
+        throw new Error(`${path}.${key}: expected a number from 0 to ${max}`);
+      return n;
+    };
+    const threshold = number('threshold', 25, 100);
+    const critical = number('critical_threshold', 10, 100);
+    if (kind === 'level' && critical > threshold)
+      throw new Error(`${path}.critical_threshold: must not exceed threshold`);
+    const states = (key: string) => {
+      const v = item[key];
+      if (v === undefined) return [];
+      if (!Array.isArray(v)) throw new Error(`${path}.${key}: expected a list`);
+      return v.map((s, j) => text(s, `${path}.${key}[${j}]`));
+    };
+    const problem = states('problem_states');
+    const healthy = states('healthy_states');
+    if (kind === 'state' && (!problem.length || !healthy.length))
+      throw new Error(
+        `${path}: state rules need explicit problem_states and healthy_states`,
+      );
+    if (
+      [...problem, ...healthy].some((s) =>
+        ['unknown', 'unavailable'].includes(s),
+      ) ||
+      problem.some((s) => healthy.includes(s))
+    )
+      throw new Error(
+        `${path}: state lists must not overlap or include unknown/unavailable`,
+      );
+    if (
+      item.severity !== undefined &&
+      !['warning', 'urgent'].includes(String(item.severity))
+    )
+      throw new Error(`${path}.severity: expected warning or urgent`);
+    return {
+      entity: entity(item.entity, `${path}.entity`),
+      name: text(item.name, `${path}.name`),
+      action: text(item.action, `${path}.action`),
+      kind: kind as MaintenanceItem['kind'],
+      category: category as MaintenanceItem['category'],
+      icon: optionalText(item.icon, `${path}.icon`),
+      room: optionalText(item.room, `${path}.room`),
+      normal_text: optionalText(item.normal_text, `${path}.normal_text`),
+      problem_text: optionalText(item.problem_text, `${path}.problem_text`),
+      threshold,
+      critical_threshold: critical,
+      max_age_hours: number('max_age_hours', 48),
+      problem_states: problem,
+      healthy_states: healthy,
+      severity: (item.severity ?? 'warning') as MaintenanceItem['severity'],
+    };
+  });
+  if (new Set(result.map((item) => item.entity)).size !== result.length)
+    throw new Error('items: duplicate entity IDs are not allowed');
+  return {
+    ...base(value),
+    title: optionalText(c.title, 'title'),
+    items: result,
+  };
 }
 function text(value: unknown, path: string): string {
   if (typeof value !== 'string' || !value.trim())
@@ -267,6 +358,27 @@ export function activityConfig(value: unknown): ActivityConfig {
         `${path}.minimum_heat_output: expected a non-negative number in kW`,
       );
     const duration = a.reference_duration_minutes;
+    const finishedDuration = a.finished_for_minutes;
+    if (
+      finishedDuration !== undefined &&
+      (typeof finishedDuration !== 'number' ||
+        !Number.isFinite(finishedDuration) ||
+        finishedDuration < 0)
+    )
+      throw new Error(
+        `${path}.finished_for_minutes: expected a non-negative number`,
+      );
+    const finishedStates = stateList(a.finished_states, 'finished_states');
+    if (
+      finishedStates.some(
+        (s) =>
+          ['unknown', 'unavailable'].includes(s) ||
+          (Array.isArray(a.active_states) && a.active_states.includes(s)),
+      )
+    )
+      throw new Error(
+        `${path}.finished_states: must not overlap active states or include unknown/unavailable`,
+      );
     if (
       duration !== undefined &&
       (typeof duration !== 'number' ||
@@ -292,6 +404,13 @@ export function activityConfig(value: unknown): ActivityConfig {
         a.started_at_entity,
         `${path}.started_at_entity`,
       ),
+      finished_at_entity: optionalEntity(
+        a.finished_at_entity,
+        `${path}.finished_at_entity`,
+      ),
+      finished_for_minutes: finishedDuration as number | undefined,
+      finished_states:
+        a.finished_states === undefined ? undefined : finishedStates,
       current_temperature: optionalEntity(
         a.current_temperature,
         `${path}.current_temperature`,

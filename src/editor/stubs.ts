@@ -19,6 +19,8 @@ export function cardStub(
     `${domain}.${placeholder}`;
   const language = hass?.locale?.language;
   switch (type) {
+    case 'home-maintenance-card':
+      return { items: [] };
     case 'home-room-header-card':
       return { name: editorLabel('new_room', language) };
     case 'home-scene-card':

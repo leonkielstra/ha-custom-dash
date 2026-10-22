@@ -84,6 +84,10 @@ export interface ApplianceConfig {
   room?: string;
   reference_duration_minutes?: number;
   started_at_entity?: string;
+  /** Persisted program completion timestamp; normally an input_datetime. */
+  finished_at_entity?: string;
+  finished_for_minutes?: number;
+  finished_states?: string[];
   current_temperature?: string;
   progress?: string;
   end_time?: string;
@@ -147,4 +151,28 @@ export interface MetricCardConfig extends CardConfig {
 export interface SystemHealthConfig extends CardConfig {
   title?: string;
   items: { entity: string; name: string; updated?: string; icon?: string }[];
+}
+
+export type MaintenanceCategory =
+  'batteries' | 'supplies' | 'backups' | 'updates' | 'devices';
+export interface MaintenanceItem {
+  entity: string;
+  name: string;
+  action: string;
+  kind: 'level' | 'state' | 'update' | 'stale';
+  category: MaintenanceCategory;
+  room?: string;
+  icon?: string;
+  threshold?: number;
+  critical_threshold?: number;
+  max_age_hours?: number;
+  problem_states?: string[];
+  healthy_states?: string[];
+  severity?: 'warning' | 'urgent';
+  normal_text?: string;
+  problem_text?: string;
+}
+export interface MaintenanceConfig extends CardConfig {
+  title?: string;
+  items: MaintenanceItem[];
 }

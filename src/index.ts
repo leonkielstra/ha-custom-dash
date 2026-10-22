@@ -12,12 +12,20 @@ import { HeatPumpStatusCard } from './cards/heat-pump-status';
 import { HeatFlowCard } from './cards/heat-flow';
 import { MetricCard } from './cards/metrics';
 import { SystemHealthCard } from './cards/system-health';
+import { MaintenanceCard } from './cards/maintenance';
+import { maintenanceText } from './i18n/maintenance';
 import { ui } from './i18n/strings';
 
 const text = ui(
   typeof navigator === 'undefined' ? undefined : navigator.language,
 );
 const cards = [
+  [
+    'home-maintenance-card',
+    MaintenanceCard,
+    maintenanceText(navigator.language).card,
+    maintenanceText(navigator.language).description,
+  ],
   [
     'home-heat-pump-status-card',
     HeatPumpStatusCard,

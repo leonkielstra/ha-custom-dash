@@ -55,6 +55,7 @@ export interface ApplianceActivity {
   temperature?: number;
   heatOutput?: number;
   fanSpeed?: number;
+  finishedMinutesAgo?: number;
 }
 
 export function applianceActivities(
@@ -112,8 +113,36 @@ export function applianceActivities(
         },
       ];
     }
-    if (!available(entity) || !config.active_states.includes(entity.state))
-      return [];
+    if (!available(entity)) return [];
+    if (!config.active_states.includes(entity.state)) {
+      const supported = ['washer', 'dryer', 'dishwasher'].includes(config.type);
+      const finishedStates =
+        config.finished_states ??
+        (config.type === 'dishwasher'
+          ? ['finished', 'ready', 'inactive']
+          : ['off']);
+      const finished = config.finished_at_entity
+        ? startTimestamp(hass?.states[config.finished_at_entity])
+        : undefined;
+      const window = (config.finished_for_minutes ?? 60) * 60000;
+      if (
+        !supported ||
+        !finishedStates.includes(entity.state) ||
+        finished === undefined ||
+        finished > now ||
+        now - finished >= window
+      )
+        return [];
+      return [
+        {
+          config,
+          state: 'finished',
+          indicative: false,
+          approximate: false,
+          finishedMinutesAgo: Math.floor((now - finished) / 60000),
+        },
+      ];
+    }
     const timedByReference =
       config.type === 'washer' || config.type === 'dryer';
     const start = config.started_at_entity

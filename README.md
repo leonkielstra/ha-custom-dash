@@ -8,10 +8,21 @@ is required.
 
 ## Visual editor
 
-All 14 cards support Home Assistant’s visual editor and picker, including lists,
+All 15 cards support Home Assistant’s visual editor and picker, including lists,
 metric state labels, and section child cards. YAML remains supported. See the
 [visual editor guide](docs/visual-editor.md); preview it locally at `/preview/editor.html`.
 Visual editing is required for every new configurable element.
+
+## Maintenance and recently finished appliances
+
+The [maintenance card](docs/maintenance.md) provides actionable messages with
+battery, supply, backup, update and device groups. Preview it at
+`/preview/maintenance.html`. All rules are explicitly configured and visually
+editable; missing readings are never treated as healthy.
+
+The activity card can retain “Finished” for an hour, cleared by a new cycle.
+See [completion setup](docs/appliance-completion.md) and the example HA helper
+package for persisted, cross-browser completion timestamps.
 
 ## Heat-pump dashboard
 

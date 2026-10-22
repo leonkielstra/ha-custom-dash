@@ -1,5 +1,18 @@
 // The host normally provides ha-icon. This tiny SVG stand-in exists ONLY here.
 const paths: Record<string, string> = {
+  'mdi:check-circle-outline': 'M3 12a9 9 0 1 0 18 0 9 9 0 1 0-18 0m5 0 3 3 6-7',
+  'mdi:wrench-outline':
+    'm14 3 2 4 5-1a6 6 0 0 1-8 7L5 21l-3-3 8-8a6 6 0 0 1 4-7Z',
+  'mdi:battery-outline': 'M8 3h8v2h3v17H5V5h3ZM8 9h8m-8 4h8m-8 4h8',
+  'mdi:alert-outline': 'M12 3 1 21h22ZM12 9v5m0 3v1',
+  'mdi:help-circle-outline':
+    'M3 12a9 9 0 1 0 18 0 9 9 0 1 0-18 0M9 9c0-4 7-3 6 0-1 2-3 1-3 4m0 3v1',
+  'mdi:cloud-check-outline':
+    'M7 19H5a4 4 0 0 1-1-8 6 6 0 0 1 11-4 5 5 0 0 1 6 8m-11 3 3 3 6-7',
+  'mdi:update': 'M21 8a9 9 0 1 0 0 8m0-14v6h-6M12 7v6l4 2',
+  'mdi:devices': 'M2 3h15v12H2Zm5 16h6M19 8h4v14h-4Z',
+  'mdi:package-variant-closed':
+    'm3 6 9-4 9 4v12l-9 4-9-4Zm0 0 9 4 9-4m-9 4v12M7 4l10 5',
   'mdi:radiator': 'M4 5h3v14H4Zm6 0h3v14h-3Zm6 0h3v14h-3M1 9h3m15 6h3',
   'mdi:water-boiler': 'M7 3h10v18H7ZM10 3V1m4 2V1M10 8h4m-4 4h4m-4 4h4',
   'mdi:access-point':

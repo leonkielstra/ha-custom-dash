@@ -40,7 +40,7 @@ room configuration remain compatible. Weather conditions are an optional hero
 field; a native HA heading badge can also display a confirmed weather entity.
 
 `examples/dashboard.yaml` contains Home and twelve room views. The private
-`local/dashboard.yaml` preserves existing Home/Woonkamer views and adds missing
+`local/dashboards/dashboard.yaml` preserves existing Home/Woonkamer views and adds missing
 room subviews from the confirmed draft. No thermostat entity was supplied, so
 climate is demonstrated with a fictional public fixture rather than a private
 binding. Existing native media/fan choices are preserved.

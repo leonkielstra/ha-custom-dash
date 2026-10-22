@@ -126,6 +126,7 @@ it('requires a form, visual editor and valid default for every registered card, 
 
 it('covers each supported configuration field instead of hiding list options behind a YAML selector', () => {
   const fields: Partial<Record<EditorType, string[]>> = {
+    'home-maintenance-card': ['title', 'items', 'theme'],
     'home-room-header-card': [
       'name',
       'show_name',
@@ -196,6 +197,30 @@ it('covers each supported configuration field instead of hiding list options beh
   )!.selector!;
   expect(activity).toHaveProperty('object.fields.mode_entity');
   expect(activity).toHaveProperty('object.fields.minimum_heat_output');
+  expect(activity).toHaveProperty('object.fields.finished_at_entity');
+  expect(activity).toHaveProperty('object.fields.finished_for_minutes');
+  expect(activity).toHaveProperty('object.fields.finished_states');
+  const maintenance = flatten(cardForm('home-maintenance-card').schema).find(
+    (f) => f.name === 'items',
+  )!.selector!;
+  for (const key of [
+    'entity',
+    'name',
+    'action',
+    'kind',
+    'category',
+    'room',
+    'icon',
+    'threshold',
+    'critical_threshold',
+    'max_age_hours',
+    'problem_states',
+    'healthy_states',
+    'severity',
+    'normal_text',
+    'problem_text',
+  ])
+    expect(maintenance).toHaveProperty(`object.fields.${key}`);
 });
 
 it('passes HA state and Dutch labels to native forms while preserving YAML-only metadata', async () => {

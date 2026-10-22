@@ -91,6 +91,7 @@ export const activities: ActivityConfig = {
       active_states: ['on'],
       room: 'Washok',
       reference_duration_minutes: 120,
+      finished_at_entity: 'input_datetime.example_washer_finished',
     },
     {
       type: 'dryer',
@@ -99,6 +100,7 @@ export const activities: ActivityConfig = {
       active_states: ['on'],
       room: 'Washok',
       reference_duration_minutes: 120,
+      finished_at_entity: 'input_datetime.example_dryer_finished',
     },
     {
       type: 'oven',
@@ -118,6 +120,7 @@ export const activities: ActivityConfig = {
       room: 'Keuken',
       progress: 'sensor.example_dishwasher_progress',
       end_time: 'sensor.example_dishwasher_end',
+      finished_at_entity: 'input_datetime.example_dishwasher_finished',
     },
   ],
 };
@@ -172,6 +175,12 @@ export function fixtureStates(
       last_changed: lastChanged,
     } satisfies HassEntity;
   };
+  for (const type of ['washer', 'dryer', 'dishwasher'])
+    add(`input_datetime.example_${type}_finished`, '2000-01-01 00:00:00', {
+      has_date: true,
+      has_time: true,
+      timestamp: 946684800,
+    });
   add(
     heatPump.entity,
     scenario === 'hot-water' || scenario === 'heating' ? '3.497' : '0',

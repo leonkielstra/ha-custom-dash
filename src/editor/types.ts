@@ -57,6 +57,7 @@ export interface ConfigForm {
   computeHelper: (schema: Pick<FormField, 'name'>) => string;
 }
 export const editorTypes = [
+  'home-maintenance-card',
   'home-room-header-card',
   'home-scene-card',
   'home-light-control-card',
