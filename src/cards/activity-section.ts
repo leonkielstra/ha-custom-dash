@@ -235,7 +235,8 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
               : undefined;
           const status = `${this.status(a)}${a.config.room ? ` · ${a.config.room}` : ''}`;
           return html`<ha-card>
-            <span class=${a.config.type === 'oven' ? 'tone-sand' : 'tone-teal'}
+            <span
+              class=${a.config.type === 'oven' || a.config.type === 'heat_pump' ? 'tone-sand' : 'tone-teal'}
               ><span class="icon-box"
                 ><ha-icon
                   .icon=${a.state === 'finished' ? 'mdi:check-circle-outline' : (a.config.icon ?? icons[a.config.type])}

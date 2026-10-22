@@ -17,6 +17,11 @@ test('heat-pump activity uses a compact neutral row, localizes, and responds to 
     await expect(section.locator('progress')).toHaveCount(0);
     expect(
       await section
+        .locator('.icon-box')
+        .evaluate((el) => getComputedStyle(el).color),
+    ).toBe(theme === 'dark' ? 'rgb(224, 173, 124)' : 'rgb(149, 100, 62)');
+    expect(
+      await section
         .locator('ha-card')
         .evaluate((el) => getComputedStyle(el).backgroundColor),
     ).toBe(theme === 'dark' ? 'rgb(36, 36, 36)' : 'rgb(255, 253, 248)');
