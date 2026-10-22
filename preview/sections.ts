@@ -89,14 +89,24 @@ function render() {
       section.append(wrapper);
     }
     view.append(section);
+    return section;
   };
   if (home) {
     section([hero, activities, scenes]);
+    const navigation = section([], 2);
+    navigation.classList.add('room-navigation');
     for (const group of roomGroups) {
-      section(group.rooms);
       const heading = document.createElement('h2');
       heading.textContent = group.title;
-      view.lastElementChild!.prepend(heading);
+      const grid = document.createElement('div');
+      grid.className = 'navigation-grid';
+      for (const config of group.rooms) {
+        const card = document.createElement('home-room-card') as PreviewCard;
+        card.setConfig(config);
+        card.hass = hass;
+        grid.append(card);
+      }
+      navigation.append(heading, grid);
     }
   } else {
     const room = roomGroups[0]!.rooms[0]!;

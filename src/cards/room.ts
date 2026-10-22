@@ -27,6 +27,7 @@ export class RoomCard extends BaseCard<RoomConfig> {
       :host {
         height: 100%;
         min-width: 0;
+        container: room-shortcut / inline-size;
       }
       ha-card {
         height: 100%;
@@ -98,6 +99,43 @@ export class RoomCard extends BaseCard<RoomConfig> {
       .unavailable {
         display: block;
         font-size: 10px;
+      }
+      @container room-shortcut (min-width: 300px) {
+        .room {
+          padding: 12px;
+          column-gap: 12px;
+          min-height: 92px;
+        }
+        .icon-box {
+          height: 48px;
+        }
+        .details {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) auto;
+          align-items: center;
+          column-gap: 12px;
+        }
+        .name,
+        .status {
+          grid-column: 1;
+        }
+        .name {
+          font-size: 15px;
+          line-height: 20px;
+        }
+        .status {
+          font-size: 12px;
+          line-height: 17px;
+        }
+        .temperature {
+          grid-column: 2;
+          grid-row: 1 / span 2;
+          justify-self: end;
+          margin: 0;
+          font-size: 14px;
+          line-height: 20px;
+          font-style: normal;
+        }
       }
       @media (max-width: 340px) {
         .room {

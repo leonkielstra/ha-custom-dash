@@ -71,6 +71,16 @@ function render() {
     page.setAttribute('aria-label', `${mode} Home preview`);
     page.innerHTML =
       '<div class="home-title"><h1>Home</h1><span>Een fijn thuis</span></div>';
+    const composition = document.createElement('div');
+    composition.className = 'home-composition';
+    const summary = document.createElement('section');
+    summary.className = 'home-summary';
+    summary.setAttribute('aria-label', 'Home summary');
+    const navigation = document.createElement('section');
+    navigation.className = 'home-navigation';
+    navigation.setAttribute('aria-label', 'Rooms');
+    composition.append(summary, navigation);
+    page.append(composition);
     const add = (config: CardConfig, target: HTMLElement = page) => {
       const card = document.createElement(
         String(config.type).replace('custom:', ''),
@@ -80,9 +90,9 @@ function render() {
       target.append(card);
       mounted.push({ card, theme: mode });
     };
-    add(hero);
-    add(activities);
-    add(scenes);
+    add(hero, summary);
+    add(activities, summary);
+    add(scenes, summary);
     for (const group of roomGroups) {
       const section = document.createElement('section');
       section.className = 'floor';
@@ -93,7 +103,7 @@ function render() {
       grid.className = 'room-grid';
       for (const room of group.rooms) add({ ...room }, grid);
       section.append(grid);
-      page.append(section);
+      navigation.append(section);
     }
     main.append(page);
   }

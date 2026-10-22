@@ -119,6 +119,15 @@ Keep the popup in its own native card slot so it can hide that slot independentl
 The Sections fixture preview exercises card metadata and section spans, alongside
 the existing isolated component previews. It does not replace live HA verification.
 
+Home composition: keep the hero/activity/scenes summary in the first section and
+combine all four floor groups into a single second section spanning two columns.
+Each native heading and two-column room grid fills the navigation section via
+`grid_options.columns: full`. Disable dense placement. This keeps floor order
+stable as activity appears or disappears and stacks both regions on mobile.
+Room shortcuts adapt at a card width of 300px: larger labels and right-aligned
+temperature, without changing their YAML API or mobile presentation. Additional
+house-status summaries and media activity remain separate future work.
+
 ## Verification limits
 
 Local browser tests use a mock `hass` object and cannot verify Home Assistant

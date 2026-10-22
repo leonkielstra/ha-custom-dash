@@ -36,6 +36,15 @@ body[data-theme='light'] {
 .layout-card {
   min-width: 0;
 }
+.navigation-grid {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.room-navigation > h2:not(:first-child) {
+  margin-top: 16px;
+}
 @container (min-width: 672px) {
   .sections-view {
     --columns: 2;

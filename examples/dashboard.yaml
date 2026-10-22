@@ -73,9 +73,12 @@ views:
                 name: Werklicht
                 icon: mdi:lightbulb-on-outline
       - type: grid
+        column_span: 2
         cards:
           - type: heading
             heading: Begane grond
+            grid_options:
+              columns: full
           - type: grid
             columns: 2
             square: false
@@ -112,10 +115,12 @@ views:
                 name: Entree
                 icon: mdi:coat-rack
                 navigation_path: '/dashboard-home/entree'
-      - type: grid
-        cards:
+            grid_options:
+              columns: full
           - type: heading
             heading: Eerste verdieping
+            grid_options:
+              columns: full
           - type: grid
             columns: 2
             square: false
@@ -156,10 +161,12 @@ views:
                 temperature: sensor.example_home_14
                 lights:
                   - light.example_home_20
-      - type: grid
-        cards:
+            grid_options:
+              columns: full
           - type: heading
             heading: Tweede verdieping
+            grid_options:
+              columns: full
           - type: grid
             columns: 2
             square: false
@@ -169,10 +176,12 @@ views:
                 icon: mdi:home-roof
                 navigation_path: '/dashboard-home/zolder'
                 temperature: sensor.example_home_15
-      - type: grid
-        cards:
+            grid_options:
+              columns: full
           - type: heading
             heading: Buiten
+            grid_options:
+              columns: full
           - type: grid
             columns: 2
             square: false
@@ -190,6 +199,9 @@ views:
                 lights:
                   - light.example_home_22
                   - light.example_home_23
+            grid_options:
+              columns: full
+    dense_section_placement: false
   - title: Woonkamer
     path: woonkamer
     icon: mdi:sofa-outline

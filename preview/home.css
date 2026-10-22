@@ -3,10 +3,11 @@
 }
 .home-preview[data-theme='dark'],
 .home-preview[data-theme='light'] {
-  grid-template-columns: minmax(0, 430px);
+  grid-template-columns: minmax(0, 1354px);
 }
 .home-page {
   padding: 20px 16px;
+  container: home-overview / inline-size;
 }
 .home-title h1 {
   font-size: 28px;
@@ -19,17 +20,27 @@
   font-size: 13px;
   opacity: 0.65;
 }
-.home-page > * + * {
-  margin-top: 8px;
+.home-composition {
+  --columns: 1;
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  gap: 24px 32px;
+  margin: 16px auto 0;
+  max-width: 430px;
+  align-items: start;
 }
-.home-page > .floor {
-  margin-top: 24px;
+.home-summary,
+.home-navigation {
+  display: grid;
+  min-width: 0;
+  align-content: start;
 }
-.home-page > home-hero-card {
-  margin-top: 16px;
+.home-summary {
+  gap: 8px;
 }
-.home-page > [hidden] {
-  margin: 0;
+.home-navigation {
+  grid-column: span min(2, var(--columns));
+  gap: 24px;
 }
 .floor h2 {
   font-size: 16px;
@@ -41,6 +52,18 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   align-items: stretch;
+}
+@container home-overview (min-width: 672px) {
+  .home-composition {
+    --columns: 2;
+    max-width: 892px;
+  }
+}
+@container home-overview (min-width: 1024px) {
+  .home-composition {
+    --columns: 3;
+    max-width: 1354px;
+  }
 }
 @media (max-width: 700px) {
   .home-preview {

@@ -32,6 +32,8 @@ The daylight control works independently of theme (including day in dark mode
 and night in light mode). Both previews support English and Dutch. Home fixtures
 mirror the twelve-room configuration structure with fictional entity IDs. Its SVG
 house illustrations are preview assets; configure your own production images.
+Select a single theme to see the desktop summary/navigation composition at full
+width; the side-by-side theme comparison keeps each preview compact.
 For comparison with `images/mockup-1.png`, open `/?reference=1` for the five-light
 room composition or `/preview/home.html?reference=1` for washer/oven activity.
 These use the same production components, with fictional preview entities.
@@ -80,6 +82,15 @@ sizes, section gaps and surfaces through HA theme variables, without card-mod.
 
 Use the updated [complete dashboard](examples/dashboard.yaml),
 [Home view](examples/home.yaml), or [living room view](examples/living-room.yaml).
+Home uses a summary section on the left and one room-navigation section spanning
+two columns on the right. All floor headings and two-column room grids stay inside
+that navigation section, so lower floors cannot move below the hero. Native
+headings and room grids explicitly use `grid_options: { columns: full }` to fill
+the widened section. Keep dense placement disabled to preserve reading order.
+The summary retains hero → relevant activity → favorite scenes, followed by rooms
+on mobile. Wider room shortcuts show larger labels and right-aligned temperatures;
+narrow cards keep their compact stacked metadata.
+
 Home allows three section columns. Room views allow two, and sections containing
 lighting span both columns. Home Assistant reduces section spans on mobile.
 The theme's 430px limit applies to each column, not to the entire desktop view.
@@ -116,7 +127,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.5.1
+url: /local/ha-custom-dash.js?v=0.6.0
 type: module
 ```
 
