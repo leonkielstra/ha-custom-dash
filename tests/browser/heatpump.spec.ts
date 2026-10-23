@@ -105,6 +105,86 @@ test('heat-pump cards match neutral surfaces and remain readable across themes a
   }
 });
 
+test('heat-flow destination icons stay square and centered on their pipe branches at every card width', async ({
+  page,
+}) => {
+  await page.goto('/preview/heatpump.html?bundle=1');
+  const flow = page.locator('home-heat-flow-card');
+  for (const [width, theme] of [
+    [320, 'dark'],
+    [390, 'dark'],
+    [390, 'light'],
+    [768, 'dark'],
+    [1440, 'dark'],
+    [1440, 'light'],
+  ] as const) {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.locator('#hp-theme').selectOption(theme);
+    for (const scenario of ['standby', 'heating', 'hot-water', 'unavailable']) {
+      await page.locator('#hp-scenario').selectOption(scenario);
+      const geometry = await flow.evaluate((el) => {
+        const root = el.shadowRoot!;
+        const svg = root.querySelector('svg')!;
+        const matrix = svg.getScreenCTM()!;
+        const targets = [...root.querySelectorAll('.target')];
+        const label = root
+          .querySelector('.valve-label')!
+          .getBoundingClientRect();
+        return {
+          width: el.getBoundingClientRect().width,
+          scrollWidth: el.scrollWidth,
+          svgBottom: svg.getBoundingClientRect().bottom,
+          labelTop: label.top,
+          rows: targets.map((target, index) => {
+            const row = target.getBoundingClientRect();
+            const icon = target
+              .querySelector('ha-icon')!
+              .getBoundingClientRect();
+            const details = target
+              .querySelector('div')!
+              .getBoundingClientRect();
+            const branch = new DOMPoint(
+              160,
+              index === 0 ? 40 : 120,
+            ).matrixTransform(matrix);
+            return {
+              iconWidth: icon.width,
+              iconHeight: icon.height,
+              iconCenter: icon.y + icon.height / 2,
+              rowCenter: row.y + row.height / 2,
+              branchY: branch.y,
+              branchX: branch.x,
+              iconLeft: icon.left,
+              iconRight: icon.right,
+              detailsLeft: details.left,
+            };
+          }),
+        };
+      });
+      expect(geometry.scrollWidth).toBeLessThanOrEqual(
+        Math.ceil(geometry.width),
+      );
+      expect(geometry.labelTop).toBeGreaterThanOrEqual(geometry.svgBottom);
+      for (const row of geometry.rows) {
+        expect(row.iconWidth).toBeCloseTo(40, 0);
+        expect(row.iconHeight).toBeCloseTo(40, 0);
+        expect(Math.abs(row.iconCenter - row.rowCenter)).toBeLessThan(1);
+        expect(Math.abs(row.iconCenter - row.branchY)).toBeLessThan(1);
+        expect(row.iconLeft).toBeGreaterThan(row.branchX);
+        expect(row.detailsLeft).toBeGreaterThan(row.iconRight);
+      }
+      expect(geometry.rows[0]!.iconLeft).toBeCloseTo(
+        geometry.rows[1]!.iconLeft,
+        0,
+      );
+    }
+    await page.locator('#hp-scenario').selectOption('standby');
+    await flow.screenshot({
+      path: `local/heat-flow-alignment/flow-${width}-${theme}.png`,
+    });
+  }
+});
+
 test('all detail views preserve their data and fit narrow screens with keyboard-accessible tabs', async ({
   page,
 }) => {

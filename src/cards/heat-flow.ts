@@ -17,14 +17,20 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
       }
       .schematic {
         display: grid;
-        grid-template-columns: minmax(90px, 1fr) minmax(48px, 1fr) minmax(
-            100px,
-            1fr
+        grid-template-columns: minmax(72px, 1fr) minmax(32px, 1fr) minmax(
+            116px,
+            1.25fr
           );
-        align-items: center;
-        gap: 8px;
+        grid-template-rows: minmax(160px, auto) auto;
+        grid-template-areas: 'source paths targets' '. valve .';
+        align-items: stretch;
+        column-gap: 8px;
+        row-gap: 4px;
       }
       .source {
+        grid-area: source;
+        align-self: center;
+        min-width: 0;
         text-align: center;
       }
       .source ha-icon {
@@ -44,11 +50,19 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
         color: var(--room-muted);
       }
       .paths {
+        grid-area: paths;
+        position: relative;
+      }
+      .valve-label {
+        grid-area: valve;
         text-align: center;
       }
       svg {
+        display: block;
+        position: absolute;
+        inset: 0;
         width: 100%;
-        height: 152px;
+        height: 100%;
         overflow: visible;
       }
       path,
@@ -73,15 +87,22 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
         stroke-dasharray: none;
       }
       .targets {
+        grid-area: targets;
         display: grid;
-        gap: 12px;
+        /* Row centers match the SVG branches at 25% and 75% height. */
+        grid-template-rows: repeat(2, minmax(80px, 1fr));
       }
       .target {
-        display: flex;
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr);
         align-items: center;
         gap: 8px;
-        min-height: 64px;
+        min-width: 0;
         color: var(--room-muted);
+      }
+      .target > div {
+        min-width: 0;
+        overflow-wrap: anywhere;
       }
       .target strong {
         display: block;
@@ -89,10 +110,11 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
         font-weight: 500;
       }
       .target ha-icon {
-        width: 28px;
-        height: 28px;
-        --mdc-icon-size: 28px;
-        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+        --mdc-icon-size: 40px;
+        justify-self: center;
+        align-self: center;
       }
       .target.active {
         color: var(--room-accent);
@@ -133,10 +155,6 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
         }
         .target {
           gap: 4px;
-        }
-        .target ha-icon {
-          width: 22px;
-          --mdc-icon-size: 22px;
         }
       }
     `,
@@ -194,8 +212,8 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
               d="M95 80H110V120H160m-8-5 8 5-8 5"
             ></path>
             <path d="m65 69 30 22V69L65 91Z"></path>
-            <circle cx="80" cy="80" r="5"></circle></svg
-          ><span class="meta">${text.valve}</span>
+            <circle cx="80" cy="80" r="5"></circle>
+          </svg>
         </div>
         <div class="targets">
           <div class=${`target ${heating ? 'active' : ''}`}>
@@ -217,6 +235,7 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
             </div>
           </div>
         </div>
+        <span class="meta valve-label">${text.valve}</span>
       </div>
       ${status.purpose === 'unknown' || status.purpose === 'active' ? html`<p class="unconfirmed">${text.unconfirmed}</p>` : nothing}
       ${readings.length ? html`<div class="readings">${readings.map(([entity, name]) => html`<p class="reading">${name}<strong>${metricValue(this.hass, { entity })}</strong></p>`)}</div>` : nothing}

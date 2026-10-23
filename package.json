@@ -1,6 +1,6 @@
 {
   "name": "ha-custom-dash",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "type": "module",
   "description": "Warm, accessible Home Assistant room cards built with Lit.",
