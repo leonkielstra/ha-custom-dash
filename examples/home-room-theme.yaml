@@ -5,6 +5,9 @@ Home Room:
   ha-font-family-body: 'var(--primary-font-family)'
   ha-font-family-heading: 'var(--primary-font-family)'
   ha-card-border-radius: '16px'
+  # Share one outer-card radius with Bubble Cards, including pop-ups.
+  bubble-border-radius: 'var(--ha-card-border-radius)'
+  bubble-pop-up-border-radius: 'var(--ha-card-border-radius)'
   ha-card-border-width: '0px'
   ha-card-box-shadow: none
   ha-view-sections-row-gap: '24px'

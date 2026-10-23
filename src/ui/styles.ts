@@ -62,7 +62,7 @@ export const sharedStyles = css`
     background: var(--room-surface);
     color: var(--room-text);
     border: none;
-    border-radius: 16px;
+    border-radius: var(--ha-card-border-radius, 16px);
     box-shadow: none;
   }
   h2,

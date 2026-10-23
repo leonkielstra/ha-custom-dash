@@ -1,4 +1,39 @@
 import { expect, test } from '@playwright/test';
+test('custom card surfaces and thermostat controls share the live HA theme radius', async ({
+  page,
+}) => {
+  await page.goto('/?bundle=1');
+  const room = page.locator('.room.light');
+  const surface = room.locator('home-light-control-card ha-card').first();
+  const climate = room.locator('home-climate-card');
+  await expect(surface).toBeVisible();
+  await expect(climate).toBeVisible();
+  await expect(surface).toHaveCSS('border-top-left-radius', '16px');
+  await expect(climate.locator('button')).toHaveCSS(
+    'border-top-left-radius',
+    '16px',
+  );
+  for (const radius of ['24px', '10px']) {
+    await room.evaluate(
+      (el, value) =>
+        (el as HTMLElement).style.setProperty('--ha-card-border-radius', value),
+      radius,
+    );
+    await expect(surface).toHaveCSS('border-top-left-radius', radius);
+    await expect(climate.locator('ha-card')).toHaveCSS(
+      'border-top-left-radius',
+      radius,
+    );
+    await expect(climate.locator('button')).toHaveCSS(
+      'border-top-left-radius',
+      radius,
+    );
+  }
+  await room.evaluate((el) =>
+    (el as HTMLElement).style.removeProperty('--ha-card-border-radius'),
+  );
+  await expect(surface).toHaveCSS('border-top-left-radius', '16px');
+});
 test('renders section headings around reusable nested cards', async ({
   page,
 }) => {

@@ -98,6 +98,10 @@ a real Home Assistant instance.
 For matching page backgrounds and native cards, install the companion
 [Home Room theme](examples/home-room-theme.yaml) and select it in your HA profile.
 The theme YAML is also attached to GitHub releases for download.
+`ha-card-border-radius` is the shared outer-card radius (16px in Home Room).
+The theme binds Bubble Card's standard and pop-up radii to this value, and the
+custom cards respect the same token. Change it once in the theme rather than
+adding radius overrides to individual cards.
 For example, with `frontend: themes: !include_dir_merge_named themes` configured,
 copy the file to `<config>/themes/home-room.yaml`, reload themes, and select
 **Home Room**. Both light and dark modes are included. This aligns native heading
@@ -152,7 +156,7 @@ Run `npm ci` and `npm run build`. Copy `dist/ha-custom-dash.js` to
 in Settings → Dashboards → Resources (advanced mode may be required):
 
 ```yaml
-url: /local/ha-custom-dash.js?v=0.8.3
+url: /local/ha-custom-dash.js?v=0.8.4
 type: module
 ```
 

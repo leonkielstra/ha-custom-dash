@@ -20,7 +20,7 @@ export class ClimateCard extends BaseCard<ClimateConfig> {
         min-height: 76px;
         padding: 10px 12px;
         background: var(--room-surface);
-        border-radius: 16px;
+        border-radius: inherit;
         text-align: start;
       }
       button:hover:not(:disabled) {
