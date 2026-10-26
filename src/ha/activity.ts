@@ -59,6 +59,25 @@ export interface ApplianceActivity {
   inactive?: boolean;
 }
 
+/** Illustrative runtime only: linear to 80%, then a logarithmic tail below 100%. */
+export function runtimeProgress(
+  elapsedMinutes: number,
+  referenceMinutes: number,
+): number | undefined {
+  if (
+    !Number.isFinite(elapsedMinutes) ||
+    elapsedMinutes < 0 ||
+    !Number.isFinite(referenceMinutes) ||
+    referenceMinutes <= 0
+  )
+    return undefined;
+  if (elapsedMinutes <= referenceMinutes)
+    return 80 * (elapsedMinutes / referenceMinutes);
+  // Subtract logarithms instead of dividing first, avoiding overflow for extreme inputs.
+  const overtime = Math.log(elapsedMinutes) - Math.log(referenceMinutes);
+  return 100 - 20 / (1 + overtime);
+}
+
 export function applianceActivities(
   hass: HomeAssistant | undefined,
   appliances: ApplianceConfig[],
@@ -158,10 +177,7 @@ export function applianceActivities(
     const end = timestamp(hass?.states[config.end_time ?? '']?.state);
     const referenceProgress =
       elapsedMinutes !== undefined && config.reference_duration_minutes
-        ? Math.min(
-            100,
-            (elapsedMinutes / config.reference_duration_minutes) * 100,
-          )
+        ? runtimeProgress(elapsedMinutes, config.reference_duration_minutes)
         : undefined;
     return [
       {

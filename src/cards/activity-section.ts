@@ -264,7 +264,7 @@ export class ActivitySectionCard extends BaseCard<ActivityConfig> {
               <p class="status" title=${status}>${status}</p>
               ${a.finishedMinutesAgo !== undefined ? html`<p class="timing">${text.finishedAgo(durationCompact(a.finishedMinutesAgo, this.hass?.locale?.language))}</p>` : nothing}
               ${a.fanSpeed !== undefined ? html`<p class="fan-speed">${text.fanSpeed} ${sensorValue(this.hass, a.config.fan_speed, '%')}</p>` : nothing}
-              ${elapsed ? html`<p class="timing" title=${elapsed}>${text.referenceTime}</p>` : a.remainingMinutes !== undefined ? html`<p class="timing">${text.remaining(durationCompact(a.remainingMinutes, this.hass?.locale?.language))}</p>` : nothing}
+              ${elapsed ? html`<p class="timing" title=${elapsed}>${text.elapsedTime}</p>` : a.remainingMinutes !== undefined ? html`<p class="timing">${text.remaining(durationCompact(a.remainingMinutes, this.hass?.locale?.language))}</p>` : nothing}
               ${a.progress !== undefined ? html`<div class="progress"><progress max="100" value=${a.progress} aria-label=${a.indicative ? text.referenceProgress : text.programProgress} aria-valuetext=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`} title=${a.indicative ? text.referenceProgress : `${Math.round(a.progress)}%`}></progress></div>` : nothing}
             </div>
           </ha-card>`;

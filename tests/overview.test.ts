@@ -2,12 +2,53 @@ import { expect, it } from 'vitest';
 import {
   applianceActivities,
   durationText,
+  runtimeProgress,
   timestamp,
 } from '../src/ha/activity';
 import { roomLights } from '../src/ha/overview';
 import { activities, fixtureStates } from '../preview/home-fixtures';
 import type { HomeAssistant } from '../src/ha/types';
 const now = Date.parse('2026-01-01T12:00:00Z');
+it('keeps illustrative runtime linear to the reference duration then approaches completion logarithmically', () => {
+  expect(runtimeProgress(0, 120)).toBe(0);
+  expect(runtimeProgress(60, 120)).toBe(40);
+  expect(runtimeProgress(120, 120)).toBe(80);
+  expect(runtimeProgress(240, 120)).toBeCloseTo(88.19, 2);
+  expect(runtimeProgress(480, 120)).toBeCloseTo(91.62, 2);
+  expect(runtimeProgress(60, 60)).toBe(80);
+  expect(runtimeProgress(120 - 0.001, 120)).toBeCloseTo(80, 2);
+  expect(runtimeProgress(120 + 0.001, 120)).toBeCloseTo(80, 2);
+  const samples = Array.from({ length: 1001 }, (_, i) =>
+    runtimeProgress(i * 10, 120)!,
+  );
+  expect(
+    samples.every(
+      (value, i) =>
+        Number.isFinite(value) &&
+        value >= 0 &&
+        value < 100 &&
+        (i === 0 || value > samples[i - 1]!),
+    ),
+  ).toBe(true);
+  const gains = [
+    runtimeProgress(240, 120)! - 80,
+    runtimeProgress(360, 120)! - runtimeProgress(240, 120)!,
+    runtimeProgress(480, 120)! - runtimeProgress(360, 120)!,
+  ];
+  expect(gains[0]).toBeGreaterThan(gains[1]!);
+  expect(gains[1]).toBeGreaterThan(gains[2]!);
+  expect(runtimeProgress(Number.MAX_VALUE, Number.MIN_VALUE)).toBeLessThan(100);
+  for (const [elapsed, reference] of [
+    [-1, 120],
+    [NaN, 120],
+    [Infinity, 120],
+    [10, 0],
+    [10, -1],
+    [10, NaN],
+    [10, Infinity],
+  ])
+    expect(runtimeProgress(elapsed!, reference!)).toBeUndefined();
+});
 function hass(): HomeAssistant {
   return {
     states: fixtureStates('multiple', now),
@@ -54,12 +95,14 @@ it('separates reference elapsed progress from actual progress and never estimate
   );
   expect(washer).toMatchObject({
     elapsedMinutes: 48,
-    progress: 40,
+    progress: 32,
     approximate: true,
     indicative: true,
     remainingMinutes: undefined,
   });
-  expect(dryer).toMatchObject({ elapsedMinutes: 135, progress: 100 });
+  expect(dryer).toMatchObject({ elapsedMinutes: 135 });
+  expect(dryer!.progress).toBeGreaterThan(80);
+  expect(dryer!.progress).toBeLessThan(100);
   expect(oven).toMatchObject({
     progress: 72,
     remainingMinutes: 12,
@@ -89,7 +132,7 @@ it('prefers a reliable configured start and hides timing when that start is inva
   };
   expect(applianceActivities(h, [config], now)[0]).toMatchObject({
     elapsedMinutes: 60,
-    progress: 50,
+    progress: 40,
     approximate: false,
   });
   for (const state of [
@@ -118,6 +161,63 @@ it('prefers a reliable configured start and hides timing when that start is inva
   expect(
     applianceActivities(h, [config], now)[0]?.elapsedMinutes,
   ).toBeUndefined();
+});
+it('retains persisted runtime after sensor restoration and uses a new timestamp for the next cycle', () => {
+  const h = hass();
+  const config = {
+    ...activities.appliances[0]!,
+    started_at_entity: 'input_datetime.example_washer_started',
+  };
+  h.states[config.started_at_entity] = {
+    entity_id: config.started_at_entity,
+    state: '2026-01-01T11:00:00Z',
+    attributes: {
+      has_date: true,
+      has_time: true,
+      timestamp: (now - 3600000) / 1000,
+    },
+  };
+  // HA restores the running sensor with a fresh last_changed timestamp.
+  const restored = {
+    ...h,
+    states: {
+      ...h.states,
+      [config.entity]: {
+        ...h.states[config.entity]!,
+        last_changed: new Date(now).toISOString(),
+      },
+    },
+  };
+  expect(applianceActivities(restored, [config], now)[0]).toMatchObject({
+    elapsedMinutes: 60,
+    progress: 40,
+    approximate: false,
+  });
+  expect(
+    applianceActivities(restored, [config], now + 3600000)[0],
+  ).toMatchObject({ elapsedMinutes: 120, progress: 80 });
+  restored.states[config.entity] = {
+    ...restored.states[config.entity]!,
+    state: 'off',
+  };
+  expect(applianceActivities(restored, [config], now + 3600000)).toHaveLength(
+    0,
+  );
+  restored.states[config.entity] = {
+    ...restored.states[config.entity]!,
+    state: 'on',
+  };
+  restored.states[config.started_at_entity] = {
+    ...restored.states[config.started_at_entity]!,
+    attributes: {
+      has_date: true,
+      has_time: true,
+      timestamp: (now + 3600000) / 1000,
+    },
+  };
+  expect(
+    applianceActivities(restored, [config], now + 3600000)[0],
+  ).toMatchObject({ elapsedMinutes: 0, progress: 0 });
 });
 it('omits invalid fallback timing and invalid actual progress without inventing replacements', () => {
   const h = hass();

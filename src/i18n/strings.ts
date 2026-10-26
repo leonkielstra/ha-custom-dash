@@ -107,8 +107,8 @@ const messages = {
       `${approximate ? 'Indicative: ' : ''}${duration} elapsed`,
     remaining: (duration: string) => `${duration} remaining`,
     referenceProgress:
-      'Elapsed time relative to reference duration; not program completion',
-    referenceTime: 'Time indication',
+      'Illustrative runtime indicator; not measured program progress or time remaining',
+    elapsedTime: 'Elapsed time',
     programProgress: 'Program progress',
     heroCard: 'Home hero',
     heroDescription:
@@ -327,8 +327,8 @@ const messages = {
       `${approximate ? 'Indicatief: ' : ''}${duration} bezig`,
     remaining: (duration: string) => `Nog ${duration}`,
     referenceProgress:
-      'Verstreken tijd ten opzichte van referentieduur; geen programmavoortgang',
-    referenceTime: 'Tijdsindicatie',
+      'Indicatieve looptijdbalk; geen gemeten programmavoortgang of resterende tijd',
+    elapsedTime: 'Verstreken tijd',
     programProgress: 'Programmavoortgang',
     heroCard: 'Home-hero',
     heroDescription:

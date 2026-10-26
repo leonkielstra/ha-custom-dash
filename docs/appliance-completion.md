@@ -12,6 +12,7 @@ appliances:
     name: Washing machine
     entity: binary_sensor.example_washer
     active_states: ['on']
+    started_at_entity: input_datetime.example_washer_started
     finished_at_entity: input_datetime.example_washer_finished
     finished_for_minutes: 60
   - type: dishwasher
@@ -44,7 +45,7 @@ produce a completion row. Other appliance types are unaffected.
 ## Persisted timestamps
 
 The [example HA package](../examples/appliance-completion-package.yaml) defines
-three helpers and automations. Replace the fictional IDs and install it once
+five helpers and automations. Replace the fictional IDs and install it once
 under HA's packages; it is **not** Lovelace dashboard YAML.
 
 ```yaml
@@ -72,6 +73,24 @@ Dishwasher errors/abortions are not recorded as completion. Transitions missed
 while HA is shut down cannot be reconstructed by this package. An existing
 completed timestamp survives normal restarts and can be read by every browser.
 A normal idle state or an `unavailable` → idle reconnection does not create one.
+
+### Runtime across Home Assistant restarts
+
+For washer/dryer runtime, configure `started_at_entity` as
+`input_datetime.example_washer_started` / `input_datetime.example_dryer_started`.
+The package records these on explicit `off` → `on` transitions. They have no
+`initial`, so their saved values survive normal HA restarts. An `unknown` or
+`unavailable` → `on` restoration/reconnection does not overwrite the start.
+Every browser reads the same saved timestamp, independent of sensor
+`last_changed`. Each observed new cycle replaces the timestamp.
+
+Without `started_at_entity`, runtime still uses the sensor's `last_changed`,
+which can reset on restart. Missing/invalid configured start helpers hide timing
+rather than falling back to this unreliable timestamp. Installing the package
+mid-cycle cannot recover the original start; for that first cycle, set the
+date-and-time helper to the known start manually, or wait for the next observed
+`off` → `on` transition. A cycle that finishes and restarts entirely while HA is
+offline cannot be distinguished from one continuous run by these binary sensors.
 
 See HA's [date/time helper](https://www.home-assistant.io/integrations/input_datetime/),
 [state trigger](https://www.home-assistant.io/docs/automation/trigger/) and

@@ -1,6 +1,14 @@
 # Home Assistant package: install once, separately from Lovelace dashboard YAML.
 # Replace fictional source entity IDs. Do not set `initial`: helpers restore state.
 input_datetime:
+  example_washer_started:
+    name: Washing machine started at
+    has_date: true
+    has_time: true
+  example_dryer_started:
+    name: Dryer started at
+    has_date: true
+    has_time: true
   example_washer_finished:
     name: Washing machine finished at
     has_date: true
@@ -15,6 +23,38 @@ input_datetime:
     has_time: true
 
 automation:
+  # Only a known idle-to-active transition starts a new runtime clock.
+  # Restore/reconnect transitions (unknown/unavailable -> on) preserve it.
+  - id: home_cards_example_washer_start
+    alias: Home cards - washing machine start
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.example_washer
+        from: 'off'
+        to: 'on'
+    actions:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.example_washer_started
+        data:
+          timestamp: '{{ as_timestamp(trigger.to_state.last_changed) }}'
+  # Only a known idle-to-active transition starts a new runtime clock.
+  # Restore/reconnect transitions (unknown/unavailable -> on) preserve it.
+  - id: home_cards_example_dryer_start
+    alias: Home cards - dryer start
+    mode: queued
+    triggers:
+      - trigger: state
+        entity_id: binary_sensor.example_dryer
+        from: 'off'
+        to: 'on'
+    actions:
+      - action: input_datetime.set_datetime
+        target:
+          entity_id: input_datetime.example_dryer_started
+        data:
+          timestamp: '{{ as_timestamp(trigger.to_state.last_changed) }}'
   - id: home_cards_example_washer_completion
     alias: Home cards - washing machine completion
     mode: queued

@@ -332,9 +332,11 @@ The entire card hides when empty, including its heading and Sections grid slot.
 It notifies HA of visibility changes and remains connected to receive states.
 Set `hide_when_empty: false` to show an empty-state message instead.
 
-Washer/dryer bars are labeled **Tijdsindicatie / Time indication**: elapsed time
-relative to a reference duration, clamped at 100%. They do not assert cycle
-completion or remaining time. A valid `started_at_entity` takes priority. Without
+Washer/dryer runtime is labeled **Verstreken tijd / Elapsed time**. The illustrative
+bar reaches 80% linearly at the configured reference duration, then approaches
+100% logarithmically without reaching it while active. For a 120-minute reference,
+one hour gives 40%, two hours 80%, four hours about 88%, and eight hours about 92%.
+This is not measured cycle completion or remaining time. A valid `started_at_entity` takes priority. Without
 one, `last_changed` is approximate and elapsed text is marked indicative because
 HA restarts/restoration can reset that timestamp. A configured but invalid start
 helper does not silently fall back. Time-only/date-only helpers are insufficient.

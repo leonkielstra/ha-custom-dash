@@ -190,19 +190,20 @@ test('activity collapses without a blank slot, reappears from state updates, and
     'aria-label',
     'Indicatief: 48 minuten bezig',
   );
-  await expect(rows.nth(0)).toContainText('Tijdsindicatie');
+  await expect(rows.nth(0)).toContainText('Verstreken tijd');
   await expect(rows.nth(0).getByRole('progressbar')).toHaveAttribute(
     'aria-label',
-    /geen programmavoortgang/,
+    /geen gemeten programmavoortgang/,
   );
   await expect(rows.nth(0).getByRole('progressbar')).toHaveAttribute(
     'value',
-    '40',
+    '32',
   );
-  await expect(rows.nth(1).getByRole('progressbar')).toHaveAttribute(
-    'value',
-    '100',
+  const dryerProgress = Number(
+    await rows.nth(1).getByRole('progressbar').getAttribute('value'),
   );
+  expect(dryerProgress).toBeGreaterThan(80);
+  expect(dryerProgress).toBeLessThan(100);
   await expect(rows.nth(2).getByRole('progressbar')).toHaveAttribute(
     'value',
     '72',
@@ -338,4 +339,53 @@ test('Home stays compact and neutral with no overflow across mobile/tablet sizes
   ).toBe(true);
   const link = await room.getByRole('link').boundingBox();
   expect(link!.height).toBeGreaterThanOrEqual(44);
+});
+
+test('runtime indicator keeps moving below completion and uses elapsed-time labels in both languages', async ({
+  page,
+}) => {
+  await page.clock.install();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/preview/home.html?bundle=1');
+  await page.waitForFunction(() => 'homePreview' in window);
+  await page.evaluate(() => {
+    (
+      window as unknown as {
+        homePreview: {
+          setState(
+            id: string,
+            state: string,
+            attributes?: Record<string, unknown>,
+            lastChanged?: string,
+          ): void;
+        };
+      }
+    ).homePreview.setState(
+      'binary_sensor.example_washer',
+      'on',
+      undefined,
+      new Date(Date.now() - 120 * 60000).toISOString(),
+    );
+  });
+  const section = page.locator('home-activity-section-card').first();
+  const row = section.locator('ha-card').first();
+  await expect(row.getByRole('progressbar')).toHaveAttribute('value', '80');
+  await expect(row).toContainText('Verstreken tijd');
+  await page.clock.fastForward(120 * 60000);
+  await expect
+    .poll(async () =>
+      Number(await row.getByRole('progressbar').getAttribute('value')),
+    )
+    .toBeCloseTo(88.19, 2);
+  await expect(row.locator('.status')).toContainText('Bezig met wassen');
+  for (const theme of ['dark', 'light']) {
+    await page.locator('#theme').selectOption(theme);
+    await page
+      .locator(`.home-page.${theme} home-activity-section-card`)
+      .screenshot({
+        path: `test-results/appliance-runtime-390-${theme}.png`,
+      });
+  }
+  await page.locator('#language').selectOption('en');
+  await expect(row).toContainText('Elapsed time');
 });
