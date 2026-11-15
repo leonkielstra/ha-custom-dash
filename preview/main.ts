@@ -100,6 +100,11 @@ interface PreviewCard extends HTMLElement {
 }
 window.loadCardHelpers = async () => ({
   createCardElement(config: LovelaceCardConfig) {
+    if (config.type === 'history-graph') {
+      const graph = document.createElement('div');
+      graph.textContent = `History graph preview: ${(config.entities as string[]).join(', ')}`;
+      return graph;
+    }
     if (!config.type.startsWith('custom:'))
       throw new Error('The mock preview only creates project custom cards.');
     const tag = config.type.slice('custom:'.length);

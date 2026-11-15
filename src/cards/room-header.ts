@@ -1,8 +1,8 @@
-import { css, html, nothing } from 'lit';
+import { css, html, nothing, type PropertyValues } from 'lit';
 import { BaseCard } from '../ui/base-card';
 import { headerConfig } from '../ha/config';
 import { available, sensorValue } from '../ha/entities';
-import type { HeaderConfig } from '../ha/types';
+import type { HeaderConfig, HomeAssistant } from '../ha/types';
 export class RoomHeaderCard extends BaseCard<HeaderConfig> {
   static readonly editorType = 'home-room-header-card' as const;
   static styles = [
@@ -47,6 +47,24 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
         font-weight: 600;
         letter-spacing: -0.35px;
       }
+      button.temperature {
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      dialog {
+        width: min(90vw, 600px);
+        border: 0;
+        border-radius: 14px;
+        padding: 20px;
+        color: var(--room-text);
+        background: var(--card-background-color, white);
+      }
+      dialog::backdrop {
+        background: rgb(0 0 0 / 0.5);
+      }
       .humidity {
         display: block;
         margin-top: 3px;
@@ -73,6 +91,8 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
       }
     `,
   ];
+  private historyGeneration = 0;
+
   setConfig(value: unknown) {
     this.config = headerConfig(value);
   }
@@ -82,6 +102,50 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
       this.config?.humidity,
       ...(this.config?.lights ?? []),
     ].filter((v): v is string => !!v);
+  }
+  private async openHistory() {
+    const dialog = this.renderRoot.querySelector('dialog');
+    const container = this.renderRoot.querySelector('.history');
+    if (!dialog || !container || !this.config?.temperature) return;
+    if (!dialog.open) dialog.showModal();
+    const generation = ++this.historyGeneration;
+    container.replaceChildren();
+    try {
+      const helpers = await window.loadCardHelpers?.();
+      if (!helpers) throw new Error('missing card helpers');
+      if (
+        generation !== this.historyGeneration ||
+        !dialog.open ||
+        !this.config?.temperature
+      )
+        return;
+      const graph = helpers.createCardElement({
+        type: 'history-graph',
+        entities: [this.config.temperature, this.config.humidity].filter(
+          Boolean,
+        ),
+      });
+      graph.hass = this.hass;
+      container.replaceChildren(graph);
+    } catch {
+      if (generation !== this.historyGeneration || !dialog.open) return;
+      container.textContent = this.strings.historyError;
+    }
+  }
+  protected shouldUpdate(changes: PropertyValues) {
+    return changes.has('hass') || super.shouldUpdate(changes);
+  }
+  protected updated(changes: PropertyValues) {
+    if (
+      changes.has('config') &&
+      this.renderRoot.querySelector('dialog')?.open
+    ) {
+      if (this.config?.temperature) void this.openHistory();
+      else this.renderRoot.querySelector('dialog')?.close();
+    }
+    const graph = this.renderRoot.querySelector('.history > *') as
+      (HTMLElement & { hass?: HomeAssistant }) | null;
+    if (graph) graph.hass = this.hass;
   }
   protected render() {
     if (!this.config) return nothing;
@@ -104,11 +168,24 @@ export class RoomHeaderCard extends BaseCard<HeaderConfig> {
       <div class="content">
         ${c.show_name && c.name ? html`<p class="room-name">${c.name}</p>` : nothing}
         <p class="readings">
-          ${c.temperature ? html`<span class="temperature" aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '°C')}</span>` : nothing}
+          ${c.temperature ? html`<button class="temperature" aria-label=${text.historyTitle} @click=${this.openHistory}>${sensorValue(this.hass, c.temperature, '°C')}</button>` : nothing}
           ${c.humidity ? html`<span class="humidity">${sensorValue(this.hass, c.humidity, '%')} ${text.humidity}</span>` : nothing}
         </p>
         ${lights.length ? html`<p class="summary">${html`<span class="count">${count}</span>${text.roomLightsOn(count).slice(String(count).length)}`}${unavailable ? html`<span class="muted"> · ${text.unavailableShort(unavailable)}</span>` : nothing}</p>` : nothing}
       </div>
+      <dialog
+        aria-label=${text.historyTitle}
+        @close=${() => {
+          this.historyGeneration++;
+        }}
+      >
+        <button
+          @click=${() => this.renderRoot.querySelector('dialog')?.close()}
+        >
+          ${text.close}
+        </button>
+        <div class="history"></div>
+      </dialog>
     </ha-card>`;
   }
 }

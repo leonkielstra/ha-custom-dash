@@ -332,3 +332,43 @@ test('live sliders update while held and reconcile the released position', async
     }),
   ).toBe(Math.round((Number(desired) * 255) / 100));
 });
+
+test('opens and closes room sensor history', async ({ page }) => {
+  await page.goto('/');
+  const header = page.locator('.room.light home-room-header-card');
+  await header.locator('button.temperature').click();
+  const dialog = header.locator('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('.history')).toContainText(
+    'sensor.example_temperature',
+  );
+  await expect(dialog.locator('.history')).toContainText(
+    'sensor.example_humidity',
+  );
+  await dialog.locator('button').click();
+  await expect(dialog).not.toBeVisible();
+});
+
+test('history supports keyboard use and a temperature-only header', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const header = page.locator('.room.light home-room-header-card');
+  await header.evaluate((element) => {
+    (element as HTMLElement & { setConfig(config: unknown): void }).setConfig({
+      type: 'custom:home-room-header-card',
+      temperature: 'sensor.example_temperature',
+    });
+  });
+  const temperature = header.locator('button.temperature');
+  await temperature.focus();
+  await page.keyboard.press('Enter');
+  const dialog = header.locator('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('.history')).toHaveText(
+    'History graph preview: sensor.example_temperature',
+  );
+  await page.keyboard.press('Escape');
+  await expect(dialog).not.toBeVisible();
+  await expect(temperature).toBeFocused();
+});
