@@ -96,6 +96,8 @@ const labels: Record<string, readonly [string, string]> = {
     'Auxiliary heating entity',
     'Entiteit elektrische bijverwarming',
   ],
+  defrost_entity: ['Defrost entity', 'Entiteit ontdooien'],
+  fault_code: ['Fault code entity', 'Entiteit storingscode'],
   controller_online: ['Controller connection', 'Verbinding systeemcontroller'],
   outdoor_online: ['Outdoor unit connection', 'Verbinding buitenunit'],
   fault_entity: ['Fault lockout entity', 'Entiteit storingsvergrendeling'],

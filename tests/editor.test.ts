@@ -315,15 +315,25 @@ it('keeps zero/false values and supports clearing advanced optional entities', (
     ...constructor('home-heat-flow-card').getStubConfig(hass),
     minimum_heat_output: 1,
     pressure: 'sensor.example_pressure',
+    defrost_entity: 'binary_sensor.example_defrost',
+    fault_code: 'sensor.example_fault',
     extension: false,
   };
   const result = fromEditorData(
     config,
-    { ...config, minimum_heat_output: 0, pressure: '' },
+    {
+      ...config,
+      minimum_heat_output: 0,
+      pressure: '',
+      defrost_entity: '',
+      fault_code: 'sensor.new_fault',
+    },
     cardForm('home-heat-flow-card').schema,
   );
   expect(result.minimum_heat_output).toBe(0);
   expect(result.extension).toBe(false);
+  expect(result).not.toHaveProperty('defrost_entity');
+  expect(result.fault_code).toBe('sensor.new_fault');
   expect(result).not.toHaveProperty('pressure');
 });
 

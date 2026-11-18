@@ -30,14 +30,14 @@ test('heat-pump bundle renders the five views and follows operating states witho
   await expect(status).toContainText('Storing gemeld');
   await expect(flow.locator('path.hot, path.running')).toHaveCount(0);
   await page.locator('#hp-scenario').selectOption('unavailable');
-  await expect(status).toContainText('Werking niet bevestigd');
+  await expect(status).toContainText('Verbindingsprobleem');
   await expect(page.locator('home-system-health-card')).toContainText(
-    'Niet beschikbaar',
+    'Offline',
   );
   await page.locator('#hp-scenario').selectOption('hot-water');
   await page.locator('#hp-language').selectOption('en');
   await expect(status).toContainText('Heating hot water');
-  await expect(flow).toContainText('Where does the heat go?');
+  await expect(flow).toContainText('Heating hot water');
   for (const name of [
     'afstelling',
     'warmwater',
@@ -122,19 +122,15 @@ test('heat-flow destination icons stay square and centered on their pipe branche
     await page.locator('#hp-theme').selectOption(theme);
     for (const scenario of ['standby', 'heating', 'hot-water', 'unavailable']) {
       await page.locator('#hp-scenario').selectOption(scenario);
+      await expect(flow.locator('.target ha-icon').first()).toBeVisible();
       const geometry = await flow.evaluate((el) => {
         const root = el.shadowRoot!;
         const svg = root.querySelector('svg')!;
         const matrix = svg.getScreenCTM()!;
         const targets = [...root.querySelectorAll('.target')];
-        const label = root
-          .querySelector('.valve-label')!
-          .getBoundingClientRect();
         return {
           width: el.getBoundingClientRect().width,
           scrollWidth: el.scrollWidth,
-          svgBottom: svg.getBoundingClientRect().bottom,
-          labelTop: label.top,
           rows: targets.map((target, index) => {
             const row = target.getBoundingClientRect();
             const icon = target
@@ -164,7 +160,6 @@ test('heat-flow destination icons stay square and centered on their pipe branche
       expect(geometry.scrollWidth).toBeLessThanOrEqual(
         Math.ceil(geometry.width),
       );
-      expect(geometry.labelTop).toBeGreaterThanOrEqual(geometry.svgBottom);
       for (const row of geometry.rows) {
         expect(row.iconWidth).toBeCloseTo(40, 0);
         expect(row.iconHeight).toBeCloseTo(40, 0);
@@ -221,6 +216,68 @@ test('all detail views preserve their data and fit narrow screens with keyboard-
       await page
         .locator('.hp-page')
         .screenshot({ path: `test-results/heatpump-${name}-320-${theme}.png` });
+    }
+  }
+});
+
+test('the seven mockup states render for visual comparison', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('/preview/heatpump.html?bundle=1');
+  const flow = page.locator('home-heat-flow-card');
+  await page.addStyleTag({
+    content: 'home-heat-flow-card { max-width: 560px }',
+  });
+  for (const [scenario, purpose, targets] of [
+    ['heating', 'heating', 2],
+    ['hot-water', 'hot_water', 2],
+    ['standby', 'standby', 2],
+    ['defrost', 'defrost', 2],
+    ['auxiliary', 'auxiliary_active', 1],
+    ['fault', 'fault', 2],
+    ['unavailable', 'offline', 2],
+  ] as const) {
+    await page.locator('#hp-scenario').selectOption(scenario);
+    await expect(flow.locator('ha-card')).toHaveClass(purpose);
+    await expect(flow.locator('.target')).toHaveCount(targets);
+    await flow.screenshot({ path: `local/heat-flow-states/${scenario}.png` });
+  }
+});
+
+test('Dutch heat flow labels fit on phones in every mockup state', async ({
+  page,
+}) => {
+  await page.goto('/preview/heatpump.html?bundle=1');
+  await page.locator('#hp-language').selectOption('nl');
+  const flow = page.locator('home-heat-flow-card');
+  for (const width of [320, 390, 430]) {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const [scenario, purpose] of [
+      ['heating', 'heating'],
+      ['hot-water', 'hot_water'],
+      ['standby', 'standby'],
+      ['defrost', 'defrost'],
+      ['auxiliary', 'auxiliary_active'],
+      ['fault', 'fault'],
+      ['unavailable', 'offline'],
+    ] as const) {
+      await page.locator('#hp-scenario').selectOption(scenario);
+      await expect(flow.locator('ha-card')).toHaveClass(purpose);
+      if (width === 320)
+        await flow.screenshot({
+          path: `local/heat-flow-mobile/${scenario}.png`,
+        });
+      const wrapped = await flow
+        .locator('.source-label p, .target strong')
+        .evaluateAll((labels) =>
+          labels.flatMap((label) => {
+            const range = document.createRange();
+            range.selectNodeContents(label);
+            return range.getClientRects().length > 1 ? [label.textContent] : [];
+          }),
+        );
+      expect.soft(wrapped, `${scenario} at ${width}px`).toEqual([]);
     }
   }
 });

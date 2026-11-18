@@ -8,6 +8,8 @@ type HeatPumpPurpose =
   | 'hot_water'
   | 'active'
   | 'standby'
+  | 'defrost'
+  | 'auxiliary_active'
   | 'unknown'
   | 'offline'
   | 'fault'
@@ -37,15 +39,19 @@ export function heatPumpStatus(
               (id) => id && state(id) === 'off',
             )
           ? 'offline'
-          : state(config.operating_entity) === 'standby'
-            ? 'standby'
-            : activity?.state === 'heat_pump_heating'
-              ? 'heating'
-              : activity?.state === 'heat_pump_hot_water'
-                ? 'hot_water'
-                : activity
-                  ? 'active'
-                  : 'unknown';
+          : state(config.defrost_entity) === 'on'
+            ? 'defrost'
+            : state(config.auxiliary_heating) === 'on'
+              ? 'auxiliary_active'
+              : state(config.operating_entity) === 'standby'
+                ? 'standby'
+                : activity?.state === 'heat_pump_heating'
+                  ? 'heating'
+                  : activity?.state === 'heat_pump_hot_water'
+                    ? 'hot_water'
+                    : activity
+                      ? 'active'
+                      : 'unknown';
   return {
     purpose,
     activity,

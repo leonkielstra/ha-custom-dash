@@ -279,3 +279,38 @@ it('never conflates unknown connection status with online or cloud fetch time wi
   expect(card.shadowRoot!.querySelectorAll('.online')).toHaveLength(2);
   expect(card.shadowRoot!.textContent).toContain('Niet beschikbaar');
 });
+
+it('shows explicit defrost and auxiliary states with fault and connection precedence', async () => {
+  const h = hass();
+  const config = heatPumpCardConfig({
+    ...flowConfig,
+    defrost_entity: 'binary_sensor.defrost',
+    fault_code: 'sensor.fault_code',
+  });
+  const set = (id: string, state: string) => {
+    h.states[id] = { entity_id: id, state, attributes: {} };
+  };
+  set('binary_sensor.defrost', 'on');
+  set(config.auxiliary_heating!, 'on');
+  expect(heatPumpStatus(h, config).purpose).toBe('defrost');
+  const card = new HeatFlowCard();
+  card.setConfig(config);
+  card.hass = { ...h, states: { ...h.states } };
+  document.body.append(card);
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('Buitenunit wordt ontdooid');
+  expect(card.shadowRoot!.querySelector('path.running, path.hot')).toBeNull();
+  set('binary_sensor.defrost', 'off');
+  expect(heatPumpStatus(h, config).purpose).toBe('auxiliary_active');
+  set(entities.controller, 'off');
+  expect(heatPumpStatus(h, config).purpose).toBe('offline');
+  set(entities.fault, 'on');
+  set('sensor.fault_code', 'F123');
+  card.hass = { ...h, states: { ...h.states } };
+  await card.updateComplete;
+  expect(card.shadowRoot!.textContent).toContain('F123');
+  const details = vi.fn();
+  card.addEventListener('hass-more-info', details);
+  card.shadowRoot!.querySelector('button')!.click();
+  expect(details.mock.calls[0]![0].detail.entityId).toBe('sensor.fault_code');
+});

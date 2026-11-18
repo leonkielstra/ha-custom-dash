@@ -120,6 +120,8 @@ export interface HeatPumpCardConfig extends CardConfig {
   electric_power?: string;
   outdoor_temperature?: string;
   auxiliary_heating?: string;
+  defrost_entity?: string;
+  fault_code?: string;
   controller_online?: string;
   outdoor_online?: string;
   fault_entity?: string;

@@ -63,6 +63,8 @@ export function heatPumpCardConfig(value: unknown): HeatPumpCardConfig {
     'electric_power',
     'outdoor_temperature',
     'auxiliary_heating',
+    'defrost_entity',
+    'fault_code',
     'controller_online',
     'outdoor_online',
     'fault_entity',

@@ -25,7 +25,17 @@ const paths: Record<string, string> = {
     'M5 7V3m-3 7H0m8-6 2-2M3 5 1 3M4 12a5 5 0 1 1 9-5M7 20a4 4 0 1 1 1-8 5 5 0 0 1 9-1 4 4 0 1 1 2 9Z',
   'mdi:water-thermometer':
     'M8 2c-1 4-6 7-6 12a6 6 0 0 0 10 4m4-5V5a2 2 0 0 1 4 0v8a4 4 0 1 1-4 0',
-  'mdi:heat-pump-outline': 'M3 3h18v18H3ZM7 7h10v10H7ZM12 7v10M7 12h10',
+  'mdi:heat-pump-outline':
+    'M5 2h14q3 0 3 3v14q0 3-3 3H5q-3 0-3-3V5q0-3 3-3ZM12 6a6 6 0 1 0 0 12 6 6 0 1 0 0-12Zm0 0v12m-5-9 10 6m0-6L7 15',
+  'mdi:fire':
+    'M12 2c1 5-4 7-3 11-2-1-2-3-2-4-7 8-1 13 5 13 8 0 10-8 5-13l-1 4c0-5-3-9-4-11Z',
+  'mdi:water': 'M12 2c-2 4-8 10-8 14a8 8 0 0 0 16 0c0-4-6-10-8-14Z',
+  'mdi:snowflake':
+    'M12 2v20M4 7l16 10M4 17 20 7M8 4l4 3 4-3M8 20l4-3 4 3M4 11l4-2V5m12 8-4 2v4M4 13l4 2v4M20 11l-4-2V5',
+  'mdi:lightning-bolt': 'm14 2-11 12h8l-1 8 11-12h-8Z',
+  'mdi:cloud-off-outline':
+    'M7 19H5a4 4 0 0 1-1-8 6 6 0 0 1 11-4 6 6 0 1 1 2 12ZM3 22 21 3',
+  'mdi:lock': 'M5 10h14v12H5Zm3 0V6a4 4 0 0 1 8 0v4',
   'mdi:heating-coil':
     'M7 3c-6 5 6 7 0 12s0 6 0 6m5-18c-6 5 6 7 0 12s0 6 0 6m5-18c-6 5 6 7 0 12s0 6 0 6',
   'mdi:chevron-right': 'm9 5 7 7-7 7',
@@ -74,7 +84,7 @@ class PreviewIcon extends HTMLElement {
   }
   private draw() {
     const root = this.shadowRoot ?? this.attachShadow({ mode: 'open' });
-    root.innerHTML = `<style>:host{display:inline-flex;width:24px;height:24px}svg{width:100%;height:100%}</style><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${paths[this.value] ?? paths['mdi:lightbulb-outline']}"/></svg>`;
+    root.innerHTML = `<style>:host{display:inline-flex;width:24px;height:24px}svg{width:var(--mdc-icon-size, 100%);height:var(--mdc-icon-size, 100%)}</style><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${paths[this.value] ?? paths['mdi:lightbulb-outline']}"/></svg>`;
   }
 }
 if (!customElements.get('ha-icon'))

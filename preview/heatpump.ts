@@ -32,7 +32,7 @@ function hass(): HomeAssistant {
 }
 const host = document.createElement('main');
 host.className = 'hp-page';
-document.body.innerHTML = `<header class="preview-bar"><div><h1>Heat-pump preview</h1><p><a href="/preview/home.html">Home</a> · Fictional states and illustrative chart traces</p></div><div class="preview-controls"><label>Theme <select id="hp-theme"><option value="dark">Dark</option><option value="light">Light</option></select></label><label>Layout <select id="hp-layout"><option value="wide">Responsive</option><option value="phone">Phone</option></select></label><label>Language <select id="hp-language"><option value="nl">Nederlands</option><option value="en">English</option></select></label><label>Scenario <select id="hp-scenario"><option value="hot-water">Hot water</option><option value="heating">Heating</option><option value="standby">Standby</option><option value="unavailable">Unavailable</option><option value="fault">Fault</option><option value="auxiliary">Auxiliary heating</option></select></label></div></header>`;
+document.body.innerHTML = `<header class="preview-bar"><div><h1>Heat-pump preview</h1><p><a href="/preview/home.html">Home</a> · Fictional states and illustrative chart traces</p></div><div class="preview-controls"><label>Theme <select id="hp-theme"><option value="dark">Dark</option><option value="light">Light</option></select></label><label>Layout <select id="hp-layout"><option value="wide">Responsive</option><option value="phone">Phone</option></select></label><label>Language <select id="hp-language"><option value="nl">Nederlands</option><option value="en">English</option></select></label><label>Scenario <select id="hp-scenario"><option value="hot-water">Hot water</option><option value="heating">Heating</option><option value="standby">Standby</option><option value="unavailable">Unavailable</option><option value="defrost">Defrost</option><option value="fault">Fault</option><option value="auxiliary">Auxiliary heating</option></select></label></div></header>`;
 document.body.append(host);
 const ns = 'http://www.w3.org/2000/svg';
 function svgEl(tag: string, attrs: Record<string, string | number>) {
@@ -378,9 +378,22 @@ document.querySelector('#hp-scenario')!.addEventListener('change', (event) => {
     set(entities.output, 'unavailable');
     set(entities.temperature, 'unavailable');
     set(entities.fan, 'unavailable');
-    set(entities.controller, 'unavailable');
+    set(entities.controller, 'off');
   }
-  if (value === 'fault') set(entities.fault, 'on');
+  if (value === 'defrost')
+    states['binary_sensor.example_defrost'] = {
+      entity_id: 'binary_sensor.example_defrost',
+      state: 'on',
+      attributes: {},
+    };
+  if (value === 'fault') {
+    set(entities.fault, 'on');
+    states['sensor.example_fault_code'] = {
+      entity_id: 'sensor.example_fault_code',
+      state: 'F123',
+      attributes: {},
+    };
+  }
   if (value === 'auxiliary') set(entities.auxiliary, 'on');
   render();
 });

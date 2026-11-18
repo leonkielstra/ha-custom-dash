@@ -57,6 +57,8 @@ fan_speed: sensor.example_fan_speed
 electric_power: sensor.example_electric_power
 outdoor_temperature: sensor.example_outdoor_temperature
 auxiliary_heating: binary_sensor.example_auxiliary_heating
+defrost_entity: binary_sensor.example_defrost
+fault_code: sensor.example_fault_code
 controller_online: binary_sensor.example_controller_online
 outdoor_online: binary_sensor.example_outdoor_online
 fault_entity: binary_sensor.example_fault
@@ -78,7 +80,7 @@ compressor or operating states do not confirm a heat route.
 The flow card adds optional `title`, `supply_temperature`, `return_temperature`,
 `temperature_difference`, `pressure`, `water_temperature`, and `water_target`.
 It draws a responsive schematic, not a physical installation diagram. Only a
-confirmed valve branch is highlighted; cooling and defrost are not inferred.
+confirmed valve branch is highlighted; cooling and defrost are not inferred. An optional binary defrost entity reports defrost when on. An optional fault-code entity provides the fault value and a link to its Home Assistant details. Fault and lockout take priority over connection loss, defrost, and auxiliary heating.
 Current reported readings remain available even in standby. They are not
 attributed to the active route as independently measured branch energy.
 
