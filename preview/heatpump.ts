@@ -380,12 +380,7 @@ document.querySelector('#hp-scenario')!.addEventListener('change', (event) => {
     set(entities.fan, 'unavailable');
     set(entities.controller, 'off');
   }
-  if (value === 'defrost')
-    states['binary_sensor.example_defrost'] = {
-      entity_id: 'binary_sensor.example_defrost',
-      state: 'on',
-      attributes: {},
-    };
+  if (value === 'defrost') set(entities.operation, 'defrost');
   if (value === 'fault') {
     set(entities.fault, 'on');
     states['sensor.example_fault_code'] = {

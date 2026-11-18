@@ -290,7 +290,7 @@ it('shows explicit defrost and auxiliary states with fault and connection preced
   const set = (id: string, state: string) => {
     h.states[id] = { entity_id: id, state, attributes: {} };
   };
-  set('binary_sensor.defrost', 'on');
+  set(config.operating_entity, 'defrost');
   set(config.auxiliary_heating!, 'on');
   expect(heatPumpStatus(h, config).purpose).toBe('defrost');
   const card = new HeatFlowCard();
@@ -300,6 +300,9 @@ it('shows explicit defrost and auxiliary states with fault and connection preced
   await card.updateComplete;
   expect(card.shadowRoot!.textContent).toContain('Buitenunit wordt ontdooid');
   expect(card.shadowRoot!.querySelector('path.running, path.hot')).toBeNull();
+  set(config.operating_entity, 'heating');
+  set('binary_sensor.defrost', 'on');
+  expect(heatPumpStatus(h, config).purpose).toBe('defrost');
   set('binary_sensor.defrost', 'off');
   expect(heatPumpStatus(h, config).purpose).toBe('auxiliary_active');
   set(entities.controller, 'off');

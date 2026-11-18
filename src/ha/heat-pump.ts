@@ -39,7 +39,8 @@ export function heatPumpStatus(
               (id) => id && state(id) === 'off',
             )
           ? 'offline'
-          : state(config.defrost_entity) === 'on'
+          : state(config.operating_entity) === 'defrost' ||
+              state(config.defrost_entity) === 'on'
             ? 'defrost'
             : state(config.auxiliary_heating) === 'on'
               ? 'auxiliary_active'

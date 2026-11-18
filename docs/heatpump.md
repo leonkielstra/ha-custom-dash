@@ -80,7 +80,7 @@ compressor or operating states do not confirm a heat route.
 The flow card adds optional `title`, `supply_temperature`, `return_temperature`,
 `temperature_difference`, `pressure`, `water_temperature`, and `water_target`.
 It draws a responsive schematic, not a physical installation diagram. Only a
-confirmed valve branch is highlighted; cooling and defrost are not inferred. An optional binary defrost entity reports defrost when on. An optional fault-code entity provides the fault value and a link to its Home Assistant details. Fault and lockout take priority over connection loss, defrost, and auxiliary heating.
+confirmed valve branch is highlighted; cooling is not inferred. Defrost is shown when the operating entity reports `defrost`, or when the optional binary defrost entity reports `on`. An optional fault-code entity provides the fault value and a link to its Home Assistant details. Fault and lockout take priority over connection loss, defrost, and auxiliary heating.
 Current reported readings remain available even in standby. They are not
 attributed to the active route as independently measured branch energy.
 
