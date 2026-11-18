@@ -17,6 +17,13 @@ Home Room:
   ha-section-grid-column-gap: '8px'
   ha-heading-card-title-font-size: '16px'
   ha-heading-card-title-font-weight: '600'
+  home-room-background: 'var(--primary-background-color)'
+  home-room-surface: 'var(--card-background-color)'
+  home-room-secondary: 'var(--secondary-background-color)'
+  home-room-text: 'var(--primary-text-color)'
+  home-room-muted: 'var(--secondary-text-color)'
+  home-room-accent: 'var(--primary-color)'
+  home-room-border: 'var(--divider-color)'
   modes:
     light:
       primary-background-color: '#F7F5EF'

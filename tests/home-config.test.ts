@@ -13,7 +13,7 @@ it('accepts the Home schema without helpers, and all twelve room shapes', () => 
   expect(rooms).toHaveLength(12);
   expect(rooms[7]?.lights).toHaveLength(3);
   expect(rooms[2]?.lights).toBeUndefined();
-  expect(rooms[3]?.temperature).toBeUndefined();
+  expect(rooms[3]?.temperature).toBe('sensor.example_room_3_temperature');
   expect(roomConfig({ type: 'test', name: 'Room', lights: [] }).lights).toEqual(
     [],
   );

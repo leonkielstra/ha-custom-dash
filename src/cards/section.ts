@@ -35,6 +35,24 @@ export class SectionCard extends BaseCard<SectionConfig> {
       .content > * {
         min-width: 0;
       }
+      section:has(.content > home-room-card) .section-heading {
+        padding-top: 0;
+        min-height: 32px;
+        margin-bottom: 4px;
+      }
+      .content:has(> home-room-card) {
+        gap: 0;
+        background: var(--room-surface);
+        border: 1px solid var(--room-border);
+        border-radius: var(--ha-card-border-radius, 16px);
+        overflow: hidden;
+      }
+      .content > home-room-card {
+        --ha-card-border-radius: 0px;
+      }
+      .content > home-room-card + home-room-card {
+        border-top: 1px solid var(--room-border);
+      }
     `,
   ];
 

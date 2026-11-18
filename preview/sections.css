@@ -39,7 +39,7 @@ body[data-theme='light'] {
 .navigation-grid {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
 }
 .room-navigation > h2:not(:first-child) {
@@ -53,7 +53,7 @@ body[data-theme='light'] {
 }
 @container (min-width: 1024px) {
   .home-layout {
-    --columns: 3;
-    max-width: 1354px;
+    --columns: 4;
+    max-width: 1700px;
   }
 }

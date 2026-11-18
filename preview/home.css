@@ -10,7 +10,7 @@
   container: home-overview / inline-size;
 }
 .home-title h1 {
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 600;
   line-height: 1.2;
   margin: 0;
@@ -24,8 +24,8 @@
   --columns: 1;
   display: grid;
   grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
-  gap: 24px 32px;
-  margin: 16px auto 0;
+  gap: 12px 32px;
+  margin: 4px auto 0;
   max-width: 430px;
   align-items: start;
 }
@@ -40,7 +40,12 @@
 }
 .home-navigation {
   grid-column: span min(2, var(--columns));
-  gap: 24px;
+  gap: 8px;
+}
+@container home-overview (min-width: 672px) {
+  .home-navigation {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 .floor h2 {
   font-size: 16px;
@@ -49,7 +54,7 @@
 }
 .room-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 8px;
   align-items: stretch;
 }
@@ -72,5 +77,8 @@
   .home-page {
     padding: 16px 12px;
     border-radius: 0;
+  }
+  .home-summary > home-hero-card {
+    margin-inline: -12px;
   }
 }

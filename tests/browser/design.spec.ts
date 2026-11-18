@@ -25,13 +25,13 @@ test('reference Home and room compositions match the compact hierarchy in both t
           const outdoor = await hero
             .locator('.outdoor dd')
             .evaluate((e) => Number.parseFloat(getComputedStyle(e).fontSize));
-          expect(indoor).toBeGreaterThan(outdoor * 1.8);
+          expect(indoor).toBeGreaterThan(outdoor * 1.5);
           const card = screen.locator('home-room-card').first();
           const icon = await card.locator('.icon-box').boundingBox();
           const name = await card.locator('.name').boundingBox();
           const temp = await card.locator('.temperature').boundingBox();
           expect(icon!.x).toBeLessThan(name!.x);
-          expect(temp!.y).toBeGreaterThan(name!.y);
+          expect(temp!.y).toBeGreaterThanOrEqual(name!.y);
           expect((await card.boundingBox())!.height).toBeLessThanOrEqual(104);
           await expect(
             screen.locator('home-activity-section-card ha-card'),

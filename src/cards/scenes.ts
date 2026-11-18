@@ -41,6 +41,11 @@ export class SceneCard extends BaseCard<ScenesConfig> {
         color: var(--room-muted);
         margin-top: 0;
       }
+      .section-heading {
+        padding-top: 0;
+        min-height: 36px;
+        margin-bottom: 4px;
+      }
     `,
   ];
   private activated = '';

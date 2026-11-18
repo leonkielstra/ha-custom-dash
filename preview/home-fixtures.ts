@@ -21,9 +21,9 @@ const floors = [
     title: 'Begane grond',
     rooms: [
       ['Woonkamer', 'mdi:sofa-outline', 5, true],
-      ['Keuken', 'mdi:countertop-outline', 7, false],
+      ['Keuken', 'mdi:countertop-outline', 7, true],
       ['Bijkeuken', 'mdi:door-open', 0, true],
-      ['Entree', 'mdi:coat-rack', 0, false],
+      ['Entree', 'mdi:coat-rack', 0, true],
     ],
   },
   {
@@ -31,7 +31,7 @@ const floors = [
     rooms: [
       ['Overloop', 'mdi:stairs', 1, true],
       ['Washok', 'mdi:washing-machine', 0, true],
-      ['Kantoor', 'mdi:desk', 3, false],
+      ['Kantoor', 'mdi:desk', 3, true],
       ['Slaapkamer', 'mdi:bed-outline', 3, true],
       ['Badkamer', 'mdi:shower', 1, true],
     ],
@@ -40,8 +40,8 @@ const floors = [
   {
     title: 'Buiten',
     rooms: [
-      ['Achtertuin', 'mdi:flower-outline', 1, false],
-      ['Oprit', 'mdi:car-outline', 2, false],
+      ['Achtertuin', 'mdi:flower-outline', 1, true],
+      ['Oprit', 'mdi:car-outline', 2, true],
     ],
   },
 ] satisfies { title: string; rooms: [string, string, number, boolean][] }[];
@@ -81,7 +81,7 @@ export const hero = {
 };
 export const activities: ActivityConfig = {
   type: 'custom:home-activity-section-card',
-  title: 'Actieve apparaten',
+  title: 'Actief & recent klaar',
   hide_when_empty: true,
   appliances: [
     {

@@ -35,11 +35,11 @@ export class RoomCard extends BaseCard<RoomConfig> {
       }
       .room {
         display: grid;
-        grid-template-columns: 44px minmax(0, 1fr);
+        grid-template-columns: 40px minmax(0, 1fr) 20px;
         align-items: center;
         column-gap: 10px;
         padding: 8px;
-        min-height: 88px;
+        min-height: 60px;
         height: 100%;
         border-radius: inherit;
         color: inherit;
@@ -54,8 +54,8 @@ export class RoomCard extends BaseCard<RoomConfig> {
         outline-offset: -1px;
       }
       .icon-box {
-        width: 44px;
-        height: 64px;
+        width: 40px;
+        height: 40px;
         border-radius: 11px;
       }
       ha-icon {
@@ -79,68 +79,39 @@ export class RoomCard extends BaseCard<RoomConfig> {
         }
       }
       .temperature {
-        margin-top: 3px;
+        display: inline;
         color: var(--room-muted);
-        font-size: 11px;
-        font-style: italic;
-        line-height: 15px;
+        font-size: 12px;
+        line-height: 17px;
       }
       h3 {
-        font-size: 13px;
-        line-height: 18px;
+        font-size: 15px;
+        line-height: 20px;
         font-weight: 550;
       }
       .status {
-        margin-top: 3px;
+        display: inline;
         color: var(--room-muted);
-        font-size: 11px;
-        line-height: 15px;
+        font-size: 12px;
+        line-height: 17px;
         overflow-wrap: anywhere;
       }
       .unavailable {
-        display: block;
+        display: inline;
         font-size: 10px;
       }
-      @container room-shortcut (min-width: 300px) {
-        .room {
-          padding: 12px;
-          column-gap: 12px;
-          min-height: 92px;
-        }
-        .icon-box {
-          height: 48px;
-        }
-        .details {
-          display: grid;
-          grid-template-columns: minmax(0, 1fr) auto;
-          align-items: center;
-          column-gap: 12px;
-        }
-        .name,
-        .status {
-          grid-column: 1;
-        }
-        .name {
-          font-size: 15px;
-          line-height: 20px;
-        }
-        .status {
-          font-size: 12px;
-          line-height: 17px;
-        }
-        .temperature {
-          grid-column: 2;
-          grid-row: 1 / span 2;
-          justify-self: end;
-          margin: 0;
-          font-size: 14px;
-          line-height: 20px;
-          font-style: normal;
-        }
+      .meta {
+        color: var(--room-muted);
+        line-height: 17px;
+      }
+      .chevron {
+        width: 20px;
+        height: 20px;
+        --mdc-icon-size: 20px;
       }
       @media (max-width: 340px) {
         .room {
-          grid-template-columns: 40px minmax(0, 1fr);
+          grid-template-columns: 40px minmax(0, 1fr) 20px;
           gap: 8px;
         }
         .icon-box {
@@ -206,22 +177,25 @@ export class RoomCard extends BaseCard<RoomConfig> {
       </div>
       <div class="details">
         <h3 class="name" title=${c.name}>${c.name}</h3>
-        ${
-          c.lights?.length
-            ? html`<p class="status">
-                <span class="sr-only">${statusLabel}</span>
-                <span class="full" aria-hidden="true"
-                  >${summary.on ? text.lightGroupsOn(summary.on) : summary.unavailable ? nothing : text.lightingOff}</span
-                >
-                <span class="short" aria-hidden="true"
-                  >${summary.on ? `${summary.on} ${text.onLower}` : summary.unavailable ? nothing : text.off}</span
-                >
-                ${summary.unavailable ? html`<span class="unavailable" aria-hidden="true">${text.unavailableShort(summary.unavailable)}</span>` : nothing}
-              </p>`
-            : nothing
-        }
-        ${c.temperature ? html`<p class="temperature" aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '')}</p>` : nothing}
-      </div>`;
+        <div class="meta">
+          ${
+            c.lights?.length
+              ? html`<span class="status">
+                  <span class="sr-only">${statusLabel}</span>
+                  <span class="full" aria-hidden="true"
+                    >${summary.on ? text.lightGroupsOn(summary.on) : summary.unavailable ? nothing : text.lightingOff}</span
+                  >
+                  <span class="short" aria-hidden="true"
+                    >${summary.on ? `${summary.on} ${text.onLower}` : summary.unavailable ? nothing : text.off}</span
+                  >
+                  ${summary.unavailable ? html`<span class="unavailable" aria-hidden="true">${text.unavailableShort(summary.unavailable)}</span>` : nothing}
+                </span>`
+              : nothing
+          }
+          ${c.temperature ? html`${c.lights?.length && statusLabel ? ' · ' : ''}<span class="temperature" aria-label=${text.temperature}>${sensorValue(this.hass, c.temperature, '')}</span>` : nothing}
+        </div>
+      </div>
+      ${c.navigation_path ? html`<ha-icon class="chevron" .icon=${'mdi:chevron-right'} aria-hidden="true"></ha-icon>` : nothing}`;
     return html`<ha-card
       >${
         c.navigation_path

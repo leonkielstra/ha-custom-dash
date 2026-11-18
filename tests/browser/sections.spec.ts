@@ -40,79 +40,38 @@ test('section spans allocate full width to room controls and collapse on mobile'
     .screenshot({ path: 'test-results/sections-room-1440-light.png' });
 });
 
-test('Home keeps every floor in the right navigation region and collapses below the summary on mobile', async ({
+test('Home keeps each floor in a compact section across screen widths', async ({
   page,
 }) => {
   await page.goto('/preview/sections.html?bundle=1');
   await page.locator('#view').selectOption('home');
-  for (const width of [320, 390, 768, 1440]) {
+  for (const width of [320, 393, 768, 1440]) {
     await page.setViewportSize({ width, height: 1100 });
     const sections = page.locator('.layout-section');
-    await expect(sections).toHaveCount(2);
-    const first = (await sections.nth(0).boundingBox())!;
-    const second = (await sections.nth(1).boundingBox())!;
-    if (width === 1440) {
-      expect(second.y).toBe(first.y);
-      expect(second.x).toBeGreaterThan(first.x);
-    } else {
-      expect(second.x).toBe(first.x);
-      expect(second.y).toBeGreaterThan(first.y);
-    }
-    const navigation = page.locator('.room-navigation');
-    await expect(navigation.getByRole('heading', { level: 2 })).toHaveText([
+    await expect(sections).toHaveCount(5);
+    const floors = page.locator('.room-navigation');
+    await expect(floors.locator('.section-heading h3')).toHaveText([
       'Begane grond',
       'Eerste verdieping',
       'Tweede verdieping',
       'Buiten',
     ]);
-    const rooms = navigation.locator('home-room-card');
+    const rooms = floors.locator('home-room-card');
     await expect(rooms).toHaveCount(12);
-    await expect(navigation.locator('.navigation-grid')).toHaveCount(4);
-    if (width === 1440) {
-      for (const heading of await navigation
-        .getByRole('heading', { level: 2 })
-        .all()) {
-        expect((await heading.boundingBox())!.x).toBeCloseTo(second.x, 0);
-      }
-      const card = rooms.first();
-      const label = (await card.locator('.name').boundingBox())!;
-      const temperature = (await card.locator('.temperature').boundingBox())!;
-      expect(temperature.x).toBeGreaterThan(label.x + label.width);
-      expect(
-        await card
-          .locator('.name')
-          .evaluate((e) => getComputedStyle(e).fontSize),
-      ).toBe('15px');
-      const headingPositions = await navigation
-        .getByRole('heading', { level: 2 })
-        .evaluateAll((elements) =>
-          elements.map((e) => e.getBoundingClientRect().y),
-        );
-      await page
-        .locator('home-activity-section-card')
-        .evaluate((e) => e.remove());
-      expect(
-        await navigation
-          .getByRole('heading', { level: 2 })
-          .evaluateAll((elements) =>
-            elements.map((e) => e.getBoundingClientRect().y),
-          ),
-      ).toEqual(headingPositions);
-    } else if (width < 672) {
-      const card = rooms.first();
-      const label = (await card.locator('.name').boundingBox())!;
-      const temperature = (await card.locator('.temperature').boundingBox())!;
-      expect(temperature.y).toBeGreaterThan(label.y);
-      expect(
-        await card
-          .locator('.name')
-          .evaluate((e) => getComputedStyle(e).fontSize),
-      ).toBe('13px');
-    }
     const a = (await rooms.nth(0).boundingBox())!;
     const b = (await rooms.nth(1).boundingBox())!;
-    expect(a.y).toBe(b.y);
-    expect(b.x).toBeGreaterThan(a.x);
+    expect(b.y).toBeGreaterThan(a.y);
+    expect(b.x).toBe(a.x);
+    await expect(rooms.first()).toContainText('20,4°C');
+    await expect(rooms.first().getByRole('link')).toHaveAttribute(
+      'href',
+      /woonkamer/,
+    );
+    if (width === 1440) {
+      expect((await floors.nth(1).boundingBox())!.x).toBeGreaterThan(
+        (await floors.nth(0).boundingBox())!.x,
+      );
+    }
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

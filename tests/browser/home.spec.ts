@@ -1,5 +1,30 @@
 import { expect, test } from '@playwright/test';
 
+test('uses local hero images when both exist and falls back to fixtures when one is missing', async ({
+  page,
+}) => {
+  let missingNight = false;
+  await page.route(
+    '**/local/ha-config/www/images/dashboard/home-*-v2.png',
+    (route) => {
+      const missing = missingNight && route.request().url().includes('night');
+      return route.fulfill({
+        status: missing ? 404 : 200,
+        contentType: 'image/svg+xml',
+        body: '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"/>',
+      });
+    },
+  );
+  await page.goto('/preview/home.html?bundle=1');
+  const image = page.locator('.home-page.light home-hero-card img');
+  await expect(image).toHaveAttribute('src', /home-day-v2\.png$/);
+  await page.locator('#daylight').selectOption('below_horizon');
+  await expect(image).toHaveAttribute('src', /home-night-v2\.png$/);
+  missingNight = true;
+  await page.reload();
+  await expect(image).toHaveAttribute('src', /home-day\.svg$/);
+});
+
 test('room appliance rows stay visible and distinguish idle, running and unavailable states', async ({
   page,
 }) => {
@@ -130,11 +155,20 @@ test('Home bundle renders all twelve rooms and switches illustrations independen
 }) => {
   const errors: string[] = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.goto('/preview/home.html?bundle=1');
+  await page.goto('/preview/home.html?bundle=1&fixtures=1');
   const dark = page.locator('.home-page.dark');
   const light = page.locator('.home-page.light');
   for (const view of [dark, light]) {
     await expect(view.locator('home-room-card')).toHaveCount(12);
+    await expect(view.locator('.floor home-section-card')).toHaveCount(4);
+    const ground = view.locator('.floor home-section-card').first();
+    await expect(ground.locator('home-room-card')).toHaveCount(4);
+    await expect(ground.locator('home-room-card').nth(1)).toContainText(
+      '20,1°C',
+    );
+    await expect(ground.locator('home-room-card').first()).toContainText(
+      '5 lichtgroepen aan',
+    );
     await expect(view.locator('home-hero-card img')).toHaveAttribute(
       'src',
       /home-day.svg$/,
@@ -239,7 +273,7 @@ test('missing metadata and unavailable lights keep room navigation and live reco
   await expect(bedroom).not.toContainText('Verlichting uit');
   await expect(rooms.nth(4)).toContainText('—');
   await expect(rooms.nth(2).locator('.status')).toHaveCount(0);
-  await expect(rooms.nth(3).locator('.temperature')).toHaveCount(0);
+  await expect(rooms.nth(3).locator('.temperature')).toContainText('19,5°C');
   await expect(
     view
       .locator('home-activity-section-card ha-card')
@@ -280,8 +314,8 @@ test('Home stays compact and neutral with no overflow across mobile/tablet sizes
   await page.goto('/preview/home.html?bundle=1');
   await page.locator('#scenario').selectOption('multiple');
   for (const [width, theme] of [
-    [390, 'dark'],
-    [390, 'light'],
+    [393, 'dark'],
+    [393, 'light'],
     [320, 'dark'],
     [768, 'dark'],
     [375, 'dark'],
@@ -291,16 +325,27 @@ test('Home stays compact and neutral with no overflow across mobile/tablet sizes
     await page.locator('#theme').selectOption(theme);
     const view = page.locator(`.home-page.${theme}`);
     const hero = await view.locator('home-hero-card').boundingBox();
-    expect(hero!.height).toBeGreaterThanOrEqual(140);
-    expect(hero!.height).toBeLessThanOrEqual(170);
+    expect(hero!.height).toBeGreaterThanOrEqual(220);
+    expect(hero!.height).toBeLessThanOrEqual(360);
+    const image = await view.locator('home-hero-card img').boundingBox();
+    expect(image!.width).toBeLessThanOrEqual(hero!.width);
+    const illustration = await view
+      .locator('home-hero-card .illustration')
+      .boundingBox();
+    const reading = await view
+      .locator('home-hero-card dd')
+      .first()
+      .boundingBox();
+    expect(reading!.y).toBeGreaterThanOrEqual(
+      illustration!.y + illustration!.height,
+    );
     for (const grid of await view.locator('.room-grid').all()) {
       const roomCards = grid.locator('home-room-card');
       if ((await roomCards.count()) > 1) {
         const a = await roomCards.nth(0).boundingBox();
         const b = await roomCards.nth(1).boundingBox();
-        expect(a!.y).toBe(b!.y);
-        expect(a!.height).toBe(b!.height);
-        expect(b!.x).toBeGreaterThan(a!.x);
+        expect(b!.y).toBeGreaterThan(a!.y);
+        expect(b!.x).toBe(a!.x);
       }
     }
     if (theme === 'dark') {
@@ -319,7 +364,7 @@ test('Home stays compact and neutral with no overflow across mobile/tablet sizes
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    if (width === 390 || width === 320 || width === 768) {
+    if (width === 393 || width === 320 || width === 768) {
       await view.screenshot({
         path: `test-results/home-${width}-${theme}.png`,
       });
@@ -332,6 +377,7 @@ test('Home stays compact and neutral with no overflow across mobile/tablet sizes
     ),
   ).toBe(true);
   const room = page.locator('.home-page.dark home-room-card').first();
+  await expect(room.locator('.name')).toContainText('bijzonder lange');
   expect(
     await room
       .locator('.name')

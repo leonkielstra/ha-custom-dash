@@ -154,7 +154,7 @@ it('updates the status card on state events, translates labels, and is read-only
   expect(card.hass.callService).not.toHaveBeenCalled();
 });
 
-it('highlights only the confirmed branch, and shows no active route for standby or faults', async () => {
+it('keeps a confirmed route visible during a fault and supplemental heating', async () => {
   const card = new HeatFlowCard();
   card.setConfig(flowConfig);
   card.hass = hass();
@@ -163,6 +163,21 @@ it('highlights only the confirmed branch, and shows no active route for standby 
   expect(card.shadowRoot!.querySelector('path.hot')).not.toBeNull();
   expect(card.shadowRoot!.querySelector('.target.active')).toBeNull();
   expect(card.shadowRoot!.textContent).toContain('48,3 °C');
+  card.hass = {
+    ...card.hass,
+    states: {
+      ...card.hass.states,
+      [entities.fault]: { ...card.hass.states[entities.fault]!, state: 'on' },
+      [entities.auxiliary]: {
+        ...card.hass.states[entities.auxiliary]!,
+        state: 'on',
+      },
+    },
+  };
+  await card.updateComplete;
+  expect(card.shadowRoot!.querySelector('ha-card')!.className).toBe('fault');
+  expect(card.shadowRoot!.querySelector('path.hot')).not.toBeNull();
+  expect(card.shadowRoot!.textContent).toContain('Bijverwarming: Aan');
   card.hass = {
     ...card.hass,
     states: {

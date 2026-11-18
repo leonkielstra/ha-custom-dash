@@ -1,16 +1,12 @@
 import type { CardConfig, HomeAssistant } from '../src/ha/types';
-import {
-  activities,
-  fixtureStates,
-  hero,
-  roomGroups,
-  scenes,
-} from './home-fixtures';
+import { activities, fixtureStates, roomGroups, scenes } from './home-fixtures';
+import { previewHero } from './hero-images';
 import './icons';
 import './style.css';
 import './sections.css';
 
 const params = new URLSearchParams(location.search);
+const hero = await previewHero();
 await import(
   /* @vite-ignore */ params.has('bundle')
     ? '/dist/ha-custom-dash.js'
@@ -21,6 +17,15 @@ interface PreviewCard extends HTMLElement {
   hass?: HomeAssistant;
   getGridOptions(): { columns: number | 'full' };
 }
+window.loadCardHelpers = async () => ({
+  createCardElement(config) {
+    const card = document.createElement(
+      config.type.replace('custom:', ''),
+    ) as PreviewCard;
+    card.setConfig(config);
+    return card;
+  },
+});
 const states = fixtureStates('unavailable');
 const lightNames = [
   'Plafondspots',
@@ -93,20 +98,15 @@ function render() {
   };
   if (home) {
     section([hero, activities, scenes]);
-    const navigation = section([], 2);
-    navigation.classList.add('room-navigation');
     for (const group of roomGroups) {
-      const heading = document.createElement('h2');
-      heading.textContent = group.title;
-      const grid = document.createElement('div');
-      grid.className = 'navigation-grid';
-      for (const config of group.rooms) {
-        const card = document.createElement('home-room-card') as PreviewCard;
-        card.setConfig(config);
-        card.hass = hass;
-        grid.append(card);
-      }
-      navigation.append(heading, grid);
+      const navigation = section([
+        {
+          type: 'custom:home-section-card',
+          title: group.title,
+          cards: group.rooms.map((room) => ({ ...room })),
+        },
+      ]);
+      navigation.classList.add('room-navigation');
     }
   } else {
     const room = roomGroups[0]!.rooms[0]!;

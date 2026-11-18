@@ -1,18 +1,24 @@
-import type { CardConfig, HomeAssistant, HassEntity } from '../src/ha/types';
+import type {
+  CardConfig,
+  HomeAssistant,
+  HassEntity,
+  SectionConfig,
+} from '../src/ha/types';
 import {
   activities,
   heatPump,
   fixtureStates,
-  hero,
   roomGroups,
   scenes,
   type HomeScenario,
 } from './home-fixtures';
+import { previewHero } from './hero-images';
 import './icons';
 import './style.css';
 import './home.css';
 
 const params = new URLSearchParams(location.search);
+const hero = await previewHero();
 await import(
   /* @vite-ignore */ params.has('bundle')
     ? '/dist/ha-custom-dash.js'
@@ -22,6 +28,15 @@ interface PreviewCard extends HTMLElement {
   setConfig(config: unknown): void;
   hass?: HomeAssistant;
 }
+window.loadCardHelpers = async () => ({
+  createCardElement(config) {
+    const card = document.createElement(
+      config.type.replace('custom:', ''),
+    ) as PreviewCard;
+    card.setConfig(config);
+    return card;
+  },
+});
 let scenario: HomeScenario = params.has('reference') ? 'reference' : 'day';
 let states = fixtureStates(scenario);
 let language = 'nl';
@@ -59,7 +74,7 @@ document.body.innerHTML = `
     </div>
   </header>
   <main class="preview-grid home-preview"></main>
-  <footer class="preview-note"><p>Fictional entity fixtures and illustrative SVG assets. Layout approximates native Lovelace Sections/grids; no Home Assistant connection.</p><p id="home-feedback" role="status"></p></footer>`;
+  <footer class="preview-note"><p>Fictional entity fixtures. Uses local v2 house images when available; otherwise uses illustrative SVGs. Layout approximates native Lovelace Sections/grids; no Home Assistant connection.</p><p id="home-feedback" role="status"></p></footer>`;
 function render() {
   const main = document.querySelector('main')!;
   main.dataset.theme = theme;
@@ -70,8 +85,7 @@ function render() {
     page.className = `home-page room ${mode}`;
     page.hidden = theme !== 'both' && theme !== mode;
     page.setAttribute('aria-label', `${mode} Home preview`);
-    page.innerHTML =
-      '<div class="home-title"><h1>Home</h1><span>Een fijn thuis</span></div>';
+    page.innerHTML = '<div class="home-title"><h1>Home</h1></div>';
     const composition = document.createElement('div');
     composition.className = 'home-composition';
     const summary = document.createElement('section');
@@ -82,7 +96,10 @@ function render() {
     navigation.setAttribute('aria-label', 'Rooms');
     composition.append(summary, navigation);
     page.append(composition);
-    const add = (config: CardConfig, target: HTMLElement = page) => {
+    const add = (
+      config: CardConfig | SectionConfig,
+      target: HTMLElement = page,
+    ) => {
       const card = document.createElement(
         String(config.type).replace('custom:', ''),
       ) as PreviewCard;
@@ -106,13 +123,14 @@ function render() {
     for (const group of roomGroups) {
       const section = document.createElement('section');
       section.className = 'floor';
-      const heading = document.createElement('h2');
-      heading.textContent = group.title;
-      section.append(heading);
-      const grid = document.createElement('div');
-      grid.className = 'room-grid';
-      for (const room of group.rooms) add({ ...room }, grid);
-      section.append(grid);
+      add(
+        {
+          type: 'custom:home-section-card',
+          title: group.title,
+          cards: group.rooms.map((room) => ({ ...room })),
+        },
+        section,
+      );
       navigation.append(section);
     }
     main.append(page);
@@ -148,10 +166,18 @@ document.querySelector('#daylight')!.addEventListener('change', (event) => {
   update();
 });
 document.querySelector('#long-name')!.addEventListener('click', () => {
-  for (const card of document.querySelectorAll<PreviewCard>('home-room-card')) {
+  for (const card of document.querySelectorAll<PreviewCard>(
+    '.floor home-section-card',
+  )) {
     card.setConfig({
-      ...roomGroups[0]!.rooms[0],
-      name: 'Een kamer met een bijzonder lange beschrijvende naam',
+      type: 'custom:home-section-card',
+      title: 'Begane grond',
+      cards: [
+        {
+          ...roomGroups[0]!.rooms[0],
+          name: 'Een kamer met een bijzonder lange beschrijvende naam',
+        },
+      ],
     });
   }
 });

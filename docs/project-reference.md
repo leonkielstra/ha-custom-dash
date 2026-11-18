@@ -56,7 +56,10 @@ night/washer, multiple appliances, unavailable entities, or rooms without lighti
 The daylight control works independently of theme (including day in dark mode
 and night in light mode). Both previews support English and Dutch. Home fixtures
 mirror the twelve-room configuration structure with fictional entity IDs. Its SVG
-house illustrations are preview assets; configure your own production images.
+house illustrations use `local/ha-config/www/images/dashboard/home-day-v2.png`
+and `home-night-v2.png` when both exist. Otherwise the preview uses fictional SVGs.
+Add `?fixtures=1` to force the SVGs. These private images are not part of the
+distributed library; configure your own production images.
 Select a single theme to see the desktop summary/navigation composition at full
 width; the side-by-side theme comparison keeps each preview compact.
 For comparison with `images/mockup-1.png`, open `/?reference=1` for the five-light

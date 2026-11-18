@@ -13,24 +13,40 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
     css`
       ha-card {
         display: grid;
-        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
-        align-items: center;
-        gap: 12px;
-        padding: 12px 16px;
-        background: var(--room-hero-surface);
-        min-height: 156px;
+        padding: 0 0 8px;
+        background: var(--room-background);
       }
       .illustration {
         display: grid;
         place-items: center;
         min-width: 0;
-        height: 132px;
+        width: 100%;
+        height: clamp(180px, 57vw, 225px);
+        overflow: hidden;
       }
       img {
         display: block;
-        width: 100%;
+        width: auto;
+        max-width: 100%;
         height: 100%;
+        min-height: 0;
         object-fit: contain;
+        mask-image:
+          linear-gradient(
+            to bottom,
+            transparent,
+            black 18%,
+            black 72%,
+            transparent
+          ),
+          linear-gradient(
+            to right,
+            transparent,
+            black 12%,
+            black 88%,
+            transparent
+          );
+        mask-composite: intersect;
       }
       .illustration ha-icon {
         color: var(--room-muted);
@@ -41,12 +57,16 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
       dl {
         margin: 0;
         display: grid;
-        gap: 12px;
+        gap: 2px;
         min-width: 0;
+        text-align: center;
       }
       dl > div:not(.outdoor) {
         display: flex;
-        flex-direction: column-reverse;
+        align-items: baseline;
+        justify-content: center;
+        flex-direction: row-reverse;
+        gap: 8px;
       }
       dt {
         font-size: 13px;
@@ -54,23 +74,22 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
         font-weight: 550;
       }
       .outdoor {
-        border-top: 1px solid var(--room-border);
-        padding-top: 12px;
+        padding: 0;
       }
       .outdoor .reading {
         display: flex;
         flex-direction: row-reverse;
-        justify-content: flex-end;
+        justify-content: center;
         align-items: baseline;
         gap: 5px;
       }
       .outdoor dd {
-        font-size: 13px;
+        font-size: 16px;
         font-weight: 500;
         letter-spacing: 0;
       }
       .outdoor dt {
-        font-size: 11px;
+        font-size: 13px;
         color: var(--room-muted);
         font-weight: 400;
       }
@@ -78,15 +97,6 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
         font-size: 11px;
         color: var(--room-muted);
         margin-top: 3px;
-      }
-      @media (max-width: 340px) {
-        ha-card {
-          padding: 12px;
-          gap: 8px;
-        }
-        dd {
-          font-size: 26px;
-        }
       }
       dd {
         margin: 0;

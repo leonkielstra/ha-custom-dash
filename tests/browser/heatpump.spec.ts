@@ -28,7 +28,7 @@ test('heat-pump bundle renders the five views and follows operating states witho
   await expect(flow.locator('path.hot, path.running')).toHaveCount(0);
   await page.locator('#hp-scenario').selectOption('fault');
   await expect(status).toContainText('Storing gemeld');
-  await expect(flow.locator('path.hot, path.running')).toHaveCount(0);
+  await expect(flow.locator('path.hot')).toHaveCount(1);
   await page.locator('#hp-scenario').selectOption('unavailable');
   await expect(status).toContainText('Verbindingsprobleem');
   await expect(page.locator('home-system-health-card')).toContainText(
@@ -234,7 +234,7 @@ test('the seven mockup states render for visual comparison', async ({
     ['hot-water', 'hot_water', 2],
     ['standby', 'standby', 2],
     ['defrost', 'defrost', 2],
-    ['auxiliary', 'auxiliary_active', 1],
+    ['auxiliary', 'auxiliary_active', 2],
     ['fault', 'fault', 2],
     ['unavailable', 'offline', 2],
   ] as const) {

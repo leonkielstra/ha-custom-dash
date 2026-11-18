@@ -66,11 +66,7 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
         transform: translate(-50%, -50%);
         display: flex;
       }
-      .auxiliary-icon {
-        position: relative;
-      }
-      .source-icon .steam,
-      .auxiliary-icon .steam {
+      .source-icon .steam {
         position: absolute;
         bottom: 100%;
         left: 50%;
@@ -153,12 +149,6 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
       .target.active strong,
       .target.hot-water strong {
         color: var(--room-accent);
-      }
-      .auxiliary_active .targets {
-        grid-template-rows: 1fr;
-      }
-      .auxiliary_active .target {
-        color: var(--state-color);
       }
       .state {
         display: flex;
@@ -281,8 +271,8 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
     const c = this.config;
     const status = heatPumpStatus(this.hass, c);
     const text = this.strings.heatPump;
-    const heating = status.purpose === 'heating';
-    const water = status.purpose === 'hot_water';
+    const heating = status.activity?.state === 'heat_pump_heating';
+    const water = status.activity?.state === 'heat_pump_hot_water';
     const icon = {
       heating: 'mdi:fire',
       hot_water: 'mdi:water',
@@ -313,12 +303,9 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
       offline: text.flowOffline,
     };
     const heading = headings[status.purpose] ?? text[status.purpose];
-    const auxiliary = status.purpose === 'auxiliary_active';
     const defrost = status.purpose === 'defrost';
     const fault = status.purpose === 'fault';
-    const unknownRoute = ['offline', 'unknown', 'active'].includes(
-      status.purpose,
-    );
+    const unknownRoute = !heating && !water && status.purpose !== 'standby';
     const inactive = unknownRoute ? '—' : this.strings.off;
     const readings = [
       [c.entity, this.strings.heatOutput],
@@ -363,71 +350,40 @@ export class HeatFlowCard extends BaseCard<HeatPumpCardConfig> {
               class=${heating ? 'running' : water ? '' : 'branch'}
               d="M0 80H65"
             ></path>
-            ${
-              auxiliary
-                ? svg`<path class="branch" d="M95 80H145"></path>`
-                : svg`<path
+            ${svg`<path
                       class=${`branch ${heating ? 'running' : ''}`}
                       d="M95 80H110V40H160m-8-5 8 5-8 5"
                     ></path>
                     <path
                       class=${`branch ${water ? 'hot' : ''}`}
                       d="M95 80H110V120H160m-8-5 8 5-8 5"
-                    ></path> `
-            }
+                    ></path> `}
             <path d="m65 69 30 22V69L65 91Z"></path>
             <circle cx="80" cy="80" r="5"></circle>
           </svg>
         </div>
         <div class="targets">
-          ${
-            status.purpose === 'auxiliary_active'
-              ? html`<div class="target">
-                  <div class="auxiliary-icon">
-                    <ha-icon
-                      class="steam"
-                      .icon=${'mdi:heating-coil'}
-                      aria-hidden="true"
-                    ></ha-icon>
-                    <ha-icon
-                      .icon=${'mdi:radiator'}
-                      aria-hidden="true"
-                    ></ha-icon>
-                  </div>
-                  <div>
-                    <strong>${text.auxiliary}</strong
-                    ><span>${text.auxiliaryShort}</span>
-                  </div>
-                </div>`
-              : html`
-                  <div class=${`target ${heating ? 'active' : ''}`}>
-                    <ha-icon
-                      .icon=${'mdi:home-outline'}
-                      aria-hidden="true"
-                    ></ha-icon>
-                    <div>
-                      <strong>${text.home}</strong
-                      ><span class="meta"
-                        >${heating ? this.strings.on : inactive}</span
-                      >
-                    </div>
-                  </div>
-                  <div class=${`target ${water ? 'hot-water' : ''}`}>
-                    <ha-icon
-                      .icon=${'mdi:water-boiler'}
-                      aria-hidden="true"
-                    ></ha-icon>
-                    <div>
-                      <strong>${text.water}</strong
-                      ><span class="meta"
-                        >${water ? this.strings.on : inactive}</span
-                      >
-                    </div>
-                  </div>
-                `
-          }
+          ${html`
+            <div class=${`target ${heating ? 'active' : ''}`}>
+              <ha-icon .icon=${'mdi:home-outline'} aria-hidden="true"></ha-icon>
+              <div>
+                <strong>${text.home}</strong
+                ><span class="meta"
+                  >${heating ? this.strings.on : inactive}</span
+                >
+              </div>
+            </div>
+            <div class=${`target ${water ? 'hot-water' : ''}`}>
+              <ha-icon .icon=${'mdi:water-boiler'} aria-hidden="true"></ha-icon>
+              <div>
+                <strong>${text.water}</strong
+                ><span class="meta">${water ? this.strings.on : inactive}</span>
+              </div>
+            </div>
+          `}
         </div>
       </div>
+      ${status.auxiliary === 'on' ? html`<p class="meta">${text.auxiliary}: ${this.strings.on}</p>` : nothing}
       ${fault ? html`<div class="fault-details"><span>${text.faultCode}: ${c.fault_code ? metricValue(this.hass, { entity: c.fault_code }) : '—'}</span><button @click=${() => this.dispatchEvent(new CustomEvent('hass-more-info', { bubbles: true, composed: true, detail: { entityId: c.fault_code ?? c.fault_entity } }))}>${text.details} ›</button></div>` : nothing}
       ${
         readings.length
