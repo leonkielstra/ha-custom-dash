@@ -78,6 +78,7 @@ export const hero = {
   sun_entity: 'sun.sun',
   image_day: '/preview/assets/home-day.svg',
   image_night: '/preview/assets/home-night.svg',
+  full_bleed: true,
 };
 export const activities: ActivityConfig = {
   type: 'custom:home-activity-section-card',

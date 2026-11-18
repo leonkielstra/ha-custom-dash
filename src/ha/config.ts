@@ -265,6 +265,7 @@ export function heroConfig(value: unknown): HeroConfig {
     sun_entity: entity(c.sun_entity, 'sun_entity', 'sun'),
     image_day: text(c.image_day, 'image_day'),
     image_night: text(c.image_night, 'image_night'),
+    full_bleed: optionalBoolean(c.full_bleed, 'full_bleed'),
     weather:
       c.weather === undefined
         ? undefined

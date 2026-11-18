@@ -56,8 +56,8 @@ night/washer, multiple appliances, unavailable entities, or rooms without lighti
 The daylight control works independently of theme (including day in dark mode
 and night in light mode). Both previews support English and Dutch. Home fixtures
 mirror the twelve-room configuration structure with fictional entity IDs. Its SVG
-house illustrations use `local/ha-config/www/images/dashboard/home-day-v2.png`
-and `home-night-v2.png` when both exist. Otherwise the preview uses fictional SVGs.
+house illustrations use `local/ha-config/www/images/dashboard/home-day-transparent-v2.png`
+and `home-night-transparent-v2.png` when both exist. Otherwise the preview uses fictional SVGs.
 Add `?fixtures=1` to force the SVGs. These private images are not part of the
 distributed library; configure your own production images.
 Select a single theme to see the desktop summary/navigation composition at full
@@ -298,6 +298,9 @@ adds a translated condition beneath the outdoor reading; the original schema
 still works without it. The illustration still follows only sun state. Humidity
 is not part of the hero. A native heading badge can show weather in the HA header
 instead; see [heading badges](https://www.home-assistant.io/dashboards/heading/).
+
+For transparent artwork, enable `full_bleed: true` on a hero in a centered,
+single-column mobile view to extend the image to the viewport edges.
 
 Room cards require only `name`. Optional `icon`, `temperature`, and `lights` add
 context. `navigation_path` accepts an internal path starting with `/`, using

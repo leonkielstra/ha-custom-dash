@@ -63,6 +63,7 @@ export interface HeroConfig extends CardConfig {
   sun_entity: string;
   image_day: string;
   image_night: string;
+  full_bleed?: boolean;
   weather?: string;
 }
 export interface RoomConfig extends CardConfig {

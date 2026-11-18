@@ -287,6 +287,7 @@ export function cardForm(
         entity('sun_entity', 'sun', true),
         text('image_day', true),
         text('image_night', true),
+        bool('full_bleed'),
         entity('weather', 'weather'),
       ];
       break;

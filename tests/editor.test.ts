@@ -158,6 +158,7 @@ it('covers each supported configuration field instead of hiding list options beh
       'sun_entity',
       'image_day',
       'image_night',
+      'full_bleed',
       'weather',
       'theme',
     ],
@@ -264,6 +265,24 @@ it('round-trips every default config through the form without dropping unknown f
       fromEditorData(config, toEditorData(config), cardForm(type).schema),
     ).toEqual(config);
   }
+});
+
+it('sets and clears the full-width hero option in the visual editor', async () => {
+  const editor = await editorFor({
+    type: 'custom:home-hero-card',
+    ...constructor('home-hero-card').getStubConfig(hass),
+  });
+  const changed = vi.fn();
+  editor.addEventListener('config-changed', changed);
+  const form = forms(editor)[0]!;
+  expect(form.computeLabel({ name: 'full_bleed' })).toBe(
+    'Paginabrede hero met transparante afbeeldingen',
+  );
+  change(form, { ...form.data, full_bleed: true });
+  expect(changed.mock.calls[0]![0].detail.config.full_bleed).toBe(true);
+  await editor.updateComplete;
+  change(form, { ...form.data, full_bleed: false });
+  expect(changed.mock.calls[1]![0].detail.config.full_bleed).toBe(false);
 });
 
 it('preserves inherited and explicit slider modes, including reordered light metadata', () => {

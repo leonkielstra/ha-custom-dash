@@ -41,6 +41,10 @@ const labels: Record<string, readonly [string, string]> = {
   sun_entity: ['Sun entity', 'Zonentiteit'],
   image_day: ['Day illustration URL', 'URL dagillustratie'],
   image_night: ['Night illustration URL', 'URL nachtillustratie'],
+  full_bleed: [
+    'Full-width hero with transparent images',
+    'Paginabrede hero met transparante afbeeldingen',
+  ],
   weather: ['Weather entity', 'Weerentiteit'],
   appliances: ['Appliances', 'Apparaten'],
   hide_when_empty: ['Hide when empty', 'Verbergen als er geen activiteit is'],

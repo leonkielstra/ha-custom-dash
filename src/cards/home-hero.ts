@@ -11,10 +11,13 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
   static styles = [
     BaseCard.styles,
     css`
+      :host {
+        container-type: inline-size;
+      }
       ha-card {
         display: grid;
-        padding: 0 0 8px;
-        background: var(--room-background);
+        grid-template-columns: minmax(0, 1fr);
+        background: transparent;
       }
       .illustration {
         display: grid;
@@ -47,6 +50,40 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
             transparent
           );
         mask-composite: intersect;
+      }
+      .full-bleed img {
+        mask-image: linear-gradient(to bottom, black 72%, transparent 96%);
+      }
+      @media (max-width: 480px) {
+        .full-bleed .illustration {
+          width: 100dvw;
+          margin-inline: calc((100% - 100dvw) / 2);
+          height: clamp(180px, 60dvw, 265px);
+        }
+        .full-bleed img {
+          width: 100%;
+          object-fit: cover;
+          object-position: center 30%;
+        }
+        .full-bleed dl {
+          position: relative;
+          margin-top: -10px;
+        }
+      }
+      @media (min-width: 900px) {
+        @container (min-width: 380px) {
+          .full-bleed {
+            grid-template-columns: minmax(0, 1fr) minmax(150px, 36%);
+            align-items: center;
+          }
+          .full-bleed .illustration {
+            height: auto;
+            aspect-ratio: 3 / 2;
+          }
+          .full-bleed dd {
+            overflow-wrap: normal;
+          }
+        }
       }
       .illustration ha-icon {
         color: var(--room-muted);
@@ -146,7 +183,7 @@ export class HomeHeroCard extends BaseCard<HeroConfig> {
   protected render() {
     if (!this.config) return nothing;
     const text = this.strings;
-    return html`<ha-card>
+    return html`<ha-card class=${this.config.full_bleed ? 'full-bleed' : ''}>
       <div class="illustration">
         ${
           this.imageFailed

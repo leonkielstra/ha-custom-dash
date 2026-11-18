@@ -17,9 +17,9 @@ test('uses local hero images when both exist and falls back to fixtures when one
   );
   await page.goto('/preview/home.html?bundle=1');
   const image = page.locator('.home-page.light home-hero-card img');
-  await expect(image).toHaveAttribute('src', /home-day-v2\.png$/);
+  await expect(image).toHaveAttribute('src', /home-day-transparent-v2\.png$/);
   await page.locator('#daylight').selectOption('below_horizon');
-  await expect(image).toHaveAttribute('src', /home-night-v2\.png$/);
+  await expect(image).toHaveAttribute('src', /home-night-transparent-v2\.png$/);
   missingNight = true;
   await page.reload();
   await expect(image).toHaveAttribute('src', /home-day\.svg$/);
@@ -328,7 +328,10 @@ test('Home stays compact and neutral with no overflow across mobile/tablet sizes
     expect(hero!.height).toBeGreaterThanOrEqual(220);
     expect(hero!.height).toBeLessThanOrEqual(360);
     const image = await view.locator('home-hero-card img').boundingBox();
-    expect(image!.width).toBeLessThanOrEqual(hero!.width);
+    if (width <= 480) {
+      expect(image!.x).toBeCloseTo(0, 0);
+      expect(image!.width).toBeCloseTo(width, 0);
+    }
     const illustration = await view
       .locator('home-hero-card .illustration')
       .boundingBox();
@@ -337,9 +340,9 @@ test('Home stays compact and neutral with no overflow across mobile/tablet sizes
       .first()
       .boundingBox();
     expect(reading!.y).toBeGreaterThanOrEqual(
-      illustration!.y + illustration!.height,
+      illustration!.y + illustration!.height - 10,
     );
-    for (const grid of await view.locator('.room-grid').all()) {
+    for (const grid of await view.locator('.floor').all()) {
       const roomCards = grid.locator('home-room-card');
       if ((await roomCards.count()) > 1) {
         const a = await roomCards.nth(0).boundingBox();
